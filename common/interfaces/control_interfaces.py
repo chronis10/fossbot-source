@@ -9,12 +9,8 @@ class MotorInterface(ABC):
     """ Interface for motor """
 
     @abstractmethod
-    def control_speed(self, speed: int) -> None:
-        """ Set speed immediately 0-100% range """
-
-    @abstractmethod
     def set_speed(self, speed: int) -> None:
-        """ Set default speed 0-100% range """
+        """ Set speed immediately 0-100% range """
 
     @abstractmethod
     def dir_control(self, direction: str) -> None:
@@ -31,10 +27,6 @@ class MotorInterface(ABC):
 
 class OdometerInterface(ABC):
     """ Interface for odometer """
-
-    @abstractmethod
-    def get_state(self) -> int:
-        """ Return 0 or 1 """
 
     @abstractmethod
     def count_revolutions(self) -> None:
