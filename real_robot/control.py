@@ -160,7 +160,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     def __init__(self, CLK =11, MISO=9, MOSI=10, CS=8):
         self.mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
-    def get_readings(self, pin):
+    def get_reading(self, pin):
         value = self.mcp.read_adc(pin)
         print(f'ADC {pin}: {value}')
         return value
