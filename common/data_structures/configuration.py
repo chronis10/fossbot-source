@@ -3,7 +3,6 @@ Robot configuration dataclasses
 """
 
 from dataclasses import dataclass
-from email.policy import default
 
 
 @dataclass
