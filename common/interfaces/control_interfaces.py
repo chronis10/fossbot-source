@@ -25,24 +25,12 @@ class AccelerometerInterface(ABC):
     """ Interface for accelerometer """
 
     @abstractmethod
-    def get_acceleration(self, dimension: str = "all" ) -> dict:
+    def get_acceleration(self, dimension: str = "all") -> dict:
         """ Returns acceleration for input dimension """
 
     @abstractmethod
-    def get_gyro(self, dimension: str = "all" ) -> dict:
+    def get_gyro(self, dimension: str = "all") -> dict:
         """ Returns gyroscope for input dimension """
-
-
-class BuzzerInterface(ABC):
-    """ Interface for buzzer """
-
-    @abstractmethod
-    def beep(self) -> None:
-        """ Short tone """
-
-    @abstractmethod
-    def timer(self, count: int) -> None:
-        """ Timer function with wait and for every 1 sec makes a tone """
 
 
 class MotorInterface(ABC):

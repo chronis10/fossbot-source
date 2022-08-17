@@ -36,41 +36,48 @@ class SensorDistance:
 @dataclass
 class LightSensor:
     """ Light Sensor """
-    name:str
-    value:int
-    default:int
+    name: str
+    value: int
+    default: int
 
 @dataclass
 class LineSensorLeft:
     """ Line Sensor left """
-    name:str
-    value:int
-    default:int
+    name: str
+    value: int
+    default: int
 
 @dataclass
 class LineSensorCenter:
     """ Line Sensor center """
-    name:str
-    value:int
-    default:int
+    name: str
+    value: int
+    default: int
 
 @dataclass
 class LineSensorRight:
     """ Line Sensor right """
-    name:str
-    value:int
-    default:int
+    name: str
+    value: int
+    default: int
 
 @dataclass
 class Rotate90:
     """ Rotate 90 degrees """
-    name:str
-    value:int
-    default:int
+    name: str
+    value: int
+    default: int
+
+@dataclass
+class SimRobotIds:
+    """ Ids for simulation """
+    client_id: int
+    left_motor_name: str
+    right_motor_name: str
 
 @dataclass
 class RobotParameters:
-    """ Dataclass for all parameters """
+    """ Dataclass for all real parameters """
     sensor_distance: SensorDistance
     motor_left_speed: MotorLeftSpeed
     motor_right_speed: MotorRightSpeed
@@ -80,3 +87,8 @@ class RobotParameters:
     line_sensor_center: LineSensorCenter
     line_sensor_right: LineSensorRight
     rotate_90: Rotate90
+
+@dataclass
+class SimRobotParameters(RobotParameters):
+    """ Dataclass for all simulated parameters """
+    simulation: SimRobotIds

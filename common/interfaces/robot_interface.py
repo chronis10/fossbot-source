@@ -88,28 +88,12 @@ class FossBotInterface(ABC):
         """ Just moves in reverse (default speed) """
 
     @abstractmethod
-    def get_last_move_distance(self) -> int:
-        """ Returns last moved distance """
-
-    @abstractmethod
     def play_sound(self, audio_id: int) -> None:
         """ Plays audio_id sound """
 
     @abstractmethod
-    def beep(self) -> None:
-        """ Beeps """
-
-    @abstractmethod
     def rgb_set_color(self, color: str) -> None:
         """ Sets color of led """
-
-    @abstractmethod
-    def get_temperature(self) -> int:
-        """ Gets temperature """
-
-    @abstractmethod
-    def get_humidity(self) -> int:
-        """ Gets humidity """
 
     @abstractmethod
     def just_rotate(self, dir_id: int) -> None:

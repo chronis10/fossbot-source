@@ -6,8 +6,6 @@ import math
 import time
 import RPi.GPIO as GPIO
 from mpu6050 import mpu6050
-import smbus
-import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 from common.interfaces import control_interfaces
 
@@ -23,7 +21,36 @@ class GenInput():
         GPIO.setup(self.pin, GPIO.IN)
 
     def get_state(self):
+        '''
+        Returns True/False
+        '''
         return GPIO.input(self.pin)
+
+class GenOutput():
+    '''
+    Class gen_output(pin)
+    Deafult pin 5
+    Functions:
+    set_on() set High the output pin
+    set_off() set Low the output pin
+    '''
+    def __init__(self, pin=5):
+        self.pin = pin
+        GPIO.setup(self.pin, GPIO.OUT)
+        GPIO.output(self.pin, False)
+
+    def set_on(self):
+        '''
+        Set High the output pin
+        '''
+        GPIO.output(self.pin, True)
+
+    def set_off(self):
+        '''
+        Set Low the output pin
+        '''
+        GPIO.output(self.pin, False)
+
 
 
 class Motor(control_interfaces.MotorInterface):
@@ -32,7 +59,7 @@ class Motor(control_interfaces.MotorInterface):
     Motor(speed_pin,terma_pin,termb_pinfreq=17,dc=70)
     """
 
-    def __init__(self, speed_pin: int, terma_pin: int, termb_pin: int , dc_value: int =70):
+    def __init__(self, speed_pin: int, terma_pin: int, termb_pin: int, dc_value: int = 70):
         GPIO.setup(speed_pin, GPIO.OUT)
         GPIO.setup(terma_pin, GPIO.OUT)
         GPIO.setup(termb_pin, GPIO.OUT)
@@ -70,7 +97,7 @@ class Motor(control_interfaces.MotorInterface):
         self.mot.ChangeDutyCycle(self.dc_value)
 
     def stop(self) -> None:
-        """ Stops the motor"""
+        """ Stops the motor """
         self.mot.ChangeDutyCycle(0)
 
 
@@ -127,7 +154,7 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     UltrasonicSensor(echo_pin,trig_pin)
     '''
 
-    def __init__(self, echo_pin: int =14, trig_pin: int =15):
+    def __init__(self, echo_pin: int = 14, trig_pin: int = 15):
         self.echo_pin = echo_pin
         self.trig_pin = trig_pin
         GPIO.setup(self.echo_pin, GPIO.IN)
@@ -157,10 +184,10 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     AnalogueReadings(CLK,MISO,MOSI,CS)
     '''
 
-    def __init__(self, CLK =11, MISO=9, MOSI=10, CS=8):
+    def __init__(self, CLK: int = 11, MISO: int = 9, MOSI: int = 10, CS: int = 8):
         self.mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
-    def get_reading(self, pin):
+    def get_reading(self, pin: int) -> list:
         value = self.mcp.read_adc(pin)
         print(f'ADC {pin}: {value}')
         return value
@@ -172,44 +199,44 @@ class LedRGB(control_interfaces.LedRGBInterface):
     LedRGB(pin_r,pin_b,pin_g)
     '''
 
-    def __init__(self, pin_r=16, pin_b=19, pin_g=12):
-        self.r = gen_output(pin_r)
-        self.b = gen_output(pin_b)
-        self.g = gen_output(pin_g)
+    def __init__(self, pin_r: int = 16, pin_b: int = 19, pin_g: int = 12):
+        self.p_r = GenOutput(pin_r)
+        self.p_b = GenOutput(pin_b)
+        self.p_g = GenOutput(pin_g)
 
-    def set_on(self, color):
-        if color  == 'red':
-            self.r.set_on()
-            self.b.set_off()
-            self.g.set_off()
+    def set_on(self, color: str) -> None:
+        if color == 'red':
+            self.p_r.set_on()
+            self.p_b.set_off()
+            self.p_g.set_off()
         elif color == 'green':
-            self.r.set_off()
-            self.b.set_off()
-            self.g.set_on()
+            self.p_r.set_off()
+            self.p_b.set_off()
+            self.p_g.set_on()
         elif color == 'blue':
-            self.r.set_off()
-            self.b.set_on()
-            self.g.set_off()
+            self.p_r.set_off()
+            self.p_b.set_on()
+            self.p_g.set_off()
         elif color == 'white':
-            self.r.set_on()
-            self.b.set_on()
-            self.g.set_on()
+            self.p_r.set_on()
+            self.p_b.set_on()
+            self.p_g.set_on()
         elif color == 'violet':
-            self.r.set_on()
-            self.b.set_on()
-            self.g.set_off()
+            self.p_r.set_on()
+            self.p_b.set_on()
+            self.p_g.set_off()
         elif color == 'cyan':
-            self.r.set_off()
-            self.b.set_on()
-            self.g.set_on()
+            self.p_r.set_off()
+            self.p_b.set_on()
+            self.p_g.set_on()
         elif color == 'yellow':
-            self.r.set_on()
-            self.b.set_off()
-            self.g.set_on()
+            self.p_r.set_on()
+            self.p_b.set_off()
+            self.p_g.set_on()
         elif color == 'closed':
-            self.r.set_off()
-            self.b.set_off()
-            self.g.set_off()
+            self.p_r.set_off()
+            self.p_b.set_off()
+            self.p_g.set_off()
 
 
 class Accelerometer(control_interfaces.AccelerometerInterface):
@@ -218,57 +245,27 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
     Accelerometer(address)
     '''
 
-    def __init__(self,address=0x68):
+    def __init__(self, address=0x68):
         self.sensor = mpu6050(address)
 
-    def get_acceleration(self,dimension = "all" ):
+    def get_acceleration(self, dimension: str = "all") -> dict:
         accel = self.sensor.get_accel_data()
         if dimension == "all":
             return accel
-        elif dimension == "x" or dimension == "y" or dimension == "z":
+        if dimension in ('x', 'y', 'z'):
             return accel[dimension]
-        else:
-            print("Dimension not recognized!!")
-            return 0
+        print("Dimension not recognized!!")
+        return 0
 
-    def get_gyro(self,dimension = "all" ):
+    def get_gyro(self, dimension: str = "all") -> dict:
         gyro = self.sensor.get_gyro_data()
         if dimension == "all":
             return gyro
-        elif dimension == "x" or dimension == "y" or dimension == "z":
+        if dimension in ('x', 'y', 'z'):
             return gyro[dimension]
-        else:
-            print("Dimension not recognized!!")
-            return 0
+        print("Dimension not recognized!!")
+        return 0
 
-
-class Buzzer(control_interfaces.BuzzerInterface):
-    '''
-    Buzzer
-    Buzzer(pin,freq,dc)
-    '''
-
-    def __init__(self,pin,freq=1500,dc=50):
-        GPIO.setup(pin,GPIO.OUT)
-        self.buz = GPIO.PWM(pin,freq)
-        self.freq = freq
-        self.dc = dc
-        self.buz.start(0)
-
-    def beep(self):
-        self.buz.ChangeDutyCycle(self.dc)
-        time.sleep(0.1)
-        self.buz.ChangeDutyCycle(0)
-
-    def timer(self,count):
-        print("Timer start for {}".format(count))
-        for i in range(1,count+1):
-            self.buz.ChangeDutyCycle(self.dc)
-            time.sleep(0.5)
-            self.buz.ChangeDutyCycle(0)
-            time.sleep(0.5)
-            print("{} sec".format(i))
-        print("Timer finished")
 
 #General functions
 def start_lib():
@@ -283,25 +280,3 @@ def clean():
     This function releases all the GPIO pins .
     '''
     GPIO.cleanup()
-
-def get_ip():
-    '''
-    This function returns the ip of the RPI
-    '''
-    ip_list = []
-    for ifaceName in interfaces():
-        addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr':'No IP addr'}] )]
-        print(addresses[0])
-        ip_list.append(addresses[0])
-    return ip_list
-
-def make_csv(data_list,filename="data.csv"):
-    '''
-    This function cretes csv file with logs from experiments.
-    '''
-    with open(filename, "w",newline='') as file:
-        csv.register_dialect('myDialect',delimiter = ',')
-        writer = csv.writer(file,dialect='myDialect')
-        for item in data_list:
-            writer.writerow(item)
-    print("Csv with name {} created.".format(filename))

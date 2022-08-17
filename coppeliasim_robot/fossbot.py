@@ -10,7 +10,7 @@ from coppeliasim_robot import control
 class FossBot(robot_interface.FossBotInterface):
     """ Real robot """
 
-    def __init__(self,parameters: configuration.RobotParameters):
+    def __init__(self, parameters: configuration.RobotParameters):
         self.motor_right  = control.Motor(motor_joint_name="something")
         self.motor_left = control.Motor(motor_joint_name="something")
         self.ultrasonic = control.UltrasonicSensor()
