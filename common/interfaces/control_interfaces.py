@@ -5,6 +5,46 @@ Interfaces for control parts
 from abc import ABC, abstractmethod
 
 
+class AnalogueReadingsInterface(ABC):
+    """ Interface for analogue readings """
+
+    @abstractmethod
+    def get_readings(self, pin: int) -> list:
+        """ Returns the image data """
+
+
+class LedRGBInterface(ABC):
+    """ Interface for led rgb """
+
+    @abstractmethod
+    def set_on(self, color: str) -> None:
+        """ Changes the color of a led """
+
+
+class AccelerometerInterface(ABC):
+    """ Interface for accelerometer """
+
+    @abstractmethod
+    def get_acceleration(self, dimension: str = "all" ) -> dict:
+        """ Returns acceleration for input dimension """
+
+    @abstractmethod
+    def get_gyro(self, dimension: str = "all" ) -> dict:
+        """ Returns gyroscope for input dimension """
+
+
+class BuzzerInterface(ABC):
+    """ Interface for buzzer """
+
+    @abstractmethod
+    def beep(self) -> None:
+        """ Short tone """
+
+    @abstractmethod
+    def timer(self, count: int) -> None:
+        """ Timer function with wait and for every 1 sec makes a tone """
+
+
 class MotorInterface(ABC):
     """ Interface for motor """
 

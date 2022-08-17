@@ -22,7 +22,12 @@ if __name__ == "__main__":
         sensor_distance = configuration.SensorDistance(**file_parameters["sensor_distance"]),
         motor_left_speed= configuration.MotorLeftSpeed(**file_parameters["motor_left"]),
         motor_right_speed= configuration.MotorRightSpeed(**file_parameters["motor_right"]),
-        default_step= configuration.DefaultStep(**file_parameters["step"]))
+        default_step= configuration.DefaultStep(**file_parameters["step"]),
+        light_sensor= configuration.LightSensor(**file_parameters["light_sensor"]),
+        line_sensor_left= configuration.LineSensorLeft(**file_parameters["line_sensor_left"]),
+        line_sensor_center= configuration.LineSensorCenter(**file_parameters["line_sensor_center"]),
+        line_sensor_right=configuration.LineSensorRight(**file_parameters["line_sensor_right"]),
+        rotate_90= configuration.Rotate90(**file_parameters["rotate_90"]))
 
     # Create a real robot
     my_real_robot = RealFossBot(parameters= parameters)
