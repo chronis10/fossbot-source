@@ -9,7 +9,7 @@ class AnalogueReadingsInterface(ABC):
     """ Interface for analogue readings """
 
     @abstractmethod
-    def get_readings(self, pin: int) -> list:
+    def get_reading(self, pin: int) -> list:
         """ Returns the image data """
 
 
