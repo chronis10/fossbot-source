@@ -77,17 +77,17 @@ class FossBot(robot_interface.FossBotInterface):
         self.odometer_right.reset()
         self.odometer_left.reset()
 
-    def wait(self, time_s):
+    def wait(self, time_s: int) -> None:
         time.sleep(time_s)
 
     def __del__(self):
         sim.simxFinish(self.client_id)
 
-    def exit(self):
+    def exit(self) -> None:
         sim.simxFinish(self.client_id)
         print('Program ended')
 
-    def just_rotate(self, dir_id):
+    def just_rotate(self, dir_id: int) -> None:
         self.odometer_right.reset()
         left_dir = "reverse" if dir_id == 1 else "forward"
         right_dir = "reverse" if dir_id == 0 else "forward"
@@ -95,38 +95,38 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_right.move(direction=right_dir)
 
     #moving forward
-    def move_forward_distance(self, dist):
+    def move_forward_distance(self, dist: int) -> None:
         self.move_distance(dist)
 
-    def move_forward_default(self):
+    def move_forward_default(self) -> None:
         self.move_distance(self.parameters.default_step.value)
 
-    def rotate_clockwise(self):
+    def rotate_clockwise(self) -> None:
         self.just_rotate(1)
 
-    def rotate_counterclockwise(self):
+    def rotate_counterclockwise(self) -> None:
         self.just_rotate(0)
 
-    def move_forward(self):
+    def move_forward(self) -> None:
         self.just_move()
 
-    def rotate_clockwise_90(self):
+    def rotate_clockwise_90(self) -> None:
         self.rotate_90(1)
 
-    def rotate_counterclockwise_90(self):
+    def rotate_counterclockwise_90(self) -> None:
         self.rotate_90(0)
 
     #moving reverse
-    def move_reverse_distance(self, dist):
+    def move_reverse_distance(self, dist: int) -> None:
         self.move_distance(dist, direction="reverse")
 
-    def move_reverse_default(self):
+    def move_reverse_default(self) -> None:
         self.move_distance(self.parameters.default_step.value, direction="reverse")
 
-    def move_reverse(self):
+    def move_reverse(self) -> None:
         self.just_move(direction="reverse")
 
-    def rotate_90(self, dir_id):
+    def rotate_90(self, dir_id: int) -> None:
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
         while self.odometer_right.get_steps() <= rotations:
@@ -134,7 +134,7 @@ class FossBot(robot_interface.FossBotInterface):
             self.odometer_right.count_revolutions()
         self.stop()
 
-    def move_distance(self, dist, direction="forward"):
+    def move_distance(self, dist, direction: str = "forward") -> None:
         self.just_move(direction=direction)
         dis_run = self.odometer_right.get_distance()
         while dis_run < dist:
@@ -146,7 +146,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_right.dir_control("forward")
 
     #sound
-    def play_sound(self, audio_id):
+    def play_sound(self, audio_id: int) -> None:
         audio_id = int(audio_id)
         if audio_id == 1:
             subprocess.run(["mpg123", "../robot_lib/soundfx/geia.mp3"], check=True)
@@ -164,10 +164,10 @@ class FossBot(robot_interface.FossBotInterface):
             subprocess.run(["mpg123", "../robot_lib/soundfx/machine_gun.mp3"], check=True)
 
     #floor sensors
-    def get_floor_sensor(self, sensor_id):
+    def get_floor_sensor(self, sensor_id: int) -> list:
         return self.analogue_reader.get_reading(sensor_id)
 
-    def check_on_line(self, sensor_id):
+    def check_on_line(self, sensor_id: int) -> bool:
         sensor_left = self.parameters.line_sensor_left.value
         sensor_center = self.parameters.line_sensor_center.value
         sensor_right = self.parameters.line_sensor_right.value
@@ -182,12 +182,12 @@ class FossBot(robot_interface.FossBotInterface):
                 return True
         return False
 
-    def get_acceleration(self, axis='all'):
+    def get_acceleration(self, axis: str = 'all') -> dict:
         value = self.accelerometer.get_acceleration(dimension=axis)
         print(value)
         return value
 
-    def get_gyroscope(self, axis='all'):
+    def get_gyroscope(self, axis: str = 'all') -> dict:
         value = self.accelerometer.get_gyro(dimension=axis)
         print(value)
         return value
@@ -196,15 +196,15 @@ class FossBot(robot_interface.FossBotInterface):
     # dont know how to implement the following in simulation... =========================
 
     #rgb
-    def rgb_set_color(self, color):
+    def rgb_set_color(self, color: str) -> None:
         pass
 
-    def get_noise_detection(self):
+    def get_noise_detection(self) -> bool:
         pass
 
     #light sensor
-    def get_light_sensor(self):
+    def get_light_sensor(self) -> list:
         pass
 
-    def check_for_dark(self):
+    def check_for_dark(self) -> bool:
         pass

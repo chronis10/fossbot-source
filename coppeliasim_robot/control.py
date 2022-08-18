@@ -34,18 +34,18 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     Analogue Readings
     AnalogueReadings(client_id)
     '''
-    def __init__(self, client_id):
+    def __init__(self, client_id: int):
         self.floor_sensor_middle = init_component(client_id, "middle_sensor")
         self.floor_sensor_left = init_component(client_id, "left_sensor")
         self.floor_sensor_right = init_component(client_id, "right_sensor")
         self.client_id = client_id
 
-    def __get_image(self, floor_sensor):
+    def __get_image(self, floor_sensor: int) -> list:
         _, _, image = sim.simxGetVisionSensorImage(self.client_id, floor_sensor,
                                                    0, sim.simx_opmode_streaming)
         return image
 
-    def get_reading(self, pin):
+    def get_reading(self, pin: int) -> list:
         if pin == 1:
             return self.__get_image(self.floor_sensor_middle)
         if pin == 2:
@@ -181,7 +181,7 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
         self.ultrasonic = init_component(self.client_id, "ultrasonic_sensor")
         self.__get_near_obst(mode=sim.simx_opmode_streaming)  # 1st call
 
-    def __get_near_obst(self, mode: int = sim.simx_opmode_buffer):
+    def __get_near_obst(self, mode: int = sim.simx_opmode_buffer) -> list:
         _, _, detected_point, _, _ = sim.simxReadProximitySensor(self.client_id,
                                                                  self.ultrasonic, mode)
         return detected_point
@@ -202,22 +202,22 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
                                 acceleration for a specific dimension give
                                 as parameter "x","y","z" return value
     '''
-    def __init__(self, client_id):
+    def __init__(self, client_id: int):
         self.sensor = init_component(client_id, 'sensor')
         sim.simxGetObjectVelocity(client_id, self.sensor, sim.simx_opmode_streaming)
         self.client_id = client_id
 
-    def __get_linear_vel(self):
+    def __get_linear_vel(self) -> float:
         _, linear_vel, _ = sim.simxGetObjectVelocity(self.client_id, self.sensor,
                                                      sim.simx_opmode_buffer)
         return linear_vel
 
-    def __get_angular_vel(self):
+    def __get_angular_vel(self) -> float:
         _, _, angular_vel = sim.simxGetObjectVelocity(self.client_id, self.sensor,
                                                       sim.simx_opmode_buffer)
         return angular_vel
 
-    def __get_accel_data(self, time_dif=1):
+    def __get_accel_data(self, time_dif: int = 1) -> dict:
         v_1 = self.__get_linear_vel()
         time.sleep(time_dif)
         v_2 = self.__get_linear_vel()
@@ -226,7 +226,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         z_vel = ((v_2[2] - v_1[2]) / time_dif)
         return {'x':x_vel, 'y':y_vel, 'z':z_vel}
 
-    def __get_gyro_data(self, time_dif=1):
+    def __get_gyro_data(self, time_dif: int = 1) -> dict:
         v_1 = self.__get_angular_vel()
         time.sleep(time_dif)
         v_2 = self.__get_angular_vel()
@@ -235,7 +235,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         z_vel = ((v_2[2] - v_1[2]) / time_dif)
         return {'x':x_vel, 'y':y_vel, 'z':z_vel}
 
-    def get_acceleration(self, dimension="all"):
+    def get_acceleration(self, dimension: str = "all") -> dict:
         accel = self.__get_accel_data()
         if dimension == "all":
             return accel
@@ -244,7 +244,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         print("Dimension not recognized!!")
         return 0
 
-    def get_gyro(self, dimension="all"):
+    def get_gyro(self, dimension: str = "all") -> dict:
         gyro = self.__get_gyro_data()
         if dimension == "all":
             return gyro
