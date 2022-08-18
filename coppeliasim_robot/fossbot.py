@@ -193,14 +193,14 @@ class FossBot(robot_interface.FossBotInterface):
 
     #rgb
     def rgb_set_color(self, color):
-        raise NotImplementedError
+        pass
 
     def get_noise_detection(self):
-        raise NotImplementedError
+        pass
 
     #light sensor
     def get_light_sensor(self):
-        raise NotImplementedError
+        pass
 
     def check_for_dark(self):
-        raise NotImplementedError
+        pass

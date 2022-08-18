@@ -54,7 +54,10 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             return self.__get_image(self.floor_sensor_left)
 
 class Motor(control_interfaces.MotorInterface):
-    """ Motor control """
+    """
+    Motor control
+    Motor(client_id,motor_joint_name,def_speed)
+    """
 
     def __init__(self, client_id: int, motor_joint_name: str, def_speed: int):
         self.client_id = client_id
