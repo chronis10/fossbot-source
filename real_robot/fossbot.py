@@ -38,7 +38,6 @@ class FossBot(robot_interface.FossBotInterface):
     def get_floor_sensor(self, sensor_id: int) -> list:
         return self.analogue_reader.get_reading(sensor_id)
 
-
     def check_on_line(self, sensor_id: int) -> bool:
         sensor_left = self.parameters.line_sensor_left.value
         sensor_center = self.parameters.line_sensor_center.value
