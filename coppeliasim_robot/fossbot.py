@@ -141,6 +141,10 @@ class FossBot(robot_interface.FossBotInterface):
             dis_run = self.odometer_right.get_distance()
         self.stop()
 
+    def reset_dir(self) -> None:
+        self.motor_left.dir_control("forward")
+        self.motor_right.dir_control("forward")
+
     #sound
     def play_sound(self, audio_id):
         audio_id = int(audio_id)
