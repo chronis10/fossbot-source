@@ -35,23 +35,29 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     AnalogueReadings(client_id)
     '''
     def __init__(self, client_id: int):
-        self.floor_sensor_middle = init_component(client_id, "middle_sensor")
-        self.floor_sensor_left = init_component(client_id, "left_sensor")
-        self.floor_sensor_right = init_component(client_id, "right_sensor")
+        self.floor_sensor_middle = init_component(client_id, "MiddleSensor")
+        self.floor_sensor_left = init_component(client_id, "LeftSensor")
+        self.floor_sensor_right = init_component(client_id, "RightSensor")
         self.client_id = client_id
 
-    def __get_image(self, floor_sensor: int) -> list:
-        _, _, image = sim.simxGetVisionSensorImage(self.client_id, floor_sensor,
-                                                   0, sim.simx_opmode_streaming)
+    def __get_image(self, floor_sensor_name: str) -> list:
+        _, floor_sensor = sim.simxGetObjectHandle(self.client_id, floor_sensor_name,
+                                                  sim.simx_opmode_blocking)
+        sim.simxGetVisionSensorImage(self.client_id, floor_sensor,
+                                     0, sim.simx_opmode_streaming)
+        time.sleep(0.1)
+        _, _, image=sim.simxGetVisionSensorImage(self.client_id, floor_sensor,
+                                                 0, sim.simx_opmode_buffer)
         return image
 
     def get_reading(self, pin: int) -> list:
         if pin == 1:
-            return self.__get_image(self.floor_sensor_middle)
-        if pin == 2:
-            return self.__get_image(self.floor_sensor_right)
-        if pin == 3:
-            return self.__get_image(self.floor_sensor_left)
+            return self.__get_image("MiddleSensor")
+        elif pin == 2:
+            return self.__get_image("RightSensor")
+        elif pin == 3:
+            return self.__get_image("LeftSensor")
+
 
 class Motor(control_interfaces.MotorInterface):
     """
@@ -119,6 +125,7 @@ class Odometer(control_interfaces.OdometerInterface):
         self.client_id = client_id
         self.motor = motor_right
         sim.simxGetJointPosition(self.client_id, self.motor, sim.simx_opmode_streaming)
+        self.run_thread = True
         self.step_thread = threading.Thread(target=self.__find_revolutions, daemon=True)
         self.step_thread.start()
 
@@ -158,6 +165,7 @@ class Odometer(control_interfaces.OdometerInterface):
 
     def get_distance(self) -> float:
         """ Return the total distance so far """
+        self.run_thread = True
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
@@ -166,6 +174,7 @@ class Odometer(control_interfaces.OdometerInterface):
     def reset(self) -> None:
         """ Reset the total distance and revolutions """
         self.steps = 0
+        self.run_thread = False
 
 class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     '''
@@ -185,6 +194,7 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
 
     def get_distance(self) -> float:
         detected_point = self.__get_near_obst(mode=sim.simx_opmode_buffer)
+        print(detected_point)
         return calc_distance_3d(detected_point[0], detected_point[1], detected_point[2])
 
 
