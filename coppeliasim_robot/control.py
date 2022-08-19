@@ -119,7 +119,6 @@ class Odometer(control_interfaces.OdometerInterface):
         self.client_id = client_id
         self.motor = motor_right
         sim.simxGetJointPosition(self.client_id, self.motor, sim.simx_opmode_streaming)
-        self.run_thread = True
         self.step_thread = threading.Thread(target=self.__find_revolutions, daemon=True)
         self.step_thread.start()
 
@@ -137,7 +136,7 @@ class Odometer(control_interfaces.OdometerInterface):
 
     def __find_revolutions(self) -> None:
         start_pos = self.__get_joint_pos()
-        while self.run_thread:
+        while True:
             time.sleep(0.01)
             start_pos = self.__check_rotations(start_pos)
 
@@ -159,7 +158,6 @@ class Odometer(control_interfaces.OdometerInterface):
 
     def get_distance(self) -> float:
         """ Return the total distance so far """
-        self.run_thread = True
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
@@ -168,7 +166,6 @@ class Odometer(control_interfaces.OdometerInterface):
     def reset(self) -> None:
         """ Reset the total distance and revolutions """
         self.steps = 0
-        self.run_thread = False
 
 class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     '''
