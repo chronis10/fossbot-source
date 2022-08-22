@@ -6,7 +6,6 @@ import ctypes as ct
 from coppeliasim_robot.simConst import *
 
 # New code ===========================
-import lsb_release as lr
 LIB_DIR_B=os.path.join(os.path.dirname(__file__), 'lib')
 LIB_DIR = None
 # =========================
@@ -25,6 +24,7 @@ try:
         file_extension = '.dylib'
         LIB_DIR=os.path.join(LIB_DIR_B,'MacOS')
     else:
+        import lsb_release as lr
         file_extension = '.so'
         ans=lr.get_os_release()
         ans['RELEASE']=ans['RELEASE'].replace('.','_')
