@@ -29,35 +29,77 @@ def calc_distance_3d(x_dif: float, y_dif: float, z_dif: float) -> float:
     return math.sqrt(x_dif**2 + y_dif**2 + z_dif**2)
 
 
+def get_object_children(client_id: int, object_name: str = '/', print_all = False) -> tuple:
+    '''
+    Retrieves handles of all the children of an object
+    Default object_name: '/': retrieves all the objects handles in the scene
+    Recommended object_name: 'fossbot': retrieves all children of fossbot 
+    Param: client_id: the client id
+           object_name: the object's name in the scene
+           print_all: prints all the handles and their corresponding object's path in the scene
+    Returns: object_children_list: a list of all the childrens handles of the requested object
+             object_children_dict: a dictionary with keys the handles and values the 
+                                  corresponding path in the scene of the requested object
+    '''
+    sim.simxGetObjectGroupData(client_id, sim.sim_appobj_object_type, 21, sim.simx_opmode_streaming)
+    time.sleep(0.1)
+    _, handle, _, _, name = sim.simxGetObjectGroupData(client_id, sim.sim_appobj_object_type, 21, sim.simx_opmode_blocking)
+
+    object_children_list=[]
+    object_children_dict={}
+
+    if not object_name.startswith('/'):
+        object_name = '/' + object_name
+
+    for h in handle:
+        if print_all:
+            print(f'Handle: {h}, Path: {name[h]}')
+        if object_name in name[h]:
+            object_children_list.append(h)
+            object_children_dict[h] = name[h]
+
+    if len(object_children_list) == 0:
+        print(f'There is no robot named {object_name[1:]} in scene.')
+        raise ModuleNotFoundError
+
+    return object_children_list, object_children_dict
+
+
 class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     '''
     Analogue Readings
     AnalogueReadings(client_id)
     '''
     def __init__(self, client_id: int):
+        self.client_id = client_id
         self.floor_sensor_middle = init_component(client_id, "MiddleSensor")
         self.floor_sensor_left = init_component(client_id, "LeftSensor")
         self.floor_sensor_right = init_component(client_id, "RightSensor")
-        self.client_id = client_id
-
-    def __get_image(self, floor_sensor_name: str) -> list:
-        _, floor_sensor = sim.simxGetObjectHandle(self.client_id, floor_sensor_name,
-                                                  sim.simx_opmode_blocking)
-        sim.simxGetVisionSensorImage(self.client_id, floor_sensor,
-                                     0, sim.simx_opmode_streaming)
+        # add sleep -> brings more results
+        sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_middle, 0, sim.simx_opmode_streaming)
         time.sleep(0.1)
-        _, _, image=sim.simxGetVisionSensorImage(self.client_id, floor_sensor,
-                                                 0, sim.simx_opmode_buffer)
-        return image
+        sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_right, 0, sim.simx_opmode_streaming)
+        time.sleep(0.1)
+        sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_left, 0, sim.simx_opmode_streaming)
+        time.sleep(0.1)
 
     def get_reading(self, pin: int) -> list:
+        # add sleep -> brings more results
         if pin == 1:
-            return self.__get_image("MiddleSensor")
+            time.sleep(0.1)
+            _, _, image=sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_middle,
+                                                     0, sim.simx_opmode_buffer)
+            return image
         elif pin == 2:
-            return self.__get_image("RightSensor")
+            time.sleep(0.1)
+            _, _, image=sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_right,
+                                                     0, sim.simx_opmode_buffer)
+            return image
         elif pin == 3:
-            return self.__get_image("LeftSensor")
-
+            time.sleep(0.1)
+            _, _, image=sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_left,
+                                                     0, sim.simx_opmode_buffer)
+            return image
 
 class Motor(control_interfaces.MotorInterface):
     """
@@ -82,7 +124,10 @@ class Motor(control_interfaces.MotorInterface):
                                               velocity, sim.simx_opmode_streaming)
 
     def dir_control(self, direction: str) -> None:
-        """ Change motor direction """
+        '''
+        Change motor direction
+        Param: direction: the direction to be headed to
+        '''
         if direction == 'forward':
             self.__change_motor_velocity(self.motor, -self.def_speed)
         elif direction == "reverse":
@@ -91,11 +136,17 @@ class Motor(control_interfaces.MotorInterface):
             print("Motor accepts only forward and reverse values")
 
     def move(self, direction: str = "forward") -> None:
-        """ Start motor to move with default speed """
+        '''
+        Start moving motor with default speed
+        Param: direction: the direction to be headed to
+        '''
         self.dir_control(direction)
 
     def set_speed(self, speed: int) -> None:
-        """ Set speed immediately 0-100% range """
+        '''
+        Set speed immediately 0-100% range
+        Param: speed: the range 0 - 100% that speed will be changed to
+        '''
         if speed < 0 or speed > 100:
             print("The motor speed is a percentage of total motor power. Accepted values 0-100.")
         else:
@@ -103,7 +154,7 @@ class Motor(control_interfaces.MotorInterface):
             self.__change_motor_velocity(self.motor, self.def_speed)
 
     def stop(self) -> None:
-        """ Stops the motor"""
+        '''Stops the motor'''
         self.__change_motor_velocity(self.motor, 0)
 
 
@@ -113,27 +164,34 @@ class Odometer(control_interfaces.OdometerInterface):
 	Functions:
 	count_revolutions() Increases the counter of revolutions
 	get_revolutions() Returns the number of revolutions
-	get_distance(wheel_diameter=6.6,precision = 2) Returns the traveled distance in cm
+	get_distance() Returns the traveled distance in cm
 	reset() Resets the steps counter
 	'''
     def __init__(self, client_id: int, motor_right: int):
         self.sensor_disc = 20   #by default 20 lines sensor disc
         self.steps = 0
-        self.offset = 0
         self.wheel_diameter = 6.65  #by default the wheel diameter is 6.6
         self.precision = 2  #by default the distance is rounded in 2 digits
         self.client_id = client_id
         self.motor = motor_right
         sim.simxGetJointPosition(self.client_id, self.motor, sim.simx_opmode_streaming)
-        self.run_thread = True
         self.step_thread = threading.Thread(target=self.__find_revolutions, daemon=True)
         self.step_thread.start()
 
     def __get_joint_pos(self) -> int:
+        '''
+        Retrieves the anglar position of a motor
+        Returns: the angular position of a motor in deegres
+        '''
         _, pos = sim.simxGetJointPosition(self.client_id, self.motor, sim.simx_opmode_buffer)
         return math.degrees(pos)
 
     def __check_rotations(self, start_pos: float) -> float:
+        '''
+        Checks and increases steps
+        Param: start_pos: the starting angle of the motor
+        Returns: cur_pos: the current angle of the motor
+        '''
         cur_pos = self.__get_joint_pos()
         #360/20=18
         dif = math.sqrt((cur_pos - start_pos)**2)
@@ -142,39 +200,43 @@ class Odometer(control_interfaces.OdometerInterface):
         return cur_pos
 
     def __find_revolutions(self) -> None:
+        '''
+        Runs in the backround and calculates revolutions
+        '''
         start_pos = self.__get_joint_pos()
         while True:
             time.sleep(0.01)
             start_pos = self.__check_rotations(start_pos)
 
     def __increase_revolutions(self, steps: float) -> None:
-        """ Increase total revolutions by steps  """
+        '''
+        Increase total steps by n
+        Param: steps: the number n that steps will be increased by 
+        '''
         self.steps += steps
 
     def count_revolutions(self) -> None:
-        """ Increase total revolutions by one  """
+        ''' Increase total steps by one '''
         self.steps += 1
 
     def get_steps(self) -> int:
-        """ Return total number of steps """
+        ''' Returns total number of steps '''
         return self.steps
 
     def get_revolutions(self) -> float:
-        """ Return total number of revolutions """
+        ''' Return total number of revolutions '''
         return self.steps / self.sensor_disc
 
     def get_distance(self) -> float:
-        """ Return the total distance so far """
-        self.run_thread = True
+        ''' Return the total distance so far (in cm) '''
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
-        return (round(distance, self.precision)) + self.offset
+        return (round(distance, self.precision))
 
     def reset(self) -> None:
-        """ Reset the total distance and revolutions """
+        ''' Reset the total distance and revolutions '''
         self.steps = 0
-        self.run_thread = False
 
 class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     '''
@@ -187,15 +249,30 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
         self.ultrasonic = init_component(self.client_id, "ultrasonic_sensor")
         self.__get_near_obst(mode=sim.simx_opmode_streaming)  # 1st call
 
-    def __get_near_obst(self, mode: int = sim.simx_opmode_buffer) -> list:
-        _, _, detected_point, _, _ = sim.simxReadProximitySensor(self.client_id,
+    def __get_near_obst(self, mode: int = sim.simx_opmode_buffer) -> tuple:
+        '''
+        Retrieves the result of ultrasonic
+        Returns: handle: the detected handle
+                 detected_point: the cordinates of the detected handle
+        '''
+        _, _, detected_point, handle, _ = sim.simxReadProximitySensor(self.client_id,
                                                                  self.ultrasonic, mode)
-        return detected_point
+        return handle, detected_point
 
     def get_distance(self) -> float:
-        detected_point = self.__get_near_obst(mode=sim.simx_opmode_buffer)
-        print(detected_point)
-        return calc_distance_3d(detected_point[0], detected_point[1], detected_point[2])
+        '''
+        Gets the distance to the closest obstacle
+        Returns: the distance to the closest obstacle (in cm)
+        If no obstacle detected => returns 999.9
+        '''
+        #get_object_children(self.client_id)
+        time.sleep(0.1)
+        handle, detected_point = self.__get_near_obst(mode=sim.simx_opmode_buffer)
+        # if handle == 0: no obstacle was detected
+        if handle == 0:
+            return 999.9
+        # multiplied by 67.6 through experiments...:
+        return calc_distance_3d(detected_point[0], detected_point[1], detected_point[2]) * 67.6
 
 
 class Accelerometer(control_interfaces.AccelerometerInterface):
@@ -259,3 +336,33 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
             return gyro[dimension]
         print("Dimension not recognized!!")
         return 0
+
+
+class Led_RGB(control_interfaces.LedRGBInterface):
+    def __init__(self, client_id: int):
+        self.client_id = client_id
+
+    def set_on(self, color: str) -> None:
+        """ Changes the color of a led """
+        color_arr = [0, 0, 0]   #red, blue, green
+        if color == 'red':
+            color_arr = [1, 0, 0]
+        elif color == 'green':
+            color_arr = [0, 1, 0]
+        elif color == 'blue':
+            color_arr = [0, 0, 1]
+        elif color == 'white':
+            color_arr = [1, 1, 1]
+        elif color == 'violet':
+            color_arr = [1, 1, 0]
+        elif color == 'cyan':
+            color_arr = [0, 1, 1]
+        elif color == 'yellow':
+            color_arr = [1, 0, 1]
+        elif color == 'closed':
+            color_arr = [0, 0, 0]
+        else:
+            print('Uknown color!')
+            raise RuntimeError
+
+        sim.simxCallScriptFunction(self.client_id, 'led_light', sim.sim_scripttype_childscript, 'set_color_led', [], color_arr, [], bytearray(), sim.simx_opmode_blocking)

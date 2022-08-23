@@ -2,6 +2,8 @@
 Real robot implementation
 """
 
+from aifc import Error
+from inspect import BoundArguments
 import time
 import subprocess
 from common.data_structures import configuration
@@ -47,7 +49,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.odometer_left = control.Odometer(self.client_id, self.motor_right.motor)
         self.analogue_reader = control.AnalogueReadings(self.client_id)
         self.accelerometer = control.Accelerometer(self.client_id)
-        #self.rgb_led = control.Led_RGB()
+        self.rgb_led = control.Led_RGB(self.client_id)
         #self.noise = control.gen_input(pin=4)
 
     def get_distance(self) -> None:
@@ -163,22 +165,26 @@ class FossBot(robot_interface.FossBotInterface):
         elif audio_id == 7:
             subprocess.run(["mpg123", "../robot_lib/soundfx/machine_gun.mp3"], check=True)
 
-    #floor sensors
     def get_floor_sensor(self, sensor_id: int) -> list:
+        '''
+        Floor Sensors
+        '''
         return self.analogue_reader.get_reading(sensor_id)
 
     def check_on_line(self, sensor_id: int) -> bool:
-        sensor_left = self.parameters.line_sensor_left.value
-        sensor_center = self.parameters.line_sensor_center.value
-        sensor_right = self.parameters.line_sensor_right.value
+        if sensor_id not in [1, 2, 3]:
+            print(f'Sensor id {sensor_id} is out of bounds.')
+            raise RuntimeError
+
+        # [23, 23, 23] => black line
         if sensor_id == 3:
-            if self.analogue_reader.get_reading(sensor_id) >= sensor_left:
+            if self.analogue_reader.get_reading(sensor_id) == [23, 23, 23]:
                 return True
         elif sensor_id == 1:
-            if self.analogue_reader.get_reading(sensor_id) >= sensor_center:
+            if self.analogue_reader.get_reading(sensor_id) == [23, 23, 23]:
                 return True
         elif sensor_id == 2:
-            if self.analogue_reader.get_reading(sensor_id) >= sensor_right:
+            if self.analogue_reader.get_reading(sensor_id) == [23, 23, 23]:
                 return True
         return False
 
@@ -192,12 +198,11 @@ class FossBot(robot_interface.FossBotInterface):
         print(value)
         return value
 
-
-    # dont know how to implement the following in simulation... =========================
-
     #rgb
     def rgb_set_color(self, color: str) -> None:
-        pass
+        self.rgb_led.set_on(color)
+
+    # dont know how to implement the following in simulation... =========================
 
     def get_noise_detection(self) -> bool:
         pass
