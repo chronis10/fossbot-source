@@ -2,8 +2,6 @@
 Real robot implementation
 """
 
-from aifc import Error
-from inspect import BoundArguments
 import time
 import subprocess
 from common.data_structures import configuration
@@ -40,13 +38,14 @@ class FossBot(robot_interface.FossBotInterface):
             raise ConnectionError
         print('Connected to remote API server')
         self.parameters = parameters
-        self.motor_right = control.Motor(self.client_id, "right_motor",
-                                         self.parameters.motor_right_speed.value)
         self.motor_left = control.Motor(self.client_id, "left_motor",
-                                        self.parameters.motor_right_speed.value)
+                                self.parameters.motor_left_speed.value)
+        self.motor_right = control.Motor(self.client_id, "right_motor",
+                                         self.parameters.motor_right_speed.value-9)
+                                         # substracted 9 to go straight ...
         self.ultrasonic = control.UltrasonicSensor(self.client_id)
-        self.odometer_right = control.Odometer(self.client_id, self.motor_right.motor)
-        self.odometer_left = control.Odometer(self.client_id, self.motor_right.motor)
+        self.odometer_right = control.Odometer(self.client_id)
+        self.odometer_left = control.Odometer(self.client_id)
         self.analogue_reader = control.AnalogueReadings(self.client_id)
         self.accelerometer = control.Accelerometer(self.client_id)
         self.rgb_led = control.Led_RGB(self.client_id)

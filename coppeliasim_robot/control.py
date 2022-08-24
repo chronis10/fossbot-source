@@ -137,19 +137,20 @@ class Motor(control_interfaces.MotorInterface):
 
     def __init__(self, client_id: int, motor_joint_name: str, def_speed: int):
         self.client_id = client_id
-        self.motor = init_component(self.client_id, motor_joint_name)
         self.motor_name = motor_joint_name
         self.def_speed = def_speed
 
-    def __change_motor_velocity(self, motor: int, velocity: int) -> int:
+    def __change_motor_velocity(self, velocity: float) -> int:
         '''
         Changes a motor's velocity
         Param: motor: the motor of the simulation to change its velocity (example 'left_motor')
                 velocity: the velocity to be changed to
         Returns: a return code of the API function
         '''
-        return sim.simxSetJointTargetVelocity(self.client_id, motor,
-                                              velocity, sim.simx_opmode_streaming)
+        while True:
+            res, _, _,_ ,_ = exec_vrep_script(self.client_id, self.motor_name, 'change_vel', inFloats=[velocity])
+            if res == sim.simx_return_ok:
+                return res
 
     def dir_control(self, direction: str) -> None:
         '''
@@ -157,9 +158,9 @@ class Motor(control_interfaces.MotorInterface):
         Param: direction: the direction to be headed to
         '''
         if direction == 'forward':
-            self.__change_motor_velocity(self.motor, -self.def_speed)
+            self.__change_motor_velocity(-self.def_speed)
         elif direction == "reverse":
-            self.__change_motor_velocity(self.motor, self.def_speed)
+            self.__change_motor_velocity(self.def_speed)
         else:
             print("Motor accepts only forward and reverse values")
 
@@ -179,11 +180,11 @@ class Motor(control_interfaces.MotorInterface):
             print("The motor speed is a percentage of total motor power. Accepted values 0-100.")
         else:
             self.def_speed = self.def_speed * speed / 100
-            self.__change_motor_velocity(self.motor, self.def_speed)
+            self.__change_motor_velocity(self.def_speed)
 
     def stop(self) -> None:
         '''Stops the motor'''
-        self.__change_motor_velocity(self.motor, 0)
+        self.__change_motor_velocity(0)
 
 
 class Odometer(control_interfaces.OdometerInterface):
@@ -195,7 +196,7 @@ class Odometer(control_interfaces.OdometerInterface):
     get_distance() Returns the traveled distance in cm
     reset() Resets the steps counter
     '''
-    def __init__(self, client_id: int, motor_right: int):
+    def __init__(self, client_id: int):
         self.sensor_disc = 20   #by default 20 lines sensor disc
         self.steps = 0
         self.wheel_diameter = 6.65  #by default the wheel diameter is 6.6
@@ -213,7 +214,6 @@ class Odometer(control_interfaces.OdometerInterface):
             res, steps, _, _, _ = exec_vrep_script(self.client_id, 'right_motor', 'get_steps')
             if res == sim.simx_return_ok:
                 self.steps = steps[0]
-                print(self.steps)
                 return self.steps
 
     def get_revolutions(self) -> float:
@@ -227,7 +227,7 @@ class Odometer(control_interfaces.OdometerInterface):
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
-        print(f'Distance: {distance}')
+        #print(f'Distance: {distance}')
         return (round(distance, self.precision))
 
     def reset(self) -> None:
