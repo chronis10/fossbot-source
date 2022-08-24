@@ -4,7 +4,6 @@ Implementation of simulated control
 
 import math
 import time
-import threading
 from common.interfaces import control_interfaces
 from coppeliasim_robot import sim
 
@@ -202,69 +201,41 @@ class Odometer(control_interfaces.OdometerInterface):
         self.wheel_diameter = 6.65  #by default the wheel diameter is 6.6
         self.precision = 2  #by default the distance is rounded in 2 digits
         self.client_id = client_id
-        self.motor = motor_right
-        sim.simxGetJointPosition(self.client_id, self.motor, sim.simx_opmode_streaming)
-        self.step_thread = threading.Thread(target=self.__find_revolutions, daemon=True)
-        self.step_thread.start()
-
-    def __get_joint_pos(self) -> int:
-        '''
-        Retrieves the anglar position of a motor
-        Returns: the angular position of a motor in deegres
-        '''
-        _, pos = sim.simxGetJointPosition(self.client_id, self.motor, sim.simx_opmode_buffer)
-        return math.degrees(pos)
-
-    def __check_rotations(self, start_pos: float) -> float:
-        '''
-        Checks and increases steps
-        Param: start_pos: the starting angle of the motor
-        Returns: cur_pos: the current angle of the motor
-        '''
-        cur_pos = self.__get_joint_pos()
-        #360/20=18
-        dif = math.sqrt((cur_pos - start_pos)**2)
-        steps, _ = divmod((dif / 18), 1)
-        self.__increase_revolutions(steps)
-        return cur_pos
-
-    def __find_revolutions(self) -> None:
-        '''
-        Runs in the backround and calculates revolutions
-        '''
-        start_pos = self.__get_joint_pos()
-        while True:
-            time.sleep(0.01)
-            start_pos = self.__check_rotations(start_pos)
-
-    def __increase_revolutions(self, steps: float) -> None:
-        '''
-        Increase total steps by n
-        Param: steps: the number n that steps will be increased by 
-        '''
-        self.steps += steps
 
     def count_revolutions(self) -> None:
         ''' Increase total steps by one '''
+        self.steps = self.get_steps()
         self.steps += 1
 
     def get_steps(self) -> int:
         ''' Returns total number of steps '''
-        return self.steps
+        while True:
+            res, steps, _, _, _ = exec_vrep_script(self.client_id, 'right_motor', 'get_steps')
+            if res == sim.simx_return_ok:
+                self.steps = steps[0]
+                print(self.steps)
+                return self.steps
 
     def get_revolutions(self) -> float:
         ''' Return total number of revolutions '''
+        self.steps = self.get_steps()
         return self.steps / self.sensor_disc
 
     def get_distance(self) -> float:
         ''' Return the total distance so far (in cm) '''
+        self.steps = self.get_steps()
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
+        print(f'Distance: {distance}')
         return (round(distance, self.precision))
 
     def reset(self) -> None:
         ''' Reset the total distance and revolutions '''
+        while True:
+            res, _, _, _, _ = exec_vrep_script(self.client_id, 'right_motor', 'reset_steps')
+            if res == sim.simx_return_ok:
+                break
         self.steps = 0
 
 class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
