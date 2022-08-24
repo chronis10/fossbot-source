@@ -357,4 +357,7 @@ class Led_RGB(control_interfaces.LedRGBInterface):
             print('Uknown color!')
             raise RuntimeError
 
-        exec_vrep_script(self.client_id, 'led_light', 'set_color_led', inFloats=color_rbg)
+        while True:
+            res, _, _, _, _ = exec_vrep_script(self.client_id, 'led_light', 'set_color_led', inFloats=color_rbg)
+            if res == sim.simx_return_ok:
+                break
