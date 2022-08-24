@@ -72,34 +72,25 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     '''
     def __init__(self, client_id: int):
         self.client_id = client_id
-        self.floor_sensor_middle = init_component(client_id, "MiddleSensor")
-        self.floor_sensor_left = init_component(client_id, "LeftSensor")
-        self.floor_sensor_right = init_component(client_id, "RightSensor")
-        # add sleep -> brings more results
-        sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_middle, 0, sim.simx_opmode_streaming)
-        time.sleep(0.1)
-        sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_right, 0, sim.simx_opmode_streaming)
-        time.sleep(0.1)
-        sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_left, 0, sim.simx_opmode_streaming)
-        time.sleep(0.1)
+
+    def __get_line_data(self, line_sensor_name: str) -> list:
+        while True:
+            res, image, _,_ ,_ = sim.simxCallScriptFunction(self.client_id, line_sensor_name, sim.sim_scripttype_childscript, 'get_line_image', [], [], [], bytearray(), sim.simx_opmode_blocking)
+            if res == sim.simx_return_ok:
+                return image
 
     def get_reading(self, pin: int) -> list:
         # add sleep -> brings more results
         if pin == 1:
-            time.sleep(0.1)
-            _, _, image=sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_middle,
-                                                     0, sim.simx_opmode_buffer)
-            return image
+            time.sleep(0.1) # has to have this 'break' else error occurs
+            return self.__get_line_data('MiddleSensor')
         elif pin == 2:
             time.sleep(0.1)
-            _, _, image=sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_right,
-                                                     0, sim.simx_opmode_buffer)
-            return image
+            return self.__get_line_data('RightSensor')
         elif pin == 3:
             time.sleep(0.1)
-            _, _, image=sim.simxGetVisionSensorImage(self.client_id, self.floor_sensor_left,
-                                                     0, sim.simx_opmode_buffer)
-            return image
+            return self.__get_line_data('LeftSensor')
+
 
 class Motor(control_interfaces.MotorInterface):
     """
