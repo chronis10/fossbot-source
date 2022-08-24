@@ -242,22 +242,11 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     '''
 	Class UltrasonicSensor() -> Ultrasonic sensor
 	Functions:
-	get_distance() return distance on cm
+	get_distance() return distance in cm
     '''
     def __init__(self, client_id: int):
         self.client_id = client_id
-        self.ultrasonic = init_component(self.client_id, "ultrasonic_sensor")
-        self.__get_near_obst(mode=sim.simx_opmode_streaming)  # 1st call
-
-    def __get_near_obst(self, mode: int = sim.simx_opmode_buffer) -> tuple:
-        '''
-        Retrieves the result of ultrasonic
-        Returns: handle: the detected handle
-                 detected_point: the cordinates of the detected handle
-        '''
-        _, _, detected_point, handle, _ = sim.simxReadProximitySensor(self.client_id,
-                                                                 self.ultrasonic, mode)
-        return handle, detected_point
+        self.precision = 2  #by default the distance is rounded in 2 digits
 
     def get_distance(self) -> float:
         '''
@@ -265,15 +254,12 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
         Returns: the distance to the closest obstacle (in cm)
         If no obstacle detected => returns 999.9
         '''
-        #get_object_children(self.client_id)
-        time.sleep(0.1)
-        handle, detected_point = self.__get_near_obst(mode=sim.simx_opmode_buffer)
-        # if handle == 0: no obstacle was detected
-        if handle == 0:
-            return 999.9
-        # multiplied by 67.6 through experiments...:
-        return calc_distance_3d(detected_point[0], detected_point[1], detected_point[2]) * 67.6
-
+        while True:
+            res_1, handle, distance,_ ,_ = sim.simxCallScriptFunction(self.client_id, 'ultrasonic_sensor', sim.sim_scripttype_childscript, 'get_distance', [], [], [], bytearray(), sim.simx_opmode_blocking)
+            if res_1 == sim.simx_return_ok and handle[0] == sim.simx_return_ok:
+                break
+        #Detected Handle: handle[1], Distance (in meters): distance[0]
+        return (round(distance[0]*100, self.precision))
 
 class Accelerometer(control_interfaces.AccelerometerInterface):
     '''
