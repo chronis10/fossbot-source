@@ -202,14 +202,19 @@ class FossBot(robot_interface.FossBotInterface):
     def rgb_set_color(self, color: str) -> None:
         self.rgb_led.set_on(color)
 
+    #light sensor
+    def get_light_sensor(self) -> list:
+        return self.analogue_reader.get_reading(0)
+
+    def check_for_dark(self) -> bool:
+        # grey == 50, white == 100, black <= 10
+        grey_color = 50
+        value = self.analogue_reader.get_reading(0)
+        print(value)
+        return bool(value < grey_color)
+
     # dont know how to implement the following in simulation... =========================
 
     def get_noise_detection(self) -> bool:
         pass
 
-    #light sensor
-    def get_light_sensor(self) -> list:
-        pass
-
-    def check_for_dark(self) -> bool:
-        pass
