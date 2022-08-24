@@ -287,55 +287,39 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
                                 as parameter "x","y","z" return value
     '''
     def __init__(self, client_id: int):
-        self.sensor = init_component(client_id, 'sensor')
-        sim.simxGetObjectVelocity(client_id, self.sensor, sim.simx_opmode_streaming)
         self.client_id = client_id
 
-    def __get_linear_vel(self) -> float:
-        _, linear_vel, _ = sim.simxGetObjectVelocity(self.client_id, self.sensor,
-                                                     sim.simx_opmode_buffer)
-        return linear_vel
-
-    def __get_angular_vel(self) -> float:
-        _, _, angular_vel = sim.simxGetObjectVelocity(self.client_id, self.sensor,
-                                                      sim.simx_opmode_buffer)
-        return angular_vel
-
-    def __get_accel_data(self, time_dif: int = 1) -> dict:
-        v_1 = self.__get_linear_vel()
-        time.sleep(time_dif)
-        v_2 = self.__get_linear_vel()
-        x_vel = ((v_2[0] - v_1[0]) / time_dif)
-        y_vel = ((v_2[1] - v_1[1]) / time_dif)
-        z_vel = ((v_2[2] - v_1[2]) / time_dif)
-        return {'x':x_vel, 'y':y_vel, 'z':z_vel}
-
-    def __get_gyro_data(self, time_dif: int = 1) -> dict:
-        v_1 = self.__get_angular_vel()
-        time.sleep(time_dif)
-        v_2 = self.__get_angular_vel()
-        x_vel = ((v_2[0] - v_1[0]) / time_dif)
-        y_vel = ((v_2[1] - v_1[1]) / time_dif)
-        z_vel = ((v_2[2] - v_1[2]) / time_dif)
-        return {'x':x_vel, 'y':y_vel, 'z':z_vel}
+    def __create_force_dict(self, force_list: list) -> dict:
+        return {'x': force_list[0], 'y': force_list[1], 'z': force_list[2]}
 
     def get_acceleration(self, dimension: str = "all") -> dict:
-        accel = self.__get_accel_data()
+        while True:
+            # 1st response -> function executed correctly, 2ns response -> data was successfully collected
+            res_1, res_2, accel_data,_ ,_ = sim.simxCallScriptFunction(self.client_id, 'Accelerometer', sim.sim_scripttype_childscript, 'get_accel', [], [], [], bytearray(), sim.simx_opmode_blocking)
+            if res_1 == sim.simx_return_ok and res_2[0] == sim.simx_return_ok:
+                break
+        accel_data = self.__create_force_dict(accel_data)
         if dimension == "all":
-            return accel
+            return accel_data
         if dimension in ('x', 'y', 'z'):
-            return accel[dimension]
+            return accel_data[dimension]
         print("Dimension not recognized!!")
-        return 0
+        raise RuntimeError
+
 
     def get_gyro(self, dimension: str = "all") -> dict:
-        gyro = self.__get_gyro_data()
+        while True:
+            res, _, gyro_data,_ ,_ = sim.simxCallScriptFunction(self.client_id, 'GyroSensor', sim.sim_scripttype_childscript, 'get_gyro', [], [], [], bytearray(), sim.simx_opmode_blocking)
+            if res == sim.simx_return_ok:
+                break
+        gyro_data = self.__create_force_dict(gyro_data)
         if dimension == "all":
-            return gyro
+            return gyro_data
         if dimension in ('x', 'y', 'z'):
-            return gyro[dimension]
+            return gyro_data[dimension]
         print("Dimension not recognized!!")
-        return 0
+        raise RuntimeError
+
 
 
 class Led_RGB(control_interfaces.LedRGBInterface):
@@ -344,25 +328,25 @@ class Led_RGB(control_interfaces.LedRGBInterface):
 
     def set_on(self, color: str) -> None:
         """ Changes the color of a led """
-        color_arr = [0, 0, 0]   #red, blue, green
+        color_rbg = [0, 0, 0]   #red, blue, green
         if color == 'red':
-            color_arr = [1, 0, 0]
+            color_rbg = [1, 0, 0]
         elif color == 'green':
-            color_arr = [0, 1, 0]
+            color_rbg = [0, 1, 0]
         elif color == 'blue':
-            color_arr = [0, 0, 1]
+            color_rbg = [0, 0, 1]
         elif color == 'white':
-            color_arr = [1, 1, 1]
+            color_rbg = [1, 1, 1]
         elif color == 'violet':
-            color_arr = [1, 1, 0]
+            color_rbg = [1, 1, 0]
         elif color == 'cyan':
-            color_arr = [0, 1, 1]
+            color_rbg = [0, 1, 1]
         elif color == 'yellow':
-            color_arr = [1, 0, 1]
+            color_rbg = [1, 0, 1]
         elif color == 'closed':
-            color_arr = [0, 0, 0]
+            color_rbg = [0, 0, 0]
         else:
             print('Uknown color!')
             raise RuntimeError
 
-        sim.simxCallScriptFunction(self.client_id, 'led_light', sim.sim_scripttype_childscript, 'set_color_led', [], color_arr, [], bytearray(), sim.simx_opmode_blocking)
+        sim.simxCallScriptFunction(self.client_id, 'led_light', sim.sim_scripttype_childscript, 'set_color_led', [], color_rbg, [], bytearray(), sim.simx_opmode_blocking)
