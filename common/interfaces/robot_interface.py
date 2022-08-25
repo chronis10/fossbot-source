@@ -32,7 +32,7 @@ class FossBotInterface(ABC):
         """ Returns True if on line """
 
     @abstractmethod
-    def get_light_sensor(self) -> list:
+    def get_light_sensor(self) -> float:
         """ Returns analogue reader """
 
     @abstractmethod

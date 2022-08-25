@@ -54,8 +54,8 @@ class FossBot(robot_interface.FossBotInterface):
         return False
 
     #light sensor
-    def get_light_sensor(self) -> list:
-        return self.analogue_reader
+    def get_light_sensor(self) -> float:
+        return self.analogue_reader.get_reading(0)
 
     def check_for_dark(self) -> bool:
         value = self.analogue_reader.get_reading(0)

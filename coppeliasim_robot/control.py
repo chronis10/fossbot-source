@@ -27,7 +27,7 @@ def exec_vrep_script(client_id: int, script_component_name: str, script_function
            script_function_name: the name of the function inside the script to be executed
            inInts: list of input integers used for the function (can be [ ])
            inFloats: list of input floats used for the function (can be [ ])
-           inInts: list of input strings used for the function (can be [ ])
+           inStrings: list of input strings used for the function (can be [ ])
            inBuffer: input bytearray used for the function
     Returns: returnCode: to show if function has been executed correctly
              => (successful execution: sim.simx_return_ok)
@@ -96,17 +96,13 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             if res == sim.simx_return_ok:
                 return image
 
-    def __get_light_data(self, percentage: bool = True):
+    def __get_light_data(self):
         '''
-        Retrieves light opacity from light sensor
-        Param: percentage: returns percentage of light opacity
-        Returns: light opacity from light sensor
+        Returns light opacity from light sensor
         '''
         while True:
             res, _, light_opacity,_ ,_ = exec_vrep_script(self.client_id, 'light_sensor', 'get_light')
             if res == sim.simx_return_ok:
-                if percentage:
-                    return light_opacity[0] * 100
                 return light_opacity[0]
 
     def get_reading(self, pin: int) -> list:
@@ -196,12 +192,13 @@ class Odometer(control_interfaces.OdometerInterface):
     get_distance() Returns the traveled distance in cm
     reset() Resets the steps counter
     '''
-    def __init__(self, client_id: int):
+    def __init__(self, client_id: int, motor_name: str):
         self.sensor_disc = 20   #by default 20 lines sensor disc
         self.steps = 0
         self.wheel_diameter = 6.65  #by default the wheel diameter is 6.6
         self.precision = 2  #by default the distance is rounded in 2 digits
         self.client_id = client_id
+        self.motor_name = motor_name
 
     def count_revolutions(self) -> None:
         ''' Increase total steps by one '''
@@ -211,7 +208,7 @@ class Odometer(control_interfaces.OdometerInterface):
     def get_steps(self) -> int:
         ''' Returns total number of steps '''
         while True:
-            res, steps, _, _, _ = exec_vrep_script(self.client_id, 'right_motor', 'get_steps')
+            res, steps, _, _, _ = exec_vrep_script(self.client_id, self.motor_name, 'get_steps')
             if res == sim.simx_return_ok:
                 self.steps = steps[0]
                 return self.steps
@@ -221,19 +218,24 @@ class Odometer(control_interfaces.OdometerInterface):
         self.steps = self.get_steps()
         return self.steps / self.sensor_disc
 
+    def __print_distance(self, distance) -> None:
+        ''' Prints distance, used for debugging '''
+        if self.motor_name == 'right_motor':
+            print(f'Distance: {distance}')
+
     def get_distance(self) -> float:
         ''' Return the total distance so far (in cm) '''
         self.steps = self.get_steps()
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
-        #print(f'Distance: {distance}')
+        #self.__print_distance(distance) # used only for debugging
         return (round(distance, self.precision))
 
     def reset(self) -> None:
         ''' Reset the total distance and revolutions '''
         while True:
-            res, _, _, _, _ = exec_vrep_script(self.client_id, 'right_motor', 'reset_steps')
+            res, _, _, _, _ = exec_vrep_script(self.client_id, self.motor_name, 'reset_steps')
             if res == sim.simx_return_ok:
                 break
         self.steps = 0

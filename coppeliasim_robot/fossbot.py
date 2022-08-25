@@ -41,11 +41,10 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_left = control.Motor(self.client_id, "left_motor",
                                 self.parameters.motor_left_speed.value)
         self.motor_right = control.Motor(self.client_id, "right_motor",
-                                         self.parameters.motor_right_speed.value-9)
-                                         # substracted 9 to go straight ...
+                                         self.parameters.motor_right_speed.value)
         self.ultrasonic = control.UltrasonicSensor(self.client_id)
-        self.odometer_right = control.Odometer(self.client_id)
-        self.odometer_left = control.Odometer(self.client_id)
+        self.odometer_right = control.Odometer(self.client_id, "right_motor")
+        self.odometer_left = control.Odometer(self.client_id, "left_motor")
         self.analogue_reader = control.AnalogueReadings(self.client_id)
         self.accelerometer = control.Accelerometer(self.client_id)
         self.rgb_led = control.Led_RGB(self.client_id)
@@ -74,7 +73,6 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_left.stop()
         self.motor_right.stop()
         print('stop')
-        time.sleep(0.1)
         self.odometer_right.reset()
         self.odometer_left.reset()
 
@@ -90,6 +88,7 @@ class FossBot(robot_interface.FossBotInterface):
 
     def just_rotate(self, dir_id: int) -> None:
         self.odometer_right.reset()
+        self.odometer_left.reset()
         left_dir = "reverse" if dir_id == 1 else "forward"
         right_dir = "reverse" if dir_id == 0 else "forward"
         self.motor_left.move(direction=left_dir)
@@ -127,19 +126,24 @@ class FossBot(robot_interface.FossBotInterface):
     def move_reverse(self) -> None:
         self.just_move(direction="reverse")
 
+    #!FIXME
     def rotate_90(self, dir_id: int) -> None:
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
         while self.odometer_right.get_steps() <= rotations:
             time.sleep(0.01)
-            self.odometer_right.count_revolutions()
+            #self.odometer_right.count_revolutions()    # not used ...
         self.stop()
 
     def move_distance(self, dist, direction: str = "forward") -> None:
+        if dist == 0:
+            return
         self.just_move(direction=direction)
-        dis_run = self.odometer_right.get_distance()
-        while dis_run < dist:
-            dis_run = self.odometer_right.get_distance()
+        dis_run_r = self.odometer_right.get_distance()
+        dis_run_l = self.odometer_left.get_distance()
+        while dis_run_r < dist and dis_run_l < dist:
+            dis_run_r = self.odometer_right.get_distance()
+            dis_run_l = self.odometer_left.get_distance()
         self.stop()
 
     def reset_dir(self) -> None:
@@ -201,19 +205,21 @@ class FossBot(robot_interface.FossBotInterface):
     def rgb_set_color(self, color: str) -> None:
         self.rgb_led.set_on(color)
 
+    def __transf_1024(self, value: float) -> float:
+        return value * 1024
+
     #light sensor
-    def get_light_sensor(self) -> list:
-        return self.analogue_reader.get_reading(0)
+    def get_light_sensor(self) -> float:
+        return self.__transf_1024(self.analogue_reader.get_reading(0))
 
     def check_for_dark(self) -> bool:
-        # grey == 50, white == 100, black <= 10
-        grey_color = 50
+        # grey == 50%, white == 100%, black <= 10%
+        grey_color = self.parameters.light_sensor.value / 1024
         value = self.analogue_reader.get_reading(0)
-        print(value)
+        print(self.__transf_1024(value))
         return bool(value < grey_color)
 
-    # dont know how to implement the following in simulation... =========================
-
+    #!FIXME
     def get_noise_detection(self) -> bool:
+        # do it with microphone (real hw)
         pass
-
