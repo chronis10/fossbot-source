@@ -40,5 +40,5 @@ line_sensor_right:
 
 rotate_90:
   name: Στροφή 90 μοίρες, κλίκ 
-  value: 12
+  value: 13
   default: 12

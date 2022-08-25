@@ -202,8 +202,11 @@ class Odometer(control_interfaces.OdometerInterface):
 
     def count_revolutions(self) -> None:
         ''' Increase total steps by one '''
-        self.steps = self.get_steps()
-        self.steps += 1
+        while True:
+            res, steps, _, _, _ = exec_vrep_script(self.client_id, self.motor_name, 'count_revolutions')
+            if res == sim.simx_return_ok:
+                self.steps = steps[0]
+                break
 
     def get_steps(self) -> int:
         ''' Returns total number of steps '''

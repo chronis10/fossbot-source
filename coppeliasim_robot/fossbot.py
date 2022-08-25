@@ -126,13 +126,15 @@ class FossBot(robot_interface.FossBotInterface):
     def move_reverse(self) -> None:
         self.just_move(direction="reverse")
 
-    #!FIXME
     def rotate_90(self, dir_id: int) -> None:
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
-        while self.odometer_right.get_steps() <= rotations:
+        steps_r = self.odometer_right.get_steps()
+        steps_l = self.odometer_left.get_steps()
+        while steps_r <= rotations and steps_l <= rotations:
+            steps_r = self.odometer_right.get_steps()
+            steps_l = self.odometer_left.get_steps()
             time.sleep(0.01)
-            #self.odometer_right.count_revolutions()    # not used ...
         self.stop()
 
     def move_distance(self, dist, direction: str = "forward") -> None:
