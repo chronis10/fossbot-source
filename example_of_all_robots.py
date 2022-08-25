@@ -13,6 +13,25 @@ def main(robot: robot_interface.FossBotInterface) -> None:
     time.sleep(10)
     robot.stop()
 
+def change_color(robot: robot_interface.FossBotInterface) -> None:
+    ''' Changes the color of a led for some times '''
+    for i in range(3):
+        robot.rgb_set_color('red')
+        robot.wait(2)
+        robot.rgb_set_color('blue')
+        robot.wait(2)
+        robot.rgb_set_color('green')
+        robot.wait(2)
+        robot.rgb_set_color('yellow')
+        robot.wait(2)
+        robot.rgb_set_color('white')
+        robot.wait(2)
+        robot.rgb_set_color('cyan')
+        robot.wait(2)
+        robot.rgb_set_color('violet')
+        robot.wait(2)
+    robot.rgb_set_color('closed')
+
 if __name__ == "__main__":
     # Load parameters from yml file
     FILE_PARAM = load_parameters()
@@ -38,4 +57,4 @@ if __name__ == "__main__":
     # Call a the same routine for the real and the simulated robot
     main(my_real_robot)
 
-    main(my_simu_robot)
+    change_color(my_simu_robot)
