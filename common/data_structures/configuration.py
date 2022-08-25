@@ -4,7 +4,6 @@ Robot configuration dataclasses
 
 from dataclasses import dataclass
 
-
 @dataclass
 class DefaultStep:
     """ Deafault distance in cm for 1 step """
@@ -74,6 +73,19 @@ class SimRobotIds:
     client_id: int
     left_motor_name: str
     right_motor_name: str
+    light_sensor_name: str
+    sensor_middle_name: str
+    sensor_right_name: str
+    sensor_left_name: str
+    ultrasonic_name: str
+    accelerometer_name: str
+    gyroscope_name: str
+    led_name: str
+    light_sensor_id: int = 0
+    sensor_middle_id: int = 1
+    sensor_right_id: int = 2
+    sensor_left_id: int = 3
+
 
 @dataclass
 class RobotParameters:
@@ -92,3 +104,14 @@ class RobotParameters:
 class SimRobotParameters(RobotParameters):
     """ Dataclass for all simulated parameters """
     simulation: SimRobotIds
+    def __init__(self, param_real: RobotParameters, param_sim: SimRobotIds) -> None:
+        self.simulation = param_sim
+        self.sensor_distance = param_real.sensor_distance
+        self.motor_left_speed = param_real.motor_left_speed
+        self.motor_right_speed = param_real.motor_right_speed
+        self.light_sensor = param_real.light_sensor
+        self.line_sensor_left = param_real.line_sensor_left
+        self.line_sensor_center = param_real.line_sensor_center
+        self.line_sensor_right = param_real.line_sensor_right
+        self.rotate_90 = param_real.rotate_90
+        self.default_step = param_real.default_step

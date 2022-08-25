@@ -19,7 +19,7 @@ except FileNotFoundError:
     print('--------------------------------------------------------------')
     print('')
 
-def connect_vrep():
+def connect_vrep() -> int:
     '''
     Connects to Coppelia Server
     Returns: clientID
@@ -27,6 +27,21 @@ def connect_vrep():
     print('Program started')
     sim.simxFinish(-1) # just in case, close all opened connections
     return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
+
+def init_sim_parameters(client_id: int, parameters: configuration.RobotParameters) -> configuration.SimRobotParameters:
+    '''
+    Initializes the parameters needed for the simulation
+    Param: client_id: the client's id
+           parameters: the parameters of the real robot parameters
+    Returns: the parameters needed for the simulation
+    '''
+    parameters_sim = configuration.SimRobotIds(
+        client_id=client_id, left_motor_name='left_motor', right_motor_name='right_motor',
+        light_sensor_name='light_sensor', sensor_middle_name='MiddleSensor',
+        sensor_right_name='RightSensor', sensor_left_name='LeftSensor',
+        ultrasonic_name='ultrasonic_sensor', accelerometer_name='Accelerometer',
+        gyroscope_name='GyroSensor', led_name='led_light')
+    return configuration.SimRobotParameters(param_real=parameters, param_sim=parameters_sim)
 
 
 class FossBot(robot_interface.FossBotInterface):
@@ -37,17 +52,21 @@ class FossBot(robot_interface.FossBotInterface):
             print('Failed connecting to remote API server')
             raise ConnectionError
         print('Connected to remote API server')
-        self.parameters = parameters
-        self.motor_left = control.Motor(self.client_id, "left_motor",
-                                self.parameters.motor_left_speed.value)
-        self.motor_right = control.Motor(self.client_id, "right_motor",
-                                         self.parameters.motor_right_speed.value)
-        self.ultrasonic = control.UltrasonicSensor(self.client_id)
-        self.odometer_right = control.Odometer(self.client_id, "right_motor")
-        self.odometer_left = control.Odometer(self.client_id, "left_motor")
-        self.analogue_reader = control.AnalogueReadings(self.client_id)
-        self.accelerometer = control.Accelerometer(self.client_id)
-        self.rgb_led = control.Led_RGB(self.client_id)
+        self.parameters = init_sim_parameters(self.client_id, parameters)
+        self.motor_left = control.Motor(
+            self.parameters, self.parameters.simulation.left_motor_name,
+            self.parameters.motor_left_speed.value)
+        self.motor_right = control.Motor(
+            self.parameters, self.parameters.simulation.right_motor_name,
+            self.parameters.motor_right_speed.value)
+        self.ultrasonic = control.UltrasonicSensor(self.parameters)
+        self.odometer_right = control.Odometer(
+            self.parameters, self.parameters.simulation.right_motor_name)
+        self.odometer_left = control.Odometer(
+            self.parameters, self.parameters.simulation.left_motor_name)
+        self.analogue_reader = control.AnalogueReadings(self.parameters)
+        self.accelerometer = control.Accelerometer(self.parameters)
+        self.rgb_led = control.LedRGB(self.parameters)
         #self.noise = control.gen_input(pin=4)
 
     def get_distance(self) -> None:
@@ -174,23 +193,25 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         Floor Sensors
         '''
+        mid_id = self.parameters.simulation.sensor_middle_id
+        left_id = self.parameters.simulation.sensor_left_id
+        right_id = self.parameters.simulation.sensor_right_id
+        if sensor_id not in [mid_id, left_id, right_id]:
+            print(f'Sensor id {sensor_id} is out of bounds.')
+            raise RuntimeError
         return self.analogue_reader.get_reading(sensor_id)
 
     def check_on_line(self, sensor_id: int) -> bool:
-        if sensor_id not in [1, 2, 3]:
+        mid_id = self.parameters.simulation.sensor_middle_id
+        left_id = self.parameters.simulation.sensor_left_id
+        right_id = self.parameters.simulation.sensor_right_id
+
+        if sensor_id not in [mid_id, left_id, right_id]:
             print(f'Sensor id {sensor_id} is out of bounds.')
             raise RuntimeError
-
         # [23, 23, 23] => black line
-        if sensor_id == 3:
-            if self.analogue_reader.get_reading(sensor_id) == [23, 23, 23]:
-                return True
-        elif sensor_id == 1:
-            if self.analogue_reader.get_reading(sensor_id) == [23, 23, 23]:
-                return True
-        elif sensor_id == 2:
-            if self.analogue_reader.get_reading(sensor_id) == [23, 23, 23]:
-                return True
+        if self.analogue_reader.get_reading(sensor_id) == [23, 23, 23]:
+            return True
         return False
 
     def get_acceleration(self, axis: str = 'all') -> dict:
@@ -212,12 +233,14 @@ class FossBot(robot_interface.FossBotInterface):
 
     #light sensor
     def get_light_sensor(self) -> float:
-        return self.__transf_1024(self.analogue_reader.get_reading(0))
+        light_id = self.parameters.simulation.light_sensor_id
+        return self.__transf_1024(self.analogue_reader.get_reading(light_id))
 
     def check_for_dark(self) -> bool:
+        light_id = self.parameters.simulation.light_sensor_id
         # grey == 50%, white == 100%, black <= 10%
         grey_color = self.parameters.light_sensor.value / 1024
-        value = self.analogue_reader.get_reading(0)
+        value = self.analogue_reader.get_reading(light_id)
         print(self.__transf_1024(value))
         return bool(value < grey_color)
 

@@ -5,6 +5,7 @@ Implementation of simulated control
 import math
 import time
 from common.interfaces import control_interfaces
+from common.data_structures import configuration
 from coppeliasim_robot import sim
 
 def init_component(client_id: int, component_name: str) -> int:
@@ -18,44 +19,47 @@ def init_component(client_id: int, component_name: str) -> int:
 
 
 def exec_vrep_script(client_id: int, script_component_name: str, script_function_name: str,
-                     inInts: list = [], inFloats: list = [], inStrings: list = [],
-                     inBuffer: bytearray = bytearray()) -> tuple:
+                     in_ints: list = [], in_floats: list = [], in_strings: list = [],
+                     in_buffer: bytearray = bytearray()) -> tuple:
     '''
     Executes a function of a lua script in vrep
     Param: client_id: the client's id
            script_component_name: the name of the object that has the script in the scene
            script_function_name: the name of the function inside the script to be executed
-           inInts: list of input integers used for the function (can be [ ])
-           inFloats: list of input floats used for the function (can be [ ])
-           inStrings: list of input strings used for the function (can be [ ])
-           inBuffer: input bytearray used for the function
+           in_ints: list of input integers used for the function (can be [ ])
+           in_floats: list of input floats used for the function (can be [ ])
+           in_strings: list of input strings used for the function (can be [ ])
+           in_buffer: input bytearray used for the function
     Returns: returnCode: to show if function has been executed correctly
              => (successful execution: sim.simx_return_ok)
-             outInts: list of integer values returned by the function
-             outFloats: list of float values returned by the function
-             outStrings: list of string values returned by the function
-             outBuffer: bytearray returned by the function
+             out_ints: list of integer values returned by the function
+             out_floats: list of float values returned by the function
+             out_strings: list of string values returned by the function
+             out_buffer: bytearray returned by the function
     '''
-    return sim.simxCallScriptFunction(client_id, script_component_name, sim.sim_scripttype_childscript,
-                                      script_function_name, inInts, inFloats, inStrings, inBuffer,
-                                      sim.simx_opmode_blocking)
+    return sim.simxCallScriptFunction(
+        client_id, script_component_name, sim.sim_scripttype_childscript,
+        script_function_name, in_ints, in_floats, in_strings, in_buffer,
+        sim.simx_opmode_blocking)
 
 
 def get_object_children(client_id: int, object_name: str = '/', print_all = False) -> tuple:
     '''
     Retrieves handles of all the children of an object
     Default object_name: '/': retrieves all the objects handles in the scene
-    Recommended object_name: 'fossbot': retrieves all children of fossbot 
+    Recommended object_name: 'fossbot': retrieves all children of fossbot
     Param: client_id: the client id
            object_name: the object's name in the scene
            print_all: prints all the handles and their corresponding object's path in the scene
     Returns: object_children_list: a list of all the childrens handles of the requested object
-             object_children_dict: a dictionary with keys the handles and values the 
+             object_children_dict: a dictionary with keys the handles and values the
                                   corresponding path in the scene of the requested object
     '''
     sim.simxGetObjectGroupData(client_id, sim.sim_appobj_object_type, 21, sim.simx_opmode_streaming)
     time.sleep(0.1)
-    _, handle, _, _, name = sim.simxGetObjectGroupData(client_id, sim.sim_appobj_object_type, 21, sim.simx_opmode_blocking)
+    _, handle, _, _, name = sim.simxGetObjectGroupData(
+                                client_id, sim.sim_appobj_object_type,
+                                21, sim.simx_opmode_blocking)
 
     object_children_list=[]
     object_children_dict={}
@@ -63,12 +67,12 @@ def get_object_children(client_id: int, object_name: str = '/', print_all = Fals
     if not object_name.startswith('/'):
         object_name = '/' + object_name
 
-    for h in handle:
+    for tmp_h in handle:
         if print_all:
-            print(f'Handle: {h}, Path: {name[h]}')
-        if object_name in name[h]:
-            object_children_list.append(h)
-            object_children_dict[h] = name[h]
+            print(f'Handle: {tmp_h}, Path: {name[tmp_h]}')
+        if object_name in name[tmp_h]:
+            object_children_list.append(tmp_h)
+            object_children_dict[tmp_h] = name[tmp_h]
 
     if len(object_children_list) == 0:
         print(f'There is no robot named {object_name[1:]} in scene.')
@@ -82,8 +86,9 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     Analogue Readings
     AnalogueReadings(client_id)
     '''
-    def __init__(self, client_id: int):
-        self.client_id = client_id
+    def __init__(self, sim_param: configuration.SimRobotParameters):
+        self.client_id = sim_param.simulation.client_id
+        self.param = sim_param
 
     def __get_line_data(self, line_sensor_name: str) -> list:
         '''
@@ -92,7 +97,9 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         Returns: image data of requested line_sensor
         '''
         while True:
-            res, image, _,_ ,_ = exec_vrep_script(self.client_id, line_sensor_name, 'get_line_image')
+            res, image, _,_ ,_ = exec_vrep_script(
+                                    self.client_id, line_sensor_name,
+                                    'get_line_image')
             if res == sim.simx_return_ok:
                 return image
 
@@ -100,8 +107,9 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         '''
         Returns light opacity from light sensor
         '''
+        light_sensor = self.param.simulation.light_sensor_name
         while True:
-            res, _, light_opacity,_ ,_ = exec_vrep_script(self.client_id, 'light_sensor', 'get_light')
+            res, _, light_opacity,_ ,_ = exec_vrep_script(self.client_id, light_sensor, 'get_light')
             if res == sim.simx_return_ok:
                 return light_opacity[0]
 
@@ -111,18 +119,21 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         Param: pin: the pin of the sensor
         Returns: the reading of the requested sensor
         '''
-        if pin == 0:
+        if pin == self.param.simulation.light_sensor_id:
             time.sleep(0.1) # has to have this 'break' else error occurs
             return self.__get_light_data()
-        elif pin == 1:
+        if pin == self.param.simulation.sensor_middle_id:
             time.sleep(0.1)
-            return self.__get_line_data('MiddleSensor')
-        elif pin == 2:
+            mid_sensor_name = self.param.simulation.sensor_middle_name
+            return self.__get_line_data(mid_sensor_name)
+        if pin == self.param.simulation.sensor_right_id:
             time.sleep(0.1)
-            return self.__get_line_data('RightSensor')
-        elif pin == 3:
+            right_sensor_name = self.param.simulation.sensor_right_name
+            return self.__get_line_data(right_sensor_name)
+        if pin == self.param.simulation.sensor_left_id:
             time.sleep(0.1)
-            return self.__get_line_data('LeftSensor')
+            left_sensor_name = self.param.simulation.sensor_left_name
+            return self.__get_line_data(left_sensor_name)
 
 
 class Motor(control_interfaces.MotorInterface):
@@ -131,8 +142,9 @@ class Motor(control_interfaces.MotorInterface):
     Motor(client_id,motor_joint_name,def_speed)
     """
 
-    def __init__(self, client_id: int, motor_joint_name: str, def_speed: int):
-        self.client_id = client_id
+    def __init__(self, sim_param: configuration.SimRobotParameters, motor_joint_name: str, def_speed: int):
+        self.client_id = sim_param.simulation.client_id
+        self.param = sim_param
         self.motor_name = motor_joint_name
         self.def_speed = def_speed
 
@@ -144,7 +156,9 @@ class Motor(control_interfaces.MotorInterface):
         Returns: a return code of the API function
         '''
         while True:
-            res, _, _,_ ,_ = exec_vrep_script(self.client_id, self.motor_name, 'change_vel', inFloats=[velocity])
+            res, _, _,_ ,_ = exec_vrep_script(
+                                self.client_id, self.motor_name,
+                                'change_vel', in_floats=[velocity])
             if res == sim.simx_return_ok:
                 return res
 
@@ -192,18 +206,21 @@ class Odometer(control_interfaces.OdometerInterface):
     get_distance() Returns the traveled distance in cm
     reset() Resets the steps counter
     '''
-    def __init__(self, client_id: int, motor_name: str):
+    def __init__(self, sim_param: configuration.SimRobotParameters, motor_name: str):
         self.sensor_disc = 20   #by default 20 lines sensor disc
         self.steps = 0
         self.wheel_diameter = 6.65  #by default the wheel diameter is 6.6
         self.precision = 2  #by default the distance is rounded in 2 digits
-        self.client_id = client_id
+        self.client_id = sim_param.simulation.client_id
+        self.param = sim_param
         self.motor_name = motor_name
 
     def count_revolutions(self) -> None:
-        ''' Increase total steps by one '''
+        '''Increase steps by one'''
         while True:
-            res, steps, _, _, _ = exec_vrep_script(self.client_id, self.motor_name, 'count_revolutions')
+            res, steps, _, _, _ = exec_vrep_script(
+                                    self.client_id, self.motor_name,
+                                    'count_revolutions')
             if res == sim.simx_return_ok:
                 self.steps = steps[0]
                 break
@@ -223,7 +240,7 @@ class Odometer(control_interfaces.OdometerInterface):
 
     def __print_distance(self, distance) -> None:
         ''' Prints distance, used for debugging '''
-        if self.motor_name == 'right_motor':
+        if self.motor_name == self.param.simulation.right_motor_name:
             print(f'Distance: {distance}')
 
     def get_distance(self) -> float:
@@ -233,7 +250,7 @@ class Odometer(control_interfaces.OdometerInterface):
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
         #self.__print_distance(distance) # used only for debugging
-        return (round(distance, self.precision))
+        return round(distance, self.precision)
 
     def reset(self) -> None:
         ''' Reset the total distance and revolutions '''
@@ -249,8 +266,9 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     Functions:
     get_distance() return distance in cm
     '''
-    def __init__(self, client_id: int):
-        self.client_id = client_id
+    def __init__(self, sim_param: configuration.SimRobotParameters):
+        self.client_id = sim_param.simulation.client_id
+        self.param = sim_param
         self.precision = 2  #by default the distance is rounded in 2 digits
 
     def get_distance(self) -> float:
@@ -260,14 +278,17 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
         If no obstacle detected => returns 999.9
         '''
         max_dist = 999.9
+        ultrasonic_name = self.param.simulation.ultrasonic_name
         while True:
-            res, handle, distance,_ ,_ = exec_vrep_script(self.client_id, 'ultrasonic_sensor', 'get_distance')
+            res, handle, distance,_ ,_ = exec_vrep_script(
+                                            self.client_id, ultrasonic_name,
+                                            'get_distance')
             if res == sim.simx_return_ok:
                 break
         #Detected Handle: handle[0], Distance (in meters): distance[0]
         if distance[0] >= 1:
             return max_dist
-        return (round(distance[0]*100, self.precision))
+        return round(distance[0]*100, self.precision)
 
 class Accelerometer(control_interfaces.AccelerometerInterface):
     '''
@@ -280,8 +301,9 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
                                 acceleration for a specific dimension give
                                 as parameter "x","y","z" return value
     '''
-    def __init__(self, client_id: int):
-        self.client_id = client_id
+    def __init__(self, sim_param: configuration.SimRobotParameters):
+        self.client_id = sim_param.simulation.client_id
+        self.param = sim_param
 
     def __create_force_dict(self, force_list: list) -> dict:
         '''
@@ -295,11 +317,15 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         '''
         Gets the acceleration for a specific or all dimensions
         Param: dimension: the dimension requested (can be 'all')
-        Returns: the acceleration for a specific or all dimensions 
+        Returns: the acceleration for a specific or all dimensions
         '''
+        accel_name = self.param.simulation.accelerometer_name
         while True:
-            # 1st response -> function executed correctly, 2ns response -> data was successfully collected
-            res_1, res_2, accel_data,_ ,_ = exec_vrep_script(self.client_id, 'Accelerometer', 'get_accel')
+            # res_1 -> function executed correctly
+            # res_2 -> data was successfully collected
+            res_1, res_2, accel_data,_ ,_ = exec_vrep_script(
+                                                self.client_id,
+                                                accel_name, 'get_accel')
             if res_1 == sim.simx_return_ok and res_2[0] == sim.simx_return_ok:
                 break
         accel_data = self.__create_force_dict(accel_data)
@@ -315,10 +341,11 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         '''
         Gets gyroscope for a specific or all dimensions
         Param: dimension: the dimension requested (can be 'all')
-        Returns: the gyroscope for a specific or all dimensions 
+        Returns: the gyroscope for a specific or all dimensions
         '''
+        gyro_name = self.param.simulation.gyroscope_name
         while True:
-            res, _, gyro_data,_ ,_ = exec_vrep_script(self.client_id, 'GyroSensor', 'get_gyro')
+            res, _, gyro_data,_ ,_ = exec_vrep_script(self.client_id, gyro_name, 'get_gyro')
             if res == sim.simx_return_ok:
                 break
         gyro_data = self.__create_force_dict(gyro_data)
@@ -331,9 +358,14 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
 
 
 
-class Led_RGB(control_interfaces.LedRGBInterface):
-    def __init__(self, client_id: int):
-        self.client_id = client_id
+class LedRGB(control_interfaces.LedRGBInterface):
+    '''
+    Class for led control
+    set_on(color): sets led to input color
+    '''
+    def __init__(self, sim_param: configuration.SimRobotParameters):
+        self.client_id = sim_param.simulation.client_id
+        self.param = sim_param
 
     def set_on(self, color: str) -> None:
         '''
@@ -362,7 +394,10 @@ class Led_RGB(control_interfaces.LedRGBInterface):
             print('Uknown color!')
             raise RuntimeError
 
+        led_name = self.param.simulation.led_name
         while True:
-            res, _, _, _, _ = exec_vrep_script(self.client_id, 'led_light', 'set_color_led', inFloats=color_rbg)
+            res, _, _, _, _ = exec_vrep_script(
+                                self.client_id, led_name,
+                                'set_color_led', in_floats=color_rbg)
             if res == sim.simx_return_ok:
                 break
