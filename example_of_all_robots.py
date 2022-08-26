@@ -50,6 +50,7 @@ def change_color(robot: robot_interface.FossBotInterface) -> None:
         robot.wait(2)
         robot.rgb_set_color('violet')
         robot.wait(2)
+    print('Closing led...')
     robot.rgb_set_color('closed')
 
 if __name__ == "__main__":

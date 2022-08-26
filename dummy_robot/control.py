@@ -4,8 +4,6 @@ Implementation for control (dummy).
 import random
 from common.interfaces import control_interfaces
 
-MAX_RANGE = 1000
-
 class Motor(control_interfaces.MotorInterface):
     """
     Motor() -> Motor control.
@@ -62,7 +60,7 @@ class Odometer(control_interfaces.OdometerInterface):
 
     def get_steps(self) -> int:
         ''' Returns total number of steps. '''
-        return random.randint(-MAX_RANGE, MAX_RANGE)
+        return random.randint(0, 1000)
 
     def get_revolutions(self) -> float:
         ''' Returns total number of revolutions. '''

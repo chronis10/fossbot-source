@@ -206,6 +206,9 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         return random.random()
 
+    def __del__(self) -> None:
+        print('__del__ executed')
+
     def exit(self) -> None:
         ''' Exits. '''
         print('Exit.')

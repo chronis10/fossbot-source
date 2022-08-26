@@ -268,7 +268,7 @@ class FossBot(robot_interface.FossBotInterface):
         print(value)
         return value
 
-    def __del__(self):
+    def __del__(self) -> None:
         control.clean()
 
     def exit(self) -> None:

@@ -91,7 +91,7 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         time.sleep(time_s)
 
-    def __del__(self):
+    def __del__(self) -> None:
         sim.simxFinish(self.client_id)
 
     def exit(self) -> None:
@@ -99,7 +99,7 @@ class FossBot(robot_interface.FossBotInterface):
         Exits the program - closes connection to vrep.
         '''
         sim.simxFinish(self.client_id)
-        print('Program ended')
+        print('Program ended.')
 
     def just_rotate(self, dir_id: int) -> None:
         '''
