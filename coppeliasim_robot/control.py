@@ -104,7 +104,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             if res == sim.simx_return_ok:
                 return image
 
-    def __get_light_data(self):
+    def __get_light_data(self) -> float:
         '''
         Returns light opacity from light sensor.
         '''
@@ -114,7 +114,18 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             if res == sim.simx_return_ok:
                 return light_opacity[0]
 
-    def get_reading(self, pin: int) -> list:
+    def __convert_float(self, reading: list) -> float:
+        '''
+        Converts list of image data to float number.
+        Param: reading: the list of image data to be transformed
+        Returns: 23.0 if reading is black line, else 0.0
+        '''
+        # [23, 23, 23] => black line
+        if reading == [23, 23, 23]:
+            return 23.0
+        return 0.0
+
+    def get_reading(self, pin: int) -> float:
         '''
         Gets reading of a specific sensor specified by input pin.
         Param: pin: the pin of the sensor.
@@ -126,15 +137,15 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         if pin == self.param.simulation.sensor_middle_id:
             time.sleep(0.1)
             mid_sensor_name = self.param.simulation.sensor_middle_name
-            return self.__get_line_data(mid_sensor_name)
+            return self.__convert_float(self.__get_line_data(mid_sensor_name))
         if pin == self.param.simulation.sensor_right_id:
             time.sleep(0.1)
             right_sensor_name = self.param.simulation.sensor_right_name
-            return self.__get_line_data(right_sensor_name)
+            return self.__convert_float(self.__get_line_data(right_sensor_name))
         if pin == self.param.simulation.sensor_left_id:
             time.sleep(0.1)
             left_sensor_name = self.param.simulation.sensor_left_name
-            return self.__get_line_data(left_sensor_name)
+            return self.__convert_float(self.__get_line_data(left_sensor_name))
 
 
 class Motor(control_interfaces.MotorInterface):
@@ -315,11 +326,11 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         '''
         return {'x': force_list[0], 'y': force_list[1], 'z': force_list[2]}
 
-    def get_acceleration(self, dimension: str = "all") -> dict:
+    def get_acceleration(self, dimension: str) -> float:
         '''
-        Gets the acceleration for a specific or all dimensions.
-        Param: dimension: the dimension requested (can be 'all').
-        Returns: the acceleration for a specific or all dimensions.
+        Gets the acceleration for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the acceleration for a specific dimension.
         '''
         accel_name = self.param.simulation.accelerometer_name
         while True:
@@ -331,19 +342,16 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
             if res_1 == sim.simx_return_ok and res_2[0] == sim.simx_return_ok:
                 break
         accel_data = self.__create_force_dict(accel_data)
-        if dimension == "all":
-            return accel_data
         if dimension in ('x', 'y', 'z'):
             return accel_data[dimension]
         print("Dimension not recognized!!")
-        raise RuntimeError
+        return 0.0
 
-
-    def get_gyro(self, dimension: str = "all") -> dict:
+    def get_gyro(self, dimension: str) -> float:
         '''
-        Gets gyroscope for a specific or all dimensions.
-        Param: dimension: the dimension requested (can be 'all').
-        Returns: the gyroscope for a specific or all dimensions.
+        Gets gyroscope for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the gyroscope for a specific dimension.
         '''
         gyro_name = self.param.simulation.gyroscope_name
         while True:
@@ -351,12 +359,10 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
             if res == sim.simx_return_ok:
                 break
         gyro_data = self.__create_force_dict(gyro_data)
-        if dimension == "all":
-            return gyro_data
         if dimension in ('x', 'y', 'z'):
             return gyro_data[dimension]
         print("Dimension not recognized!!")
-        raise RuntimeError
+        return 0.0
 
 
 

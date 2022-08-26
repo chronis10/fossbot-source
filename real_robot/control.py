@@ -16,13 +16,13 @@ class GenInput():
     Functions:
     get_state() return True/False
     '''
-    def __init__(self, pin=4):
+    def __init__(self, pin: int = 4):
         self.pin = pin
         GPIO.setup(self.pin, GPIO.IN)
 
-    def get_state(self):
+    def get_state(self) -> int:
         '''
-        Returns True/False
+        Returns state 0 or 1
         '''
         return GPIO.input(self.pin)
 
@@ -34,18 +34,18 @@ class GenOutput():
     set_on() set High the output pin
     set_off() set Low the output pin
     '''
-    def __init__(self, pin=5):
+    def __init__(self, pin: int = 5):
         self.pin = pin
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)
 
-    def set_on(self):
+    def set_on(self) -> None:
         '''
         Set High the output pin
         '''
         GPIO.output(self.pin, True)
 
-    def set_off(self):
+    def set_off(self) -> None:
         '''
         Set Low the output pin
         '''
@@ -126,10 +126,8 @@ class Odometer(control_interfaces.OdometerInterface):
     '''
     def __init__(self, pin: int):
         self.pin = pin
-        self.prev_pos = self.get_state()
         self.sensor_disc = 20
         self.steps = 0
-        self.offset = 0
         self.wheel_diameter = 6.65
         self.precision = 2
         GPIO.setup(pin, GPIO.IN)
@@ -138,10 +136,6 @@ class Odometer(control_interfaces.OdometerInterface):
             GPIO.RISING,
             callback=self.count_revolutions,
             bouncetime=1)
-
-    def get_state(self) -> int:
-        """ Return 0 or 1 current state of odometer """
-        return GPIO.input(self.pin)
 
     def count_revolutions(self) -> None:
         '''Increase total steps by one.'''
@@ -160,8 +154,7 @@ class Odometer(control_interfaces.OdometerInterface):
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
-        final = round(distance, self.precision)
-        return final + self.offset
+        return round(distance, self.precision)
 
     def reset(self) -> None:
         ''' Reset the total traveled distance and revolutions. '''
@@ -204,7 +197,7 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
 
 class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     '''
-    Class AnalogueReadings(CLK,MISO,MOSI,CS) -> Handles Analogue Readings.
+    Class AnalogueReadings(clk_p,miso_p,mosi_p,cs_p) -> Handles Analogue Readings.
     Functions:
     get_reading(pin) Gets reading of a specific sensor specified by input pin.
     '''
@@ -212,7 +205,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     def __init__(self, clk_p: int = 11, miso_p: int = 9, mosi_p: int = 10, cs_p: int = 8):
         self.mcp = Adafruit_MCP3008.MCP3008(clk=clk_p, cs=cs_p, miso=miso_p, mosi=mosi_p)
 
-    def get_reading(self, pin: int) -> list:
+    def get_reading(self, pin: int) -> float:
         '''
         Gets reading of a specific sensor specified by input pin.
         Param: pin: the pin of the sensor.
@@ -284,47 +277,45 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
                                 all dimensions.
     '''
 
-    def __init__(self, address=0x68):
+    #!FIXME what datatype is address (hexademical)?
+    def __init__(self, address: int = 0x68):
+        #hex(104) == 0x68
         self.sensor = mpu6050(address)
 
-    def get_acceleration(self, dimension: str = "all") -> dict:
+    def get_acceleration(self, dimension: str) -> float:
         '''
-        Gets the acceleration for a specific or all dimensions.
-        Param: dimension: the dimension requested (can be 'all').
-        Returns: the acceleration for a specific or all dimensions.
+        Gets the acceleration for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the acceleration for a specific dimension.
         '''
         accel = self.sensor.get_accel_data()
-        if dimension == "all":
-            return accel
         if dimension in ('x', 'y', 'z'):
             return accel[dimension]
         print("Dimension not recognized!!")
-        return 0
+        return 0.0
 
-    def get_gyro(self, dimension: str = "all") -> dict:
+    def get_gyro(self, dimension: str) -> float:
         '''
-        Gets gyroscope for a specific or all dimensions.
-        Param: dimension: the dimension requested (can be 'all').
-        Returns: the gyroscope for a specific or all dimensions.
+        Gets gyroscope for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the gyroscope for a specific dimension.
         '''
         gyro = self.sensor.get_gyro_data()
-        if dimension == "all":
-            return gyro
         if dimension in ('x', 'y', 'z'):
             return gyro[dimension]
         print("Dimension not recognized!!")
-        return 0
+        return 0.0
 
 
 #General functions
-def start_lib():
+def start_lib() -> None:
     '''
     This function sets the GPIO pins to input output mode with GPIO number syntax.
     '''
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
 
-def clean():
+def clean() -> None:
     '''
     This function releases all the GPIO pins .
     '''

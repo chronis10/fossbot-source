@@ -28,31 +28,17 @@ def connect_vrep() -> int:
     sim.simxFinish(-1) # just in case, close all opened connections
     return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
 
-def init_sim_parameters(client_id: int, parameters: configuration.RobotParameters) -> configuration.SimRobotParameters:
-    '''
-    Initializes the parameters needed for the simulation.
-    Param: client_id: the client's id.
-           parameters: the parameters of the real robot parameters.
-    Returns: the parameters needed for the simulation.
-    '''
-    parameters_sim = configuration.SimRobotIds(
-        client_id=client_id, left_motor_name='left_motor', right_motor_name='right_motor',
-        light_sensor_name='light_sensor', sensor_middle_name='MiddleSensor',
-        sensor_right_name='RightSensor', sensor_left_name='LeftSensor',
-        ultrasonic_name='ultrasonic_sensor', accelerometer_name='Accelerometer',
-        gyroscope_name='GyroSensor', led_name='led_light')
-    return configuration.SimRobotParameters(param_real=parameters, param_sim=parameters_sim)
-
 
 class FossBot(robot_interface.FossBotInterface):
     """ Sim robot """
-    def __init__(self, parameters: configuration.RobotParameters):
+    def __init__(self, parameters: configuration.SimRobotParameters):
         self.client_id = connect_vrep()
         if self.client_id == -1:
             print('Failed connecting to remote API server')
             raise ConnectionError
         print('Connected to remote API server')
-        self.parameters = init_sim_parameters(self.client_id, parameters)
+        self.parameters = parameters
+        self.parameters.simulation.client_id = self.client_id
         self.motor_left = control.Motor(
             self.parameters, self.parameters.simulation.left_motor_name,
             self.parameters.motor_left_speed.value)
@@ -69,18 +55,18 @@ class FossBot(robot_interface.FossBotInterface):
         self.rgb_led = control.LedRGB(self.parameters)
         #self.noise = control.gen_input(pin=4)
 
-    def get_distance(self) -> None:
+    def get_distance(self) -> float:
         '''Returns distance of nearest obstacle in cm.'''
         return self.ultrasonic.get_distance()
 
-    def check_for_obstacle(self) -> None:
+    def check_for_obstacle(self) -> bool:
         '''Returns True only if an obstacle is detected.'''
         i = self.ultrasonic.get_distance()
         if i <= self.parameters.sensor_distance.value:
             return True
         return False
 
-    def just_move(self, direction="forward") -> None:
+    def just_move(self, direction: str = "forward") -> None:
         """
         Move forward/backwards forever.
         Param: direction: the direction to be headed to.
@@ -122,6 +108,9 @@ class FossBot(robot_interface.FossBotInterface):
                - clockwise: dir_id == 0
                - counterclockwise: dir_id == 1
         '''
+        if dir_id not in [0, 1]:
+            print('Uknown Direction!')
+            raise RuntimeError
         self.odometer_right.reset()
         self.odometer_left.reset()
         left_dir = "reverse" if dir_id == 1 else "forward"
@@ -210,7 +199,7 @@ class FossBot(robot_interface.FossBotInterface):
             time.sleep(0.01)
         self.stop()
 
-    def move_distance(self, dist, direction: str = "forward") -> None:
+    def move_distance(self, dist: int, direction: str = "forward") -> None:
         '''
         Moves to input direction (default == forward) a specified - input distance (cm).
         Param: dist: the distance to be moved (in cm).
@@ -254,7 +243,7 @@ class FossBot(robot_interface.FossBotInterface):
         elif audio_id == 7:
             subprocess.run(["mpg123", "../robot_lib/soundfx/machine_gun.mp3"], check=True)
 
-    def get_floor_sensor(self, sensor_id: int) -> list:
+    def get_floor_sensor(self, sensor_id: int) -> float:
         '''
         Gets reading of a floor - line sensor specified by sensor_id.
         Param: sensor_id: the id of the wanted floor - line sensor.
@@ -265,7 +254,7 @@ class FossBot(robot_interface.FossBotInterface):
         right_id = self.parameters.simulation.sensor_right_id
         if sensor_id not in [mid_id, left_id, right_id]:
             print(f'Sensor id {sensor_id} is out of bounds.')
-            raise RuntimeError
+            return 0.0
         return self.analogue_reader.get_reading(sensor_id)
 
     def check_on_line(self, sensor_id: int) -> bool:
@@ -280,27 +269,26 @@ class FossBot(robot_interface.FossBotInterface):
 
         if sensor_id not in [mid_id, left_id, right_id]:
             print(f'Sensor id {sensor_id} is out of bounds.')
-            raise RuntimeError
-        # [23, 23, 23] => black line
-        if self.analogue_reader.get_reading(sensor_id) == [23, 23, 23]:
+            return False
+        if self.analogue_reader.get_reading(sensor_id) == 23.0:
             return True
         return False
 
-    def get_acceleration(self, axis: str = 'all') -> dict:
+    def get_acceleration(self, axis: str) -> float:
         '''
-        Gets acceleration of specified axis (can be 'all' axes).
-        Param: axis: the axis to get the acceleration from (default is 'all').
-        Returns: the acceleration of specified axis as dictionary.
+        Gets acceleration of specified axis.
+        Param: axis: the axis to get the acceleration from.
+        Returns: the acceleration of specified axis.
         '''
         value = self.accelerometer.get_acceleration(dimension=axis)
         print(value)
         return value
 
-    def get_gyroscope(self, axis: str = 'all') -> dict:
+    def get_gyroscope(self, axis: str) -> float:
         '''
-        Gets gyroscope of specified axis (can be 'all' axes).
-        Param: axis: the axis to get the gyroscope from (default is 'all').
-        Returns: the gyroscope of specified axis as dictionary.
+        Gets gyroscope of specified axis.
+        Param: axis: the axis to get the gyroscope from.
+        Returns: the gyroscope of specified axis.
         '''
         value = self.accelerometer.get_gyro(dimension=axis)
         print(value)

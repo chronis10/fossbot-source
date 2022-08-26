@@ -13,7 +13,7 @@ class AnalogueReadingsInterface(ABC):
     '''
 
     @abstractmethod
-    def get_reading(self, pin: int) -> list:
+    def get_reading(self, pin: int) -> float:
         '''
         Gets reading of a specific sensor specified by input pin.
         Param: pin: the pin of the sensor.
@@ -46,19 +46,19 @@ class AccelerometerInterface(ABC):
     '''
 
     @abstractmethod
-    def get_acceleration(self, dimension: str = "all") -> dict:
+    def get_acceleration(self, dimension: str) -> float:
         '''
-        Gets the acceleration for a specific or all dimensions.
-        Param: dimension: the dimension requested (can be 'all').
-        Returns: the acceleration for a specific or all dimensions.
+        Gets the acceleration for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the acceleration for a specific dimension.
         '''
 
     @abstractmethod
-    def get_gyro(self, dimension: str = "all") -> dict:
+    def get_gyro(self, dimension: str) -> float:
         '''
-        Gets gyroscope for a specific or all dimensions.
-        Param: dimension: the dimension requested (can be 'all').
-        Returns: the gyroscope for a specific or all dimensions.
+        Gets gyroscope for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the gyroscope for a specific dimension.
         '''
 
 class MotorInterface(ABC):

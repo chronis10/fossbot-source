@@ -27,7 +27,7 @@ class FossBotInterface(ABC):
         """ Stop moving. """
 
     @abstractmethod
-    def get_floor_sensor(self, sensor_id: int) -> list:
+    def get_floor_sensor(self, sensor_id: int) -> float:
         '''
         Gets reading of a floor - line sensor specified by sensor_id.
         Param: sensor_id: the id of the wanted floor - line sensor.
@@ -173,19 +173,19 @@ class FossBotInterface(ABC):
         '''
 
     @abstractmethod
-    def get_acceleration(self, axis: str) -> dict:
+    def get_acceleration(self, axis: str) -> float:
         '''
-        Gets acceleration of specified axis (can be 'all' axes).
-        Param: axis: the axis to get the acceleration from (default is 'all').
-        Returns: the acceleration of specified axis as dictionary.
+        Gets acceleration of specified axis.
+        Param: axis: the axis to get the acceleration from.
+        Returns: the acceleration of specified axis.
         '''
 
     @abstractmethod
-    def get_gyroscope(self, axis: str) -> dict:
+    def get_gyroscope(self, axis: str) -> float:
         '''
-        Gets gyroscope of specified axis (can be 'all' axes).
-        Param: axis: the axis to get the gyroscope from (default is 'all').
-        Returns: the gyroscope of specified axis as dictionary.
+        Gets gyroscope of specified axis.
+        Param: axis: the axis to get the gyroscope from.
+        Returns: the gyroscope of specified axis.
         '''
 
     @abstractmethod

@@ -104,14 +104,3 @@ class RobotParameters:
 class SimRobotParameters(RobotParameters):
     """ Dataclass for all simulated robot parameters """
     simulation: SimRobotIds
-    def __init__(self, param_real: RobotParameters, param_sim: SimRobotIds) -> None:
-        self.simulation = param_sim
-        self.sensor_distance = param_real.sensor_distance
-        self.motor_left_speed = param_real.motor_left_speed
-        self.motor_right_speed = param_real.motor_right_speed
-        self.light_sensor = param_real.light_sensor
-        self.line_sensor_left = param_real.line_sensor_left
-        self.line_sensor_center = param_real.line_sensor_center
-        self.line_sensor_right = param_real.line_sensor_right
-        self.rotate_90 = param_real.rotate_90
-        self.default_step = param_real.default_step
