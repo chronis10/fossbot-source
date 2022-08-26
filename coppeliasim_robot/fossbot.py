@@ -1,5 +1,5 @@
 """
-Real robot implementation
+Simulated robot implementation.
 """
 
 import time
@@ -31,7 +31,7 @@ def connect_vrep() -> int:
 
 class FossBot(robot_interface.FossBotInterface):
     """ Sim robot """
-    def __init__(self, parameters: configuration.SimRobotParameters):
+    def __init__(self, parameters: configuration.SimRobotParameters) -> None:
         self.client_id = connect_vrep()
         if self.client_id == -1:
             print('Failed connecting to remote API server')

@@ -1,3 +1,6 @@
+"""
+Configuration for coppelia sim (vrep)
+"""
 import platform
 import struct
 import sys

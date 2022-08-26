@@ -1,4 +1,4 @@
-""" Configuration yaml parser """
+""" Configuration yaml parser. """
 
 from typing import Optional
 import yaml

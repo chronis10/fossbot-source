@@ -1,5 +1,5 @@
 """
-Interfaces for control parts
+Interfaces for control parts.
 """
 
 from abc import ABC, abstractmethod
@@ -39,10 +39,8 @@ class AccelerometerInterface(ABC):
     '''
     Interface for accelerometer and gyroscope.
     Functions:
-    get_acceleration(dimension = "all") Returns the acceleration for a specific or
-                                        all dimensions.
-    get_gyro(dimension = "all") Returns the gyroscope for a specific or
-                                all dimensions.
+    get_acceleration(dimension) Returns the acceleration for a specific dimension.
+    get_gyro(dimension) Returns the gyroscope for a specific dimension.
     '''
 
     @abstractmethod

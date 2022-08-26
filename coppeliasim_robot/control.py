@@ -1,5 +1,5 @@
 """
-Implementation of simulated control
+Implementation of simulated control.
 """
 
 import math
@@ -87,7 +87,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     Functions:
     get_reading(pin) Gets reading of a specific sensor specified by input pin.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters):
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
 
@@ -157,7 +157,7 @@ class Motor(control_interfaces.MotorInterface):
     set_speed(speed) Set speed immediately 0-100% range.
     stop() Stops the motor.
     """
-    def __init__(self, sim_param: configuration.SimRobotParameters, motor_joint_name: str, def_speed: int):
+    def __init__(self, sim_param: configuration.SimRobotParameters, motor_joint_name: str, def_speed: int) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
         self.motor_name = motor_joint_name
@@ -221,7 +221,7 @@ class Odometer(control_interfaces.OdometerInterface):
     get_distance() Returns the traveled distance in cm.
     reset() Resets the steps counter.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters, motor_name: str):
+    def __init__(self, sim_param: configuration.SimRobotParameters, motor_name: str) -> None:
         self.sensor_disc = 20   #by default 20 lines sensor disc
         self.steps = 0
         self.wheel_diameter = 6.65  #by default the wheel diameter is 6.6
@@ -281,7 +281,7 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     Functions:
     get_distance() return distance in cm.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters):
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
         self.precision = 2  #by default the distance is rounded in 2 digits
@@ -309,12 +309,10 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
     '''
     Class Accelerometer(sim_param) -> Handles accelerometer and gyroscope.
     Functions:
-    get_acceleration(dimension = "all") Returns the acceleration for a specific or
-                                        all dimensions.
-    get_gyro(dimension = "all") Returns the gyroscope for a specific or
-                                all dimensions.
+    get_acceleration(dimension) Returns the acceleration for a specific dimension.
+    get_gyro(dimension) Returns the gyroscope for a specific dimension.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters):
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
 
@@ -371,7 +369,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
     Class LedRGB(sim_param) -> Led control
     set_on(color): sets led to input color.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters):
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
 

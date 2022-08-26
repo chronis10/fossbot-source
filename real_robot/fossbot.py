@@ -12,7 +12,7 @@ from real_robot import control
 class FossBot(robot_interface.FossBotInterface):
     """ Real robot """
 
-    def __init__(self, parameters: configuration.RobotParameters):
+    def __init__(self, parameters: configuration.RobotParameters) -> None:
         control.start_lib()
         self.motor_right = control.Motor(speed_pin=23, terma_pin=27, termb_pin=22,
                                          dc_value=parameters.motor_right_speed.value)
