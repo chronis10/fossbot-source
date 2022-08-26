@@ -5,12 +5,12 @@ step:
   
 motor_left:
   name: Ταχύτητα αριστερού μοτέρ
-  value: 22
+  value: 0.9
   default: 22
 
 motor_right:
   name: Ταχύτητα δεξιού μοτέρ
-  value: 23
+  value: 0.9
   default: 23
 
 sensor_distance:
@@ -40,5 +40,18 @@ line_sensor_right:
 
 rotate_90:
   name: Στροφή 90 μοίρες, κλίκ 
-  value: 12
+  value: 13
   default: 12
+
+simulator_ids:
+  client_id: None
+  left_motor_name: left_motor
+  right_motor_name: right_motor
+  light_sensor_name: light_sensor
+  sensor_middle_name: MiddleSensor
+  sensor_right_name: RightSensor
+  sensor_left_name: LeftSensor
+  ultrasonic_name: ultrasonic_sensor
+  accelerometer_name: Accelerometer
+  gyroscope_name: GyroSensor
+  led_name: led_light
