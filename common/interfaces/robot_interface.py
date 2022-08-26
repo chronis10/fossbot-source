@@ -9,116 +9,185 @@ class FossBotInterface(ABC):
 
     @abstractmethod
     def get_distance(self) -> float:
-        """ Return Distance in cm  """
+        '''Returns distance of nearest obstacle in cm.'''
 
     @abstractmethod
     def check_for_obstacle(self) -> bool:
-        """ Return True if obstacle detected """
+        '''Returns True only if an obstacle is detected.'''
 
     @abstractmethod
     def just_move(self, direction: str = "forward") -> None:
-        """ Move input direction forever """
+        """
+        Move forward/backwards forever.
+        Param: direction: the direction to be headed to.
+        """
 
     @abstractmethod
     def stop(self) -> None:
-        """ Stop moving """
+        """ Stop moving. """
 
     @abstractmethod
     def get_floor_sensor(self, sensor_id: int) -> list:
-        """ Returns reading of analogue reader """
+        '''
+        Gets reading of a floor - line sensor specified by sensor_id.
+        Param: sensor_id: the id of the wanted floor - line sensor.
+        Returns: the reading of input floor - line sensor.
+        '''
 
     @abstractmethod
     def check_on_line(self, sensor_id: int) -> bool:
-        """ Returns True if on line """
+        '''
+        Checks if line sensor (specified by sensor_id) is on black line.
+        Param: sensor_id: the id of the wanted floor - line sensor.
+        Returns: True if sensor is on line, else False.
+        '''
 
     @abstractmethod
     def get_light_sensor(self) -> float:
-        """ Returns analogue reader """
+        '''
+        Returns the reading of the light sensor.
+        '''
 
     @abstractmethod
     def check_for_dark(self) -> bool:
-        """ Returns True if dark is detected """
+        '''
+        Returns True only if light sensor detects dark.
+        '''
 
     @abstractmethod
     def wait(self, time_s: int) -> None:
-        """ Sleeps for time_s time """
+        '''
+        Waits (sleeps) for an amount of time.
+        Param: time_s: the time (seconds) of sleep.
+        '''
 
     @abstractmethod
     def move_forward_distance(self, dist: int) -> None:
-        """ Moves forward dist """
+        '''
+        Moves robot forward input distance.
+        Param: dist: the distance (cm) to be moved by robot.
+        '''
 
     @abstractmethod
     def move_forward_default(self) -> None:
-        """ Moves forward default distance """
+        '''
+        Moves robot forward default distance.
+        '''
 
     @abstractmethod
     def rotate_clockwise(self) -> None:
-        """ Rotates clockwise """
+        '''
+        Rotates robot clockwise (forever).
+        '''
 
     @abstractmethod
     def rotate_counterclockwise(self) -> None:
-        """ Rotates counterclockwise """
+        '''
+        Rotates robot counterclockwise (forever).
+        '''
 
     @abstractmethod
     def move_forward(self) -> None:
-        """ Just moves forward (default speed) """
+        '''
+        Moves robot forwards (forever).
+        '''
 
     @abstractmethod
     def rotate_clockwise_90(self) -> None:
-        """ Rotates clockwise 90 degrees """
+        '''
+        Rotates robot 90 degrees clockwise.
+        '''
 
     @abstractmethod
     def rotate_counterclockwise_90(self) -> None:
-        """ Rotates counterclockwise 90 degrees """
+        '''
+        Rotates robot 90 degrees counterclockwise.
+        '''
 
     @abstractmethod
     def get_noise_detection(self) -> bool:
-        """ Returns True if noise detected """
+        """ Returns True only if noise is detected """
 
     @abstractmethod
     def move_reverse_distance(self, dist: int) -> None:
-        """ Moves dist in reverse """
+        '''
+        Moves robot input distance in reverse.
+        Param: dist: the distance (cm) to be moved by robot.
+        '''
 
     @abstractmethod
     def move_reverse_default(self) -> None:
-        """ Moves default distance in reverse """
+        '''
+        Moves robot default distance in reverse.
+        '''
 
     @abstractmethod
     def move_reverse(self) -> None:
-        """ Just moves in reverse (default speed) """
+        '''
+        Moves robot in reverse (forever).
+        '''
 
     @abstractmethod
     def play_sound(self, audio_id: int) -> None:
-        """ Plays audio_id sound """
+        '''
+        Plays mp3 file specified by input audio_id.
+        '''
 
     @abstractmethod
     def rgb_set_color(self, color: str) -> None:
-        """ Sets color of led """
+        '''
+        Sets a led to input color.
+        Param: color: the wanted color.
+        '''
 
     @abstractmethod
     def just_rotate(self, dir_id: int) -> None:
-        """ Rotates forever """
+        '''
+        Rotates fossbot towards the specified dir_id (forever).
+        Param: dir_id: the direction id to rotate to:
+               - clockwise: dir_id == 0
+               - counterclockwise: dir_id == 1
+        '''
 
     @abstractmethod
     def move_distance(self, dist: int, direction: str = "forward") -> None:
-        """ Moves dist forwards or backwards """
+        '''
+        Moves to input direction (default == forward) a specified - input distance (cm).
+        Param: dist: the distance to be moved (in cm).
+               direction: the direction to be moved towards.
+        '''
 
     @abstractmethod
     def reset_dir(self) -> None:
-        """ Resets direction of motors to default (forwards) """
+        '''
+        Resets all motors direction to default (forward).
+        '''
 
     @abstractmethod
     def rotate_90(self, dir_id: int) -> None:
-        """ Rotates 90 degrees """
+        '''
+        Rotates fossbot 90 degrees towards the specified dir_id.
+        Param: dir_id: the direction id to rotate 90 degrees:
+               - clockwise: dir_id == 0
+               - counterclockwise: dir_id == 1
+        '''
 
     @abstractmethod
     def get_acceleration(self, axis: str) -> dict:
-        """ Gets acceleration of an axis """
+        '''
+        Gets acceleration of specified axis (can be 'all' axes).
+        Param: axis: the axis to get the acceleration from (default is 'all').
+        Returns: the acceleration of specified axis as dictionary.
+        '''
 
     @abstractmethod
     def get_gyroscope(self, axis: str) -> dict:
-        """ Gets gyroscope of an axis """
+        '''
+        Gets gyroscope of specified axis (can be 'all' axes).
+        Param: axis: the axis to get the gyroscope from (default is 'all').
+        Returns: the gyroscope of specified axis as dictionary.
+        '''
 
     @abstractmethod
     def exit(self) -> None:
-        """ Exits """
+        """ Exits. """

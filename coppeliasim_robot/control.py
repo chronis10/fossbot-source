@@ -83,8 +83,9 @@ def get_object_children(client_id: int, object_name: str = '/', print_all = Fals
 
 class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     '''
-    Analogue Readings
-    AnalogueReadings(client_id)
+    Class AnalogueReadings(sim_param) -> Handles Analogue Readings.
+    Functions:
+    get_reading(pin) Gets reading of a specific sensor specified by input pin.
     '''
     def __init__(self, sim_param: configuration.SimRobotParameters):
         self.client_id = sim_param.simulation.client_id
@@ -92,9 +93,9 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
 
     def __get_line_data(self, line_sensor_name: str) -> list:
         '''
-        Retrieves image data of requested line sensor
-        Param: line_sensor_name: the name of the wanted line sensor
-        Returns: image data of requested line_sensor
+        Retrieves image data of requested line sensor.
+        Param: line_sensor_name: the name of the wanted line sensor.
+        Returns: image data of requested line_sensor.
         '''
         while True:
             res, image, _,_ ,_ = exec_vrep_script(
@@ -105,7 +106,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
 
     def __get_light_data(self):
         '''
-        Returns light opacity from light sensor
+        Returns light opacity from light sensor.
         '''
         light_sensor = self.param.simulation.light_sensor_name
         while True:
@@ -115,9 +116,9 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
 
     def get_reading(self, pin: int) -> list:
         '''
-        Gets reading of a specific sensor
-        Param: pin: the pin of the sensor
-        Returns: the reading of the requested sensor
+        Gets reading of a specific sensor specified by input pin.
+        Param: pin: the pin of the sensor.
+        Returns: the reading of the requested sensor.
         '''
         if pin == self.param.simulation.light_sensor_id:
             time.sleep(0.1) # has to have this 'break' else error occurs
@@ -138,10 +139,13 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
 
 class Motor(control_interfaces.MotorInterface):
     """
-    Motor control
-    Motor(client_id,motor_joint_name,def_speed)
+    Motor(sim_param,motor_joint_name,def_speed) -> Motor control.
+    Functions:
+    dir_control(direction) Change motor direction to input direction.
+    move(direction) Start moving motor with default speed towards input direction.
+    set_speed(speed) Set speed immediately 0-100% range.
+    stop() Stops the motor.
     """
-
     def __init__(self, sim_param: configuration.SimRobotParameters, motor_joint_name: str, def_speed: int):
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
@@ -150,10 +154,10 @@ class Motor(control_interfaces.MotorInterface):
 
     def __change_motor_velocity(self, velocity: float) -> int:
         '''
-        Changes a motor's velocity
-        Param: motor: the motor of the simulation to change its velocity (example 'left_motor')
-                velocity: the velocity to be changed to
-        Returns: a return code of the API function
+        Changes a motor's velocity.
+        Param: motor: the motor of the simulation to change its velocity (example 'left_motor').
+               velocity: the velocity to be changed to.
+        Returns: a return code of the API function.
         '''
         while True:
             res, _, _,_ ,_ = exec_vrep_script(
@@ -164,8 +168,8 @@ class Motor(control_interfaces.MotorInterface):
 
     def dir_control(self, direction: str) -> None:
         '''
-        Change motor direction
-        Param: direction: the direction to be headed to
+        Change motor direction to input direction.
+        Param: direction: the direction to be headed to.
         '''
         if direction == 'forward':
             self.__change_motor_velocity(-self.def_speed)
@@ -176,15 +180,15 @@ class Motor(control_interfaces.MotorInterface):
 
     def move(self, direction: str = "forward") -> None:
         '''
-        Start moving motor with default speed
-        Param: direction: the direction to be headed to
+        Start moving motor with default speed towards input direction.
+        Param: direction: the direction to be headed to.
         '''
         self.dir_control(direction)
 
     def set_speed(self, speed: int) -> None:
         '''
-        Set speed immediately 0-100% range
-        Param: speed: the range 0 - 100% that speed will be changed to
+        Set speed immediately 0-100% range.
+        Param: speed: the range 0 - 100% that speed will be changed to.
         '''
         if speed < 0 or speed > 100:
             print("The motor speed is a percentage of total motor power. Accepted values 0-100.")
@@ -193,18 +197,18 @@ class Motor(control_interfaces.MotorInterface):
             self.__change_motor_velocity(self.def_speed)
 
     def stop(self) -> None:
-        '''Stops the motor'''
+        '''Stops the motor.'''
         self.__change_motor_velocity(0)
 
 
 class Odometer(control_interfaces.OdometerInterface):
     '''
-    Class Odometer() -> Odometer control
+    Class Odometer(sim_param, motor_name) -> Odometer control.
     Functions:
-    count_revolutions() Increases the counter of revolutions
-    get_revolutions() Returns the number of revolutions
-    get_distance() Returns the traveled distance in cm
-    reset() Resets the steps counter
+    count_revolutions() Increases the counter of revolutions.
+    get_revolutions() Returns the number of revolutions.
+    get_distance() Returns the traveled distance in cm.
+    reset() Resets the steps counter.
     '''
     def __init__(self, sim_param: configuration.SimRobotParameters, motor_name: str):
         self.sensor_disc = 20   #by default 20 lines sensor disc
@@ -216,7 +220,7 @@ class Odometer(control_interfaces.OdometerInterface):
         self.motor_name = motor_name
 
     def count_revolutions(self) -> None:
-        '''Increase steps by one'''
+        '''Increase total steps by one.'''
         while True:
             res, steps, _, _, _ = exec_vrep_script(
                                     self.client_id, self.motor_name,
@@ -226,7 +230,7 @@ class Odometer(control_interfaces.OdometerInterface):
                 break
 
     def get_steps(self) -> int:
-        ''' Returns total number of steps '''
+        ''' Returns total number of steps. '''
         while True:
             res, steps, _, _, _ = exec_vrep_script(self.client_id, self.motor_name, 'get_steps')
             if res == sim.simx_return_ok:
@@ -234,17 +238,17 @@ class Odometer(control_interfaces.OdometerInterface):
                 return self.steps
 
     def get_revolutions(self) -> float:
-        ''' Return total number of revolutions '''
+        ''' Returns total number of revolutions. '''
         self.steps = self.get_steps()
         return self.steps / self.sensor_disc
 
     def __print_distance(self, distance) -> None:
-        ''' Prints distance, used for debugging '''
+        ''' Prints distance traveled (used for debugging). '''
         if self.motor_name == self.param.simulation.right_motor_name:
             print(f'Distance: {distance}')
 
     def get_distance(self) -> float:
-        ''' Return the total distance so far (in cm) '''
+        ''' Return the total distance traveled so far (in cm). '''
         self.steps = self.get_steps()
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
@@ -253,7 +257,7 @@ class Odometer(control_interfaces.OdometerInterface):
         return round(distance, self.precision)
 
     def reset(self) -> None:
-        ''' Reset the total distance and revolutions '''
+        ''' Reset the total traveled distance and revolutions. '''
         while True:
             res, _, _, _, _ = exec_vrep_script(self.client_id, self.motor_name, 'reset_steps')
             if res == sim.simx_return_ok:
@@ -262,9 +266,9 @@ class Odometer(control_interfaces.OdometerInterface):
 
 class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     '''
-    Class UltrasonicSensor() -> Ultrasonic sensor
+    Class UltrasonicSensor(sim_param) -> Ultrasonic sensor control.
     Functions:
-    get_distance() return distance in cm
+    get_distance() return distance in cm.
     '''
     def __init__(self, sim_param: configuration.SimRobotParameters):
         self.client_id = sim_param.simulation.client_id
@@ -273,8 +277,8 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
 
     def get_distance(self) -> float:
         '''
-        Gets the distance to the closest obstacle
-        Returns: the distance to the closest obstacle (in cm)
+        Gets the distance to the closest obstacle.
+        Returns: the distance to the closest obstacle (in cm).
         If no obstacle detected => returns 999.9
         '''
         max_dist = 999.9
@@ -292,14 +296,12 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
 
 class Accelerometer(control_interfaces.AccelerometerInterface):
     '''
-    Class accelerometer(address=0x68)
+    Class Accelerometer(sim_param) -> Handles accelerometer and gyroscope.
     Functions:
-    get_acceleration(dimension = "all") with "parameter return dictionary with x,y,z
-                                        acceleration for a specific dimension give
-                                        as parameter "x","y","z" return value
-    get_gyro(dimension = "all") with "parameter return dictionary with x,y,z
-                                acceleration for a specific dimension give
-                                as parameter "x","y","z" return value
+    get_acceleration(dimension = "all") Returns the acceleration for a specific or
+                                        all dimensions.
+    get_gyro(dimension = "all") Returns the gyroscope for a specific or
+                                all dimensions.
     '''
     def __init__(self, sim_param: configuration.SimRobotParameters):
         self.client_id = sim_param.simulation.client_id
@@ -307,17 +309,17 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
 
     def __create_force_dict(self, force_list: list) -> dict:
         '''
-        Creates dictionary out of list of x, y, z forces
-        Param: force_list: the list of x, y, z forces
-        Returns: the dictionary of x, y, z forces
+        Creates dictionary out of list of x, y, z forces.
+        Param: force_list: the list of x, y, z forces.
+        Returns: the dictionary of x, y, z forces.
         '''
         return {'x': force_list[0], 'y': force_list[1], 'z': force_list[2]}
 
     def get_acceleration(self, dimension: str = "all") -> dict:
         '''
-        Gets the acceleration for a specific or all dimensions
-        Param: dimension: the dimension requested (can be 'all')
-        Returns: the acceleration for a specific or all dimensions
+        Gets the acceleration for a specific or all dimensions.
+        Param: dimension: the dimension requested (can be 'all').
+        Returns: the acceleration for a specific or all dimensions.
         '''
         accel_name = self.param.simulation.accelerometer_name
         while True:
@@ -339,9 +341,9 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
 
     def get_gyro(self, dimension: str = "all") -> dict:
         '''
-        Gets gyroscope for a specific or all dimensions
-        Param: dimension: the dimension requested (can be 'all')
-        Returns: the gyroscope for a specific or all dimensions
+        Gets gyroscope for a specific or all dimensions.
+        Param: dimension: the dimension requested (can be 'all').
+        Returns: the gyroscope for a specific or all dimensions.
         '''
         gyro_name = self.param.simulation.gyroscope_name
         while True:
@@ -360,8 +362,8 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
 
 class LedRGB(control_interfaces.LedRGBInterface):
     '''
-    Class for led control
-    set_on(color): sets led to input color
+    Class LedRGB(sim_param) -> Led control
+    set_on(color): sets led to input color.
     '''
     def __init__(self, sim_param: configuration.SimRobotParameters):
         self.client_id = sim_param.simulation.client_id

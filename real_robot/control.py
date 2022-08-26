@@ -55,8 +55,12 @@ class GenOutput():
 
 class Motor(control_interfaces.MotorInterface):
     """
-    Motor control
-    Motor(speed_pin,terma_pin,termb_pinfreq=17,dc=70)
+    Motor(speed_pin,terma_pin,termb_pinfreq=17,dc=70) -> Motor control.
+    Functions:
+    dir_control(direction) Change motor direction to input direction.
+    move(direction) Start moving motor with default speed towards input direction.
+    set_speed(speed) Set speed immediately 0-100% range.
+    stop() Stops the motor.
     """
 
     def __init__(self, speed_pin: int, terma_pin: int, termb_pin: int, dc_value: int = 70):
@@ -72,7 +76,10 @@ class Motor(control_interfaces.MotorInterface):
         self.mot.start(0)
 
     def set_speed(self, speed: int) -> None:
-        """ Set speed immediately 0-100% range """
+        '''
+        Set speed immediately 0-100% range.
+        Param: speed: the range 0 - 100% that speed will be changed to.
+        '''
         if speed < 0 or speed > 100:
             print(
                 "The motor speed is a percentage of total motor power. Accepted values 0-100.")
@@ -81,7 +88,10 @@ class Motor(control_interfaces.MotorInterface):
             self.mot.ChangeDutyCycle(speed)
 
     def dir_control(self, direction: str) -> None:
-        """ Change motor direction """
+        '''
+        Change motor direction to input direction.
+        Param: direction: the direction to be headed to.
+        '''
         if direction == "forward":
             GPIO.output(self.terma_pin, GPIO.HIGH)
             GPIO.output(self.termb_pin, GPIO.LOW)
@@ -92,22 +102,28 @@ class Motor(control_interfaces.MotorInterface):
             print("Motor accepts only forward and reverse values")
 
     def move(self, direction: str = "forward") -> None:
-        """ Start motor to move with default speed """
+        '''
+        Start moving motor with default speed towards input direction.
+        Param: direction: the direction to be headed to.
+        '''
         self.dir_control(direction)
         self.mot.ChangeDutyCycle(self.dc_value)
 
     def stop(self) -> None:
-        """ Stops the motor """
+        '''Stops the motor.'''
         self.mot.ChangeDutyCycle(0)
 
 
 class Odometer(control_interfaces.OdometerInterface):
-    """
-    Odometer control
-    Odometer(pin)
-    Event triggered counter
-    """
-
+    '''
+    Class Odometer(pin) -> Odometer control.
+    (Event triggered counter).
+    Functions:
+    count_revolutions() Increases the counter of revolutions.
+    get_revolutions() Returns the number of revolutions.
+    get_distance() Returns the traveled distance in cm.
+    reset() Resets the steps counter.
+    '''
     def __init__(self, pin: int):
         self.pin = pin
         self.prev_pos = self.get_state()
@@ -128,15 +144,19 @@ class Odometer(control_interfaces.OdometerInterface):
         return GPIO.input(self.pin)
 
     def count_revolutions(self) -> None:
+        '''Increase total steps by one.'''
         self.steps += 1
 
     def get_steps(self) -> int:
+        ''' Returns total number of steps. '''
         return self.steps
 
     def get_revolutions(self) -> float:
+        ''' Returns total number of revolutions. '''
         return self.steps / self.sensor_disc
 
     def get_distance(self) -> float:
+        ''' Return the total distance traveled so far (in cm). '''
         circumference = self.wheel_diameter * math.pi
         revolutions = self.steps / self.sensor_disc
         distance = revolutions * circumference
@@ -144,14 +164,15 @@ class Odometer(control_interfaces.OdometerInterface):
         return final + self.offset
 
     def reset(self) -> None:
-        """ Reset the total distance and revolutions """
+        ''' Reset the total traveled distance and revolutions. '''
         self.steps = 0
 
 
 class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     '''
-    Ultrasonic Sensor
-    UltrasonicSensor(echo_pin,trig_pin)
+    Class UltrasonicSensor(echo_pin,trig_pin) -> Ultrasonic sensor control.
+    Functions:
+    get_distance() return distance in cm.
     '''
 
     def __init__(self, echo_pin: int = 14, trig_pin: int = 15):
@@ -162,7 +183,10 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
         GPIO.output(self.trig_pin, False)
 
     def get_distance(self) -> float:
-        """ Interface for ultrasonic sensor """
+        '''
+        Gets the distance to the closest obstacle.
+        Returns: the distance to the closest obstacle (in cm).
+        '''
         GPIO.output(self.trig_pin, True)
         time.sleep(0.00001)
         GPIO.output(self.trig_pin, False)
@@ -180,14 +204,20 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
 
 class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     '''
-    Analogue Readings
-    AnalogueReadings(CLK,MISO,MOSI,CS)
+    Class AnalogueReadings(CLK,MISO,MOSI,CS) -> Handles Analogue Readings.
+    Functions:
+    get_reading(pin) Gets reading of a specific sensor specified by input pin.
     '''
 
-    def __init__(self, CLK: int = 11, MISO: int = 9, MOSI: int = 10, CS: int = 8):
-        self.mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+    def __init__(self, clk_p: int = 11, miso_p: int = 9, mosi_p: int = 10, cs_p: int = 8):
+        self.mcp = Adafruit_MCP3008.MCP3008(clk=clk_p, cs=cs_p, miso=miso_p, mosi=mosi_p)
 
     def get_reading(self, pin: int) -> list:
+        '''
+        Gets reading of a specific sensor specified by input pin.
+        Param: pin: the pin of the sensor.
+        Returns: the reading of the requested sensor.
+        '''
         value = self.mcp.read_adc(pin)
         print(f'ADC {pin}: {value}')
         return value
@@ -195,8 +225,8 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
 
 class LedRGB(control_interfaces.LedRGBInterface):
     '''
-    Led rgb
-    LedRGB(pin_r,pin_b,pin_g)
+    Class LedRGB(pin_r,pin_b,pin_g) -> Led control
+    set_on(color): sets led to input color.
     '''
 
     def __init__(self, pin_r: int = 16, pin_b: int = 19, pin_g: int = 12):
@@ -205,6 +235,11 @@ class LedRGB(control_interfaces.LedRGBInterface):
         self.p_g = GenOutput(pin_g)
 
     def set_on(self, color: str) -> None:
+        '''
+        Changes the color of a led
+        Param: color: the wanted color
+        For closing the led, use color == 'closed'
+        '''
         if color == 'red':
             self.p_r.set_on()
             self.p_b.set_off()
@@ -241,14 +276,23 @@ class LedRGB(control_interfaces.LedRGBInterface):
 
 class Accelerometer(control_interfaces.AccelerometerInterface):
     '''
-    Accelerometer
-    Accelerometer(address)
+    Class Accelerometer(address) -> Handles accelerometer and gyroscope.
+    Functions:
+    get_acceleration(dimension = "all") Returns the acceleration for a specific or
+                                        all dimensions.
+    get_gyro(dimension = "all") Returns the gyroscope for a specific or
+                                all dimensions.
     '''
 
     def __init__(self, address=0x68):
         self.sensor = mpu6050(address)
 
     def get_acceleration(self, dimension: str = "all") -> dict:
+        '''
+        Gets the acceleration for a specific or all dimensions.
+        Param: dimension: the dimension requested (can be 'all').
+        Returns: the acceleration for a specific or all dimensions.
+        '''
         accel = self.sensor.get_accel_data()
         if dimension == "all":
             return accel
@@ -258,6 +302,11 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         return 0
 
     def get_gyro(self, dimension: str = "all") -> dict:
+        '''
+        Gets gyroscope for a specific or all dimensions.
+        Param: dimension: the dimension requested (can be 'all').
+        Returns: the gyroscope for a specific or all dimensions.
+        '''
         gyro = self.sensor.get_gyro_data()
         if dimension == "all":
             return gyro

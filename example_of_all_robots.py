@@ -14,7 +14,7 @@ def main(robot: robot_interface.FossBotInterface) -> None:
     robot.stop()
 
 def ultimate_test(robot: robot_interface.FossBotInterface) -> None:
-    '''Test important function of robot'''
+    '''Tests important functions of robot'''
     robot.move_distance(21)
     robot.wait(1)
     robot.rotate_clockwise_90()

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 @dataclass
 class DefaultStep:
-    """ Deafault distance in cm for 1 step """
+    """ Default distance in cm for 1 step """
     name: str
     value: int
     default: int
@@ -27,7 +27,7 @@ class MotorLeftSpeed:
 
 @dataclass
 class SensorDistance:
-    """ Min distance for obstacle detection  """
+    """ Min distance for obstacle detection """
     name: str
     value: int
     default: int
@@ -89,7 +89,7 @@ class SimRobotIds:
 
 @dataclass
 class RobotParameters:
-    """ Dataclass for all real parameters """
+    """ Dataclass for all real robot parameters """
     sensor_distance: SensorDistance
     motor_left_speed: MotorLeftSpeed
     motor_right_speed: MotorRightSpeed
@@ -102,7 +102,7 @@ class RobotParameters:
 
 @dataclass
 class SimRobotParameters(RobotParameters):
-    """ Dataclass for all simulated parameters """
+    """ Dataclass for all simulated robot parameters """
     simulation: SimRobotIds
     def __init__(self, param_real: RobotParameters, param_sim: SimRobotIds) -> None:
         self.simulation = param_sim
