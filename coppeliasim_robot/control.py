@@ -367,6 +367,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
 class LedRGB(control_interfaces.LedRGBInterface):
     '''
     Class LedRGB(sim_param) -> Led control
+    Functions:
     set_on(color): sets led to input color.
     '''
     def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
@@ -407,3 +408,23 @@ class LedRGB(control_interfaces.LedRGBInterface):
                                 'set_color_led', in_floats=color_rbg)
             if res == sim.simx_return_ok:
                 break
+
+
+#!FIXME -- implement this class with microphone (real hw)
+class Noise(control_interfaces.NoiseInterface):
+    '''
+    Class Noise() -> Handles Noise Detection.
+    Functions:
+    get_state() Returns state 0 (False) or 1 (True)
+    '''
+
+    def __init__(self) -> None:
+        pass
+
+    #!FIXME
+    def get_state(self) -> int:
+        '''
+        Returns state 0 or 1
+        '''
+        # do it with microphone (real hw)
+        raise NotImplementedError

@@ -157,3 +157,19 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         Returns: the gyroscope for a specific dimension.
         '''
         return random.random()
+
+class Noise(control_interfaces.NoiseInterface):
+    '''
+    Class Noise() -> Handles Noise Detection.
+    Functions:
+    get_state() Returns state 0 (False) or 1 (True)
+    '''
+
+    def __init__(self) -> None:
+        print('Noise detector initialized.')
+
+    def get_state(self) -> int:
+        '''
+        Returns state 0 or 1
+        '''
+        return random.randint(0, 1)

@@ -9,12 +9,12 @@ from mpu6050 import mpu6050
 import Adafruit_MCP3008
 from common.interfaces import control_interfaces
 
-class GenInput():
+class GenInput(control_interfaces.NoiseInterface):
     '''
     Class gen_input(pin)
     Default pin 4
     Functions:
-    get_state() return True/False
+    get_state(): Returns state 0 (False) or 1 (True)
     '''
     def __init__(self, pin: int = 4) -> None:
         self.pin = pin

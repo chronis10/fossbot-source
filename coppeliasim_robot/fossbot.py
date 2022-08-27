@@ -53,7 +53,8 @@ class FossBot(robot_interface.FossBotInterface):
         self.analogue_reader = control.AnalogueReadings(self.parameters)
         self.accelerometer = control.Accelerometer(self.parameters)
         self.rgb_led = control.LedRGB(self.parameters)
-        #self.noise = control.gen_input(pin=4)
+        #!FIXME -- implement constructor of Noise and input its parameters here:
+        self.noise = control.Noise()
 
     def get_distance(self) -> float:
         '''Returns distance of nearest obstacle in cm.'''
@@ -329,8 +330,8 @@ class FossBot(robot_interface.FossBotInterface):
         print(self.__transf_1024(value))
         return bool(value < grey_color)
 
-    #!FIXME
     def get_noise_detection(self) -> bool:
         """ Returns True only if noise is detected """
-        # do it with microphone (real hw)
-        raise NotImplementedError
+        state = self.noise.get_state()
+        print(state)
+        return bool(state) #not bool(state)
