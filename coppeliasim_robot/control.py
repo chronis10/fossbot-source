@@ -11,8 +11,8 @@ from coppeliasim_robot import sim
 def init_component(client_id: int, component_name: str) -> int:
     '''
     Initializes a component (like motors, sensors etc) of the simulation.
-    Param: component_name: the name of the component (example: 'left_motor')
-    Returns: the component in the simulation
+    Param: component_name: the name of the component (example: 'left_motor').
+    Returns: the component in the simulation.
     '''
     _, component = sim.simxGetObjectHandle(client_id, component_name, sim.simx_opmode_blocking)
     return component
@@ -22,20 +22,20 @@ def exec_vrep_script(client_id: int, script_component_name: str, script_function
                      in_ints: list = [], in_floats: list = [], in_strings: list = [],
                      in_buffer: bytearray = bytearray()) -> tuple:
     '''
-    Executes a function of a lua script in vrep
-    Param: client_id: the client's id
-           script_component_name: the name of the object that has the script in the scene
-           script_function_name: the name of the function inside the script to be executed
-           in_ints: list of input integers used for the function (can be [ ])
-           in_floats: list of input floats used for the function (can be [ ])
-           in_strings: list of input strings used for the function (can be [ ])
-           in_buffer: input bytearray used for the function
+    Executes a function of a lua script in vrep.
+    Param: client_id: the client's id.
+           script_component_name: the name of the object that has the script in the scene.
+           script_function_name: the name of the function inside the script to be executed.
+           in_ints: list of input integers used for the function (can be [ ]).
+           in_floats: list of input floats used for the function (can be [ ]).
+           in_strings: list of input strings used for the function (can be [ ]).
+           in_buffer: input bytearray used for the function.
     Returns: returnCode: to show if function has been executed correctly
-             => (successful execution: sim.simx_return_ok)
-             out_ints: list of integer values returned by the function
-             out_floats: list of float values returned by the function
-             out_strings: list of string values returned by the function
-             out_buffer: bytearray returned by the function
+             => (successful execution: sim.simx_return_ok).
+             out_ints: list of integer values returned by the function.
+             out_floats: list of float values returned by the function.
+             out_strings: list of string values returned by the function.
+             out_buffer: bytearray returned by the function.
     '''
     return sim.simxCallScriptFunction(
         client_id, script_component_name, sim.sim_scripttype_childscript,
@@ -45,15 +45,15 @@ def exec_vrep_script(client_id: int, script_component_name: str, script_function
 
 def get_object_children(client_id: int, object_name: str = '/', print_all=False) -> tuple:
     '''
-    Retrieves handles of all the children of an object
-    Default object_name: '/': retrieves all the objects handles in the scene
-    Recommended object_name: 'fossbot': retrieves all children of fossbot
-    Param: client_id: the client id
-           object_name: the object's name in the scene
-           print_all: prints all the handles and their corresponding object's path in the scene
-    Returns: object_children_list: a list of all the childrens handles of the requested object
+    Retrieves handles of all the children of an object.
+    Default object_name: '/': retrieves all the objects handles in the scene.
+    Recommended object_name: 'fossbot': retrieves all children of fossbot.
+    Param: client_id: the client id.
+           object_name: the object's name in the scene.
+           print_all: prints all the handles and their corresponding object's path in the scene.
+    Returns: object_children_list: a list of all the childrens handles of the requested object.
              object_children_dict: a dictionary with keys the handles and values the
-                                  corresponding path in the scene of the requested object
+                                   corresponding path in the scene of the requested object.
     '''
     sim.simxGetObjectGroupData(client_id, sim.sim_appobj_object_type, 21, sim.simx_opmode_streaming)
     time.sleep(0.1)
@@ -366,7 +366,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
 
 class LedRGB(control_interfaces.LedRGBInterface):
     '''
-    Class LedRGB(sim_param) -> Led control
+    Class LedRGB(sim_param) -> Led control.
     Functions:
     set_on(color): sets led to input color.
     '''
@@ -376,9 +376,9 @@ class LedRGB(control_interfaces.LedRGBInterface):
 
     def set_on(self, color: str) -> None:
         '''
-        Changes the color of a led
-        Param: color: the wanted color
-        For closing the led, use color == 'closed'
+        Changes the color of a led.
+        Param: color: the wanted color.
+        For closing the led, use color == 'closed'.
         '''
         color_rbg = [0, 0, 0]   #red, blue, green
         if color == 'red':
@@ -415,7 +415,7 @@ class Noise(control_interfaces.NoiseInterface):
     '''
     Class Noise() -> Handles Noise Detection.
     Functions:
-    get_state() Returns state 0 (False) or 1 (True)
+    get_state() Returns state 0 (False) or 1 (True).
     '''
 
     def __init__(self) -> None:
@@ -424,7 +424,7 @@ class Noise(control_interfaces.NoiseInterface):
     #!FIXME
     def get_state(self) -> int:
         '''
-        Returns state 0 (if noise not detected) or 1 (if noise detected)
+        Returns state 0 (if noise not detected) or 1 (if noise detected).
         '''
         # do it with microphone (real hw)
         raise NotImplementedError

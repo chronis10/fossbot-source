@@ -56,17 +56,7 @@ class FossBot(robot_interface.FossBotInterface):
         #!FIXME -- implement constructor of Noise and input its parameters here:
         self.noise = control.Noise()
 
-    def get_distance(self) -> float:
-        '''Returns distance of nearest obstacle in cm.'''
-        return self.ultrasonic.get_distance()
-
-    def check_for_obstacle(self) -> bool:
-        '''Returns True only if an obstacle is detected.'''
-        i = self.ultrasonic.get_distance()
-        if i <= self.parameters.sensor_distance.value:
-            return True
-        return False
-
+    # movement
     def just_move(self, direction: str = "forward") -> None:
         """
         Move forward/backwards forever.
@@ -76,6 +66,22 @@ class FossBot(robot_interface.FossBotInterface):
         self.odometer_left.reset()
         self.motor_right.move(direction=direction)
         self.motor_left.move(direction=direction)
+
+    def move_distance(self, dist: int, direction: str = "forward") -> None:
+        '''
+        Moves to input direction (default == forward) a specified - input distance (cm).
+        Param: dist: the distance to be moved (in cm).
+               direction: the direction to be moved towards.
+        '''
+        if dist == 0:
+            return
+        self.just_move(direction=direction)
+        dis_run_r = self.odometer_right.get_distance()
+        dis_run_l = self.odometer_left.get_distance()
+        while dis_run_r < dist and dis_run_l < dist:
+            dis_run_r = self.odometer_right.get_distance()
+            dis_run_l = self.odometer_left.get_distance()
+        self.stop()
 
     def stop(self) -> None:
         """ Stop moving. """
@@ -92,34 +98,14 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         time.sleep(time_s)
 
-    def __del__(self) -> None:
-        sim.simxFinish(self.client_id)
+    def reset_dir(self) -> None:
+        '''
+        Resets all motors direction to default (forward).
+        '''
+        self.motor_left.dir_control("forward")
+        self.motor_right.dir_control("forward")
 
-    def exit(self) -> None:
-        '''
-        Exits the program - closes connection to vrep.
-        '''
-        sim.simxFinish(self.client_id)
-        print('Program ended.')
-
-    def just_rotate(self, dir_id: int) -> None:
-        '''
-        Rotates fossbot towards the specified dir_id (forever).
-        Param: dir_id: the direction id to rotate to:
-               - clockwise: dir_id == 0
-               - counterclockwise: dir_id == 1
-        '''
-        if dir_id not in [0, 1]:
-            print('Uknown Direction!')
-            raise RuntimeError
-        self.odometer_right.reset()
-        self.odometer_left.reset()
-        left_dir = "reverse" if dir_id == 1 else "forward"
-        right_dir = "reverse" if dir_id == 0 else "forward"
-        self.motor_left.move(direction=left_dir)
-        self.motor_right.move(direction=right_dir)
-
-    #moving forward
+    # moving forward
     def move_forward_distance(self, dist: int) -> None:
         '''
         Moves robot forward input distance.
@@ -133,37 +119,13 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         self.move_distance(self.parameters.default_step.value)
 
-    def rotate_clockwise(self) -> None:
-        '''
-        Rotates robot clockwise (forever).
-        '''
-        self.just_rotate(1)
-
-    def rotate_counterclockwise(self) -> None:
-        '''
-        Rotates robot counterclockwise (forever).
-        '''
-        self.just_rotate(0)
-
     def move_forward(self) -> None:
         '''
         Moves robot forwards (forever).
         '''
         self.just_move()
 
-    def rotate_clockwise_90(self) -> None:
-        '''
-        Rotates robot 90 degrees clockwise.
-        '''
-        self.rotate_90(1)
-
-    def rotate_counterclockwise_90(self) -> None:
-        '''
-        Rotates robot 90 degrees counterclockwise.
-        '''
-        self.rotate_90(0)
-
-    #moving reverse
+    # moving reverse
     def move_reverse_distance(self, dist: int) -> None:
         '''
         Moves robot input distance in reverse.
@@ -183,12 +145,30 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         self.just_move(direction="reverse")
 
+    # rotation
+    def just_rotate(self, dir_id: int) -> None:
+        '''
+        Rotates fossbot towards the specified dir_id (forever).
+        Param: dir_id: the direction id to rotate to:
+               - clockwise: dir_id == 0
+               - counterclockwise: dir_id == 1
+        '''
+        if dir_id not in [0, 1]:
+            print('Uknown Direction!')
+            raise RuntimeError
+        self.odometer_right.reset()
+        self.odometer_left.reset()
+        left_dir = "reverse" if dir_id == 1 else "forward"
+        right_dir = "reverse" if dir_id == 0 else "forward"
+        self.motor_left.move(direction=left_dir)
+        self.motor_right.move(direction=right_dir)
+
     def rotate_90(self, dir_id: int) -> None:
         '''
         Rotates fossbot 90 degrees towards the specified dir_id.
         Param: dir_id: the direction id to rotate 90 degrees:
-               - clockwise: dir_id == 0
-               - counterclockwise: dir_id == 1
+                - clockwise: dir_id == 0
+                - counterclockwise: dir_id == 1
         '''
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
@@ -200,30 +180,43 @@ class FossBot(robot_interface.FossBotInterface):
             time.sleep(0.01)
         self.stop()
 
-    def move_distance(self, dist: int, direction: str = "forward") -> None:
+    def rotate_clockwise(self) -> None:
         '''
-        Moves to input direction (default == forward) a specified - input distance (cm).
-        Param: dist: the distance to be moved (in cm).
-               direction: the direction to be moved towards.
+        Rotates robot clockwise (forever).
         '''
-        if dist == 0:
-            return
-        self.just_move(direction=direction)
-        dis_run_r = self.odometer_right.get_distance()
-        dis_run_l = self.odometer_left.get_distance()
-        while dis_run_r < dist and dis_run_l < dist:
-            dis_run_r = self.odometer_right.get_distance()
-            dis_run_l = self.odometer_left.get_distance()
-        self.stop()
+        self.just_rotate(1)
 
-    def reset_dir(self) -> None:
+    def rotate_counterclockwise(self) -> None:
         '''
-        Resets all motors direction to default (forward).
+        Rotates robot counterclockwise (forever).
         '''
-        self.motor_left.dir_control("forward")
-        self.motor_right.dir_control("forward")
+        self.just_rotate(0)
 
-    #sound
+    def rotate_clockwise_90(self) -> None:
+        '''
+        Rotates robot 90 degrees clockwise.
+        '''
+        self.rotate_90(1)
+
+    def rotate_counterclockwise_90(self) -> None:
+        '''
+        Rotates robot 90 degrees counterclockwise.
+        '''
+        self.rotate_90(0)
+
+    # ultrasonic sensor
+    def get_distance(self) -> float:
+        '''Returns distance of nearest obstacle in cm.'''
+        return self.ultrasonic.get_distance()
+
+    def check_for_obstacle(self) -> bool:
+        '''Returns True only if an obstacle is detected.'''
+        i = self.ultrasonic.get_distance()
+        if i <= self.parameters.sensor_distance.value:
+            return True
+        return False
+
+    # sound
     def play_sound(self, audio_id: int) -> None:
         '''
         Plays mp3 file specified by input audio_id.
@@ -244,6 +237,7 @@ class FossBot(robot_interface.FossBotInterface):
         elif audio_id == 7:
             subprocess.run(["mpg123", "../robot_lib/soundfx/machine_gun.mp3"], check=True)
 
+    # floor sensors
     def get_floor_sensor(self, sensor_id: int) -> float:
         '''
         Gets reading of a floor - line sensor specified by sensor_id.
@@ -275,6 +269,7 @@ class FossBot(robot_interface.FossBotInterface):
             return True
         return False
 
+    # accelerometer
     def get_acceleration(self, axis: str) -> float:
         '''
         Gets acceleration of specified axis.
@@ -295,7 +290,7 @@ class FossBot(robot_interface.FossBotInterface):
         print(value)
         return value
 
-    #rgb
+    # rgb
     def rgb_set_color(self, color: str) -> None:
         '''
         Sets a led to input color.
@@ -303,6 +298,7 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         self.rgb_led.set_on(color)
 
+    # light sensor
     def __transf_1024(self, value: float) -> float:
         '''
         Transforms a value from (initial) range [0, 1] to range [0, 1024].
@@ -311,7 +307,6 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         return value * 1024
 
-    #light sensor
     def get_light_sensor(self) -> float:
         '''
         Returns the reading of the light sensor.
@@ -330,8 +325,20 @@ class FossBot(robot_interface.FossBotInterface):
         print(self.__transf_1024(value))
         return bool(value < grey_color)
 
+    # noise detection
     def get_noise_detection(self) -> bool:
         """ Returns True only if noise is detected """
         state = self.noise.get_state()
         print(state)
         return bool(state) #not bool(state)
+
+    # exit
+    def exit(self) -> None:
+        '''
+        Exits the program - closes connection to vrep.
+        '''
+        sim.simxFinish(self.client_id)
+        print('Program ended.')
+
+    def __del__(self) -> None:
+        sim.simxFinish(self.client_id)

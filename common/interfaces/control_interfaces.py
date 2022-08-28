@@ -22,7 +22,7 @@ class AnalogueReadingsInterface(ABC):
 
 class LedRGBInterface(ABC):
     '''
-    Interface for Led control
+    Interface for Led control.
     Functions:
     set_on(color): sets led to input color.
     '''
@@ -37,14 +37,14 @@ class LedRGBInterface(ABC):
 
 class NoiseInterface(ABC):
     '''
-    Interface for noise (detection)
+    Interface for noise (detection).
     Functions:
-    get_state(): Returns state 0 (False) or 1 (True)
+    get_state(): Returns state 0 (False) or 1 (True).
     '''
     @abstractmethod
     def get_state(self) -> int:
         '''
-        Returns state 0 (False) or 1 (True)
+        Returns state 0 (False) or 1 (True).
         '''
 
 class AccelerometerInterface(ABC):

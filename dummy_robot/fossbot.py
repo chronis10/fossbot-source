@@ -11,46 +11,25 @@ class FossBot(robot_interface.FossBotInterface):
     def __init__(self) -> None:
         print('Fossbot initialized.')
 
-    #ultrasonic sensor
-    def get_distance(self) -> float:
-        '''Returns distance of nearest obstacle in cm.'''
-        return random.random()
+    # movement
+    def just_move(self, direction: str = "forward") -> None:
+        """
+        Move forward/backwards forever.
+        Param: direction: the direction to be headed to.
+        """
+        print('Just moving.')
 
-    def check_for_obstacle(self) -> bool:
-        '''Returns True only if an obstacle is detected.'''
-        return bool(random.randint(0, 1))
+    def move_distance(self, dist: int, direction: str = "forward") -> None:
+        '''
+        Moves to input direction (default == forward) a specified - input distance (cm).
+        Param: dist: the distance to be moved (in cm).
+               direction: the direction to be moved towards.
+        '''
+        print('Moving distance.')
 
-    #floor sensors
-    def get_floor_sensor(self, sensor_id: int) -> float:
-        '''
-        Gets reading of a floor - line sensor specified by sensor_id.
-        Param: sensor_id: the id of the wanted floor - line sensor.
-        Returns: the reading of input floor - line sensor.
-        '''
-        return random.random()
-
-    def check_on_line(self, sensor_id: int) -> bool:
-        '''
-        Checks if line sensor (specified by sensor_id) is on black line.
-        Param: sensor_id: the id of the wanted floor - line sensor.
-        Returns: True if sensor is on line, else False.
-        '''
-        return bool(random.randint(0, 1))
-
-
-    #light sensor
-    def get_light_sensor(self) -> float:
-        '''
-        Returns the reading of the light sensor.
-        '''
-        return random.random()
-
-    def check_for_dark(self) -> bool:
-        '''
-        Returns True only if light sensor detects dark.
-        '''
-        return bool(random.randint(0, 1))
-
+    def stop(self) -> None:
+        """ Stop moving. """
+        print('Stop.')
 
     def wait(self, time_s: int) -> None:
         '''
@@ -59,8 +38,13 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         print('Sleeping...')
 
-    #moving forward
+    def reset_dir(self) -> None:
+        '''
+        Resets all motors direction to default (forward).
+        '''
+        print('Direction reset.')
 
+    # moving forward
     def move_forward_distance(self, dist: int) -> None:
         '''
         Moves robot forward input distance.
@@ -74,43 +58,13 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         print('Moving forward default distance.')
 
-    def rotate_clockwise(self) -> None:
-        '''
-        Rotates robot clockwise (forever).
-        '''
-        print('Rotating clockwise.')
-
-    def rotate_counterclockwise(self) -> None:
-        '''
-        Rotates robot counterclockwise (forever).
-        '''
-        print('Rotating counterclockwise.')
-
     def move_forward(self) -> None:
         '''
         Moves robot forwards (forever).
         '''
         print('Moving forward.')
 
-    def rotate_clockwise_90(self) -> None:
-        '''
-        Rotates robot 90 degrees clockwise.
-        '''
-        print('Rotating clockwise 90 degrees.')
-
-    def rotate_counterclockwise_90(self) -> None:
-        '''
-        Rotates robot 90 degrees counterclockwise.
-        '''
-        print('Rotating counterclockwise 90 degrees.')
-
-
-    def get_noise_detection(self) -> bool:
-        """ Returns True only if noise is detected """
-        return bool(random.randint(0, 1))
-
-
-    #moving reverse
+    # moving reverse
     def move_reverse_distance(self, dist: int) -> None:
         '''
         Moves robot input distance in reverse.
@@ -130,28 +84,7 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         print('Moving in reverse.')
 
-    #sound
-    def play_sound(self, audio_id: int) -> None:
-        '''
-        Plays mp3 file specified by input audio_id.
-        '''
-        print('Playing sound.')
-
-    #rgb
-    def rgb_set_color(self, color: str) -> None:
-        '''
-        Sets a led to input color.
-        Param: color: the wanted color.
-        '''
-        print('Led color set.')
-
-    def just_move(self, direction: str = "forward") -> None:
-        """
-        Move forward/backwards forever.
-        Param: direction: the direction to be headed to.
-        """
-        print('Just moving.')
-
+    # rotation
     def just_rotate(self, dir_id: int) -> None:
         '''
         Rotates fossbot towards the specified dir_id (forever).
@@ -160,26 +93,6 @@ class FossBot(robot_interface.FossBotInterface):
                - counterclockwise: dir_id == 1
         '''
         print('Just rotating.')
-
-
-    def move_distance(self, dist: int, direction: str = "forward") -> None:
-        '''
-        Moves to input direction (default == forward) a specified - input distance (cm).
-        Param: dist: the distance to be moved (in cm).
-               direction: the direction to be moved towards.
-        '''
-        print('Moving distance.')
-
-
-    def stop(self) -> None:
-        """ Stop moving. """
-        print('Stop.')
-
-    def reset_dir(self) -> None:
-        '''
-        Resets all motors direction to default (forward).
-        '''
-        print('Direction reset.')
 
     def rotate_90(self, dir_id: int) -> None:
         '''
@@ -190,6 +103,64 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         print('Rotating 90 degrees.')
 
+    def rotate_clockwise(self) -> None:
+        '''
+        Rotates robot clockwise (forever).
+        '''
+        print('Rotating clockwise.')
+
+    def rotate_counterclockwise(self) -> None:
+        '''
+        Rotates robot counterclockwise (forever).
+        '''
+        print('Rotating counterclockwise.')
+
+    def rotate_clockwise_90(self) -> None:
+        '''
+        Rotates robot 90 degrees clockwise.
+        '''
+        print('Rotating clockwise 90 degrees.')
+
+    def rotate_counterclockwise_90(self) -> None:
+        '''
+        Rotates robot 90 degrees counterclockwise.
+        '''
+        print('Rotating counterclockwise 90 degrees.')
+
+    # ultrasonic sensor
+    def get_distance(self) -> float:
+        '''Returns distance of nearest obstacle in cm.'''
+        return random.random()
+
+    def check_for_obstacle(self) -> bool:
+        '''Returns True only if an obstacle is detected.'''
+        return bool(random.randint(0, 1))
+
+    # sound
+    def play_sound(self, audio_id: int) -> None:
+        '''
+        Plays mp3 file specified by input audio_id.
+        '''
+        print('Playing sound.')
+
+    # floor sensors
+    def get_floor_sensor(self, sensor_id: int) -> float:
+        '''
+        Gets reading of a floor - line sensor specified by sensor_id.
+        Param: sensor_id: the id of the wanted floor - line sensor.
+        Returns: the reading of input floor - line sensor.
+        '''
+        return random.random()
+
+    def check_on_line(self, sensor_id: int) -> bool:
+        '''
+        Checks if line sensor (specified by sensor_id) is on black line.
+        Param: sensor_id: the id of the wanted floor - line sensor.
+        Returns: True if sensor is on line, else False.
+        '''
+        return bool(random.randint(0, 1))
+
+    # accelerometer
     def get_acceleration(self, axis: str) -> float:
         '''
         Gets acceleration of specified axis.
@@ -206,9 +177,36 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         return random.random()
 
-    def __del__(self) -> None:
-        print('__del__ executed')
+    # rgb
+    def rgb_set_color(self, color: str) -> None:
+        '''
+        Sets a led to input color.
+        Param: color: the wanted color.
+        '''
+        print('Led color set.')
 
+    # light sensor
+    def get_light_sensor(self) -> float:
+        '''
+        Returns the reading of the light sensor.
+        '''
+        return random.random()
+
+    def check_for_dark(self) -> bool:
+        '''
+        Returns True only if light sensor detects dark.
+        '''
+        return bool(random.randint(0, 1))
+
+    # noise detection
+    def get_noise_detection(self) -> bool:
+        """ Returns True only if noise is detected """
+        return bool(random.randint(0, 1))
+
+    # exit
     def exit(self) -> None:
         ''' Exits. '''
         print('Exit.')
+
+    def __del__(self) -> None:
+        print('__del__ executed')
