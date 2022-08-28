@@ -9,7 +9,7 @@ from mpu6050 import mpu6050
 import Adafruit_MCP3008
 from common.interfaces import control_interfaces
 
-class GenInput(control_interfaces.NoiseInterface):
+class Noise(control_interfaces.NoiseInterface):
     '''
     Class gen_input(pin)
     Default pin 4

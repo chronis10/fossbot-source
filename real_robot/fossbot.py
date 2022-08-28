@@ -24,7 +24,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.rgb_led = control.LedRGB()
         self.analogue_reader = control.AnalogueReadings()
         self.accelerometer = control.Accelerometer()
-        self.noise = control.GenInput(pin=4)
+        self.noise = control.Noise(pin=4)
         self.parameters = parameters
 
     #ultrasonic sensor

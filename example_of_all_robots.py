@@ -58,7 +58,7 @@ if __name__ == "__main__":
     FILE_PARAM = load_parameters()
 
     # Real robot test ================================================
-    parameters = configuration.RobotParameters(
+    REAL_PARAM = configuration.RobotParameters(
         sensor_distance=configuration.SensorDistance(**FILE_PARAM["sensor_distance"]),
         motor_left_speed=configuration.MotorLeftSpeed(**FILE_PARAM["motor_left"]),
         motor_right_speed=configuration.MotorRightSpeed(**FILE_PARAM["motor_right"]),
@@ -70,13 +70,13 @@ if __name__ == "__main__":
         rotate_90=configuration.Rotate90(**FILE_PARAM["rotate_90"]))
 
     # Create a real robot
-    my_real_robot = RealFossBot(parameters=parameters)
-    main(my_real_robot)
+    REAL_ROBOT = RealFossBot(parameters=REAL_PARAM)
+    main(REAL_ROBOT)
 
 
     # Simulation robot test ===========================================
-    parameters_sim = configuration.SimRobotIds(**FILE_PARAM["simulator_ids"])
-    parameters = configuration.SimRobotParameters(
+    SIM_IDS = configuration.SimRobotIds(**FILE_PARAM["simulator_ids"])
+    SIM_PARAM = configuration.SimRobotParameters(
         sensor_distance=configuration.SensorDistance(**FILE_PARAM["sensor_distance"]),
         motor_left_speed=configuration.MotorLeftSpeed(**FILE_PARAM["motor_left"]),
         motor_right_speed=configuration.MotorRightSpeed(**FILE_PARAM["motor_right"]),
@@ -86,10 +86,10 @@ if __name__ == "__main__":
         line_sensor_center=configuration.LineSensorCenter(**FILE_PARAM["line_sensor_center"]),
         line_sensor_right=configuration.LineSensorRight(**FILE_PARAM["line_sensor_right"]),
         rotate_90=configuration.Rotate90(**FILE_PARAM["rotate_90"]),
-        simulation=parameters_sim)
+        simulation=SIM_IDS)
 
     # Create a simu robot
-    my_simu_robot = SimuFossBot(parameters=parameters)
-    main(my_simu_robot)
-    #ultimate_test(my_simu_robot)
-    #change_color(my_simu_robot)
+    SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
+    main(SIM_ROBOT)
+    #ultimate_test(SIM_ROBOT)
+    #change_color(SIM_ROBOT)

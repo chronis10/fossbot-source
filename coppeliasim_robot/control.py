@@ -43,7 +43,7 @@ def exec_vrep_script(client_id: int, script_component_name: str, script_function
         sim.simx_opmode_blocking)
 
 
-def get_object_children(client_id: int, object_name: str = '/', print_all = False) -> tuple:
+def get_object_children(client_id: int, object_name: str = '/', print_all=False) -> tuple:
     '''
     Retrieves handles of all the children of an object
     Default object_name: '/': retrieves all the objects handles in the scene
@@ -58,11 +58,11 @@ def get_object_children(client_id: int, object_name: str = '/', print_all = Fals
     sim.simxGetObjectGroupData(client_id, sim.sim_appobj_object_type, 21, sim.simx_opmode_streaming)
     time.sleep(0.1)
     _, handle, _, _, name = sim.simxGetObjectGroupData(
-                                client_id, sim.sim_appobj_object_type,
-                                21, sim.simx_opmode_blocking)
+        client_id, sim.sim_appobj_object_type,
+        21, sim.simx_opmode_blocking)
 
-    object_children_list=[]
-    object_children_dict={}
+    object_children_list = []
+    object_children_dict = {}
 
     if not object_name.startswith('/'):
         object_name = '/' + object_name
@@ -98,9 +98,9 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         Returns: image data of requested line_sensor.
         '''
         while True:
-            res, image, _,_ ,_ = exec_vrep_script(
-                                    self.client_id, line_sensor_name,
-                                    'get_line_image')
+            res, image, _, _, _ = exec_vrep_script(
+                self.client_id, line_sensor_name,
+                'get_line_image')
             if res == sim.simx_return_ok:
                 return image
 
@@ -110,7 +110,8 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         '''
         light_sensor = self.param.simulation.light_sensor_name
         while True:
-            res, _, light_opacity,_ ,_ = exec_vrep_script(self.client_id, light_sensor, 'get_light')
+            res, _, light_opacity, _, _ = exec_vrep_script(
+                self.client_id, light_sensor, 'get_light')
             if res == sim.simx_return_ok:
                 return light_opacity[0]
 
@@ -171,9 +172,9 @@ class Motor(control_interfaces.MotorInterface):
         Returns: a return code of the API function.
         '''
         while True:
-            res, _, _,_ ,_ = exec_vrep_script(
-                                self.client_id, self.motor_name,
-                                'change_vel', in_floats=[velocity])
+            res, _, _, _, _ = exec_vrep_script(
+                self.client_id, self.motor_name,
+                'change_vel', in_floats=[velocity])
             if res == sim.simx_return_ok:
                 return res
 
@@ -234,8 +235,8 @@ class Odometer(control_interfaces.OdometerInterface):
         '''Increase total steps by one.'''
         while True:
             res, steps, _, _, _ = exec_vrep_script(
-                                    self.client_id, self.motor_name,
-                                    'count_revolutions')
+                self.client_id, self.motor_name,
+                'count_revolutions')
             if res == sim.simx_return_ok:
                 self.steps = steps[0]
                 break
@@ -295,9 +296,9 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
         max_dist = 999.9
         ultrasonic_name = self.param.simulation.ultrasonic_name
         while True:
-            res, handle, distance,_ ,_ = exec_vrep_script(
-                                            self.client_id, ultrasonic_name,
-                                            'get_distance')
+            res, handle, distance, _, _ = exec_vrep_script(
+                self.client_id, ultrasonic_name,
+                'get_distance')
             if res == sim.simx_return_ok:
                 break
         #Detected Handle: handle[0], Distance (in meters): distance[0]
@@ -334,9 +335,8 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         while True:
             # res_1 -> function executed correctly
             # res_2 -> data was successfully collected
-            res_1, res_2, accel_data,_ ,_ = exec_vrep_script(
-                                                self.client_id,
-                                                accel_name, 'get_accel')
+            res_1, res_2, accel_data, _, _ = exec_vrep_script(
+                self.client_id, accel_name, 'get_accel')
             if res_1 == sim.simx_return_ok and res_2[0] == sim.simx_return_ok:
                 break
         accel_data = self.__create_force_dict(accel_data)
@@ -353,7 +353,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         '''
         gyro_name = self.param.simulation.gyroscope_name
         while True:
-            res, _, gyro_data,_ ,_ = exec_vrep_script(self.client_id, gyro_name, 'get_gyro')
+            res, _, gyro_data, _, _ = exec_vrep_script(self.client_id, gyro_name, 'get_gyro')
             if res == sim.simx_return_ok:
                 break
         gyro_data = self.__create_force_dict(gyro_data)
@@ -424,7 +424,7 @@ class Noise(control_interfaces.NoiseInterface):
     #!FIXME
     def get_state(self) -> int:
         '''
-        Returns state 0 or 1
+        Returns state 0 (if noise not detected) or 1 (if noise detected)
         '''
         # do it with microphone (real hw)
         raise NotImplementedError
