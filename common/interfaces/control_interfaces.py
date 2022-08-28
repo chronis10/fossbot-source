@@ -4,73 +4,6 @@ Interfaces for control parts.
 
 from abc import ABC, abstractmethod
 
-
-class AnalogueReadingsInterface(ABC):
-    '''
-    Interface for Analogue Readings.
-    Functions:
-    get_reading(pin) Gets reading of a specific sensor specified by input pin.
-    '''
-
-    @abstractmethod
-    def get_reading(self, pin: int) -> float:
-        '''
-        Gets reading of a specific sensor specified by input pin.
-        Param: pin: the pin of the sensor.
-        Returns: the reading of the requested sensor.
-        '''
-
-class LedRGBInterface(ABC):
-    '''
-    Interface for Led control.
-    Functions:
-    set_on(color): sets led to input color.
-    '''
-
-    @abstractmethod
-    def set_on(self, color: str) -> None:
-        '''
-        Changes the color of a led
-        Param: color: the wanted color
-        For closing the led, use color == 'closed'
-        '''
-
-class NoiseInterface(ABC):
-    '''
-    Interface for noise (detection).
-    Functions:
-    get_state(): Returns state 0 (False) or 1 (True).
-    '''
-    @abstractmethod
-    def get_state(self) -> int:
-        '''
-        Returns state 0 (False) or 1 (True).
-        '''
-
-class AccelerometerInterface(ABC):
-    '''
-    Interface for accelerometer and gyroscope.
-    Functions:
-    get_acceleration(dimension) Returns the acceleration for a specific dimension.
-    get_gyro(dimension) Returns the gyroscope for a specific dimension.
-    '''
-
-    @abstractmethod
-    def get_acceleration(self, dimension: str) -> float:
-        '''
-        Gets the acceleration for a specific dimension.
-        Param: dimension: the dimension requested.
-        Returns: the acceleration for a specific dimension.
-        '''
-
-    @abstractmethod
-    def get_gyro(self, dimension: str) -> float:
-        '''
-        Gets gyroscope for a specific dimension.
-        Param: dimension: the dimension requested.
-        Returns: the gyroscope for a specific dimension.
-        '''
-
 class MotorInterface(ABC):
     """
     Interface for Motor control.
@@ -149,4 +82,72 @@ class UltrasonicSensorInterface(ABC):
         '''
         Gets the distance to the closest obstacle.
         Returns: the distance to the closest obstacle (in cm).
+        '''
+
+
+class AccelerometerInterface(ABC):
+    '''
+    Interface for accelerometer and gyroscope.
+    Functions:
+    get_acceleration(dimension) Returns the acceleration for a specific dimension.
+    get_gyro(dimension) Returns the gyroscope for a specific dimension.
+    '''
+
+    @abstractmethod
+    def get_acceleration(self, dimension: str) -> float:
+        '''
+        Gets the acceleration for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the acceleration for a specific dimension.
+        '''
+
+    @abstractmethod
+    def get_gyro(self, dimension: str) -> float:
+        '''
+        Gets gyroscope for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the gyroscope for a specific dimension.
+        '''
+
+
+class AnalogueReadingsInterface(ABC):
+    '''
+    Interface for Analogue Readings.
+    Functions:
+    get_reading(pin) Gets reading of a specific sensor specified by input pin.
+    '''
+
+    @abstractmethod
+    def get_reading(self, pin: int) -> float:
+        '''
+        Gets reading of a specific sensor specified by input pin.
+        Param: pin: the pin of the sensor.
+        Returns: the reading of the requested sensor.
+        '''
+
+class LedRGBInterface(ABC):
+    '''
+    Interface for Led control.
+    Functions:
+    set_on(color): sets led to input color.
+    '''
+
+    @abstractmethod
+    def set_on(self, color: str) -> None:
+        '''
+        Changes the color of a led
+        Param: color: the wanted color
+        For closing the led, use color == 'closed'
+        '''
+
+class NoiseInterface(ABC):
+    '''
+    Interface for noise (detection).
+    Functions:
+    get_state(): Returns state 0 (False) or 1 (True).
+    '''
+    @abstractmethod
+    def get_state(self) -> int:
+        '''
+        Returns state 0 (False) or 1 (True).
         '''

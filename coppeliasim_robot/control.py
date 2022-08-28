@@ -8,6 +8,7 @@ from common.interfaces import control_interfaces
 from common.data_structures import configuration
 from coppeliasim_robot import sim
 
+# General Functions
 def init_component(client_id: int, component_name: str) -> int:
     '''
     Initializes a component (like motors, sensors etc) of the simulation.
@@ -79,74 +80,6 @@ def get_object_children(client_id: int, object_name: str = '/', print_all=False)
         raise ModuleNotFoundError
 
     return object_children_list, object_children_dict
-
-
-class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
-    '''
-    Class AnalogueReadings(sim_param) -> Handles Analogue Readings.
-    Functions:
-    get_reading(pin) Gets reading of a specific sensor specified by input pin.
-    '''
-    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
-        self.client_id = sim_param.simulation.client_id
-        self.param = sim_param
-
-    def __get_line_data(self, line_sensor_name: str) -> list:
-        '''
-        Retrieves image data of requested line sensor.
-        Param: line_sensor_name: the name of the wanted line sensor.
-        Returns: image data of requested line_sensor.
-        '''
-        while True:
-            res, image, _, _, _ = exec_vrep_script(
-                self.client_id, line_sensor_name,
-                'get_line_image')
-            if res == sim.simx_return_ok:
-                return image
-
-    def __get_light_data(self) -> float:
-        '''
-        Returns light opacity from light sensor.
-        '''
-        light_sensor = self.param.simulation.light_sensor_name
-        while True:
-            res, _, light_opacity, _, _ = exec_vrep_script(
-                self.client_id, light_sensor, 'get_light')
-            if res == sim.simx_return_ok:
-                return light_opacity[0]
-
-    def __convert_float(self, reading: list) -> float:
-        '''
-        Converts list of image data to float number.
-        Param: reading: the list of image data to be transformed
-        Returns: 23.0 if reading is black line, else 0.0
-        '''
-        # [23, 23, 23] => black line
-        if reading == [23, 23, 23]:
-            return 23.0
-        return 0.0
-
-    def get_reading(self, pin: int) -> float:
-        '''
-        Gets reading of a specific sensor specified by input pin.
-        Param: pin: the pin of the sensor.
-        Returns: the reading of the requested sensor.
-        '''
-        if pin == self.param.simulation.light_sensor_id:
-            time.sleep(0.1) # has to have this 'break' else error occurs
-            return self.__get_light_data()
-        if pin == self.param.simulation.sensor_middle_id:
-            time.sleep(0.1)
-            mid_sensor_name = self.param.simulation.sensor_middle_name
-            return self.__convert_float(self.__get_line_data(mid_sensor_name))
-        if pin == self.param.simulation.sensor_right_id:
-            time.sleep(0.1)
-            right_sensor_name = self.param.simulation.sensor_right_name
-            return self.__convert_float(self.__get_line_data(right_sensor_name))
-        if pin == self.param.simulation.sensor_left_id:
-            time.sleep(0.1)
-            left_sensor_name = self.param.simulation.sensor_left_name
-            return self.__convert_float(self.__get_line_data(left_sensor_name))
 
 
 class Motor(control_interfaces.MotorInterface):
@@ -362,6 +295,73 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         print("Dimension not recognized!!")
         return 0.0
 
+
+class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
+    '''
+    Class AnalogueReadings(sim_param) -> Handles Analogue Readings.
+    Functions:
+    get_reading(pin) Gets reading of a specific sensor specified by input pin.
+    '''
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
+        self.client_id = sim_param.simulation.client_id
+        self.param = sim_param
+
+    def __get_line_data(self, line_sensor_name: str) -> list:
+        '''
+        Retrieves image data of requested line sensor.
+        Param: line_sensor_name: the name of the wanted line sensor.
+        Returns: image data of requested line_sensor.
+        '''
+        while True:
+            res, image, _, _, _ = exec_vrep_script(
+                self.client_id, line_sensor_name,
+                'get_line_image')
+            if res == sim.simx_return_ok:
+                return image
+
+    def __get_light_data(self) -> float:
+        '''
+        Returns light opacity from light sensor.
+        '''
+        light_sensor = self.param.simulation.light_sensor_name
+        while True:
+            res, _, light_opacity, _, _ = exec_vrep_script(
+                self.client_id, light_sensor, 'get_light')
+            if res == sim.simx_return_ok:
+                return light_opacity[0]
+
+    def __convert_float(self, reading: list) -> float:
+        '''
+        Converts list of image data to float number.
+        Param: reading: the list of image data to be transformed
+        Returns: 23.0 if reading is black line, else 0.0
+        '''
+        # [23, 23, 23] => black line
+        if reading == [23, 23, 23]:
+            return 23.0
+        return 0.0
+
+    def get_reading(self, pin: int) -> float:
+        '''
+        Gets reading of a specific sensor specified by input pin.
+        Param: pin: the pin of the sensor.
+        Returns: the reading of the requested sensor.
+        '''
+        if pin == self.param.simulation.light_sensor_id:
+            time.sleep(0.1) # has to have this 'break' else error occurs
+            return self.__get_light_data()
+        if pin == self.param.simulation.sensor_middle_id:
+            time.sleep(0.1)
+            mid_sensor_name = self.param.simulation.sensor_middle_name
+            return self.__convert_float(self.__get_line_data(mid_sensor_name))
+        if pin == self.param.simulation.sensor_right_id:
+            time.sleep(0.1)
+            right_sensor_name = self.param.simulation.sensor_right_name
+            return self.__convert_float(self.__get_line_data(right_sensor_name))
+        if pin == self.param.simulation.sensor_left_id:
+            time.sleep(0.1)
+            left_sensor_name = self.param.simulation.sensor_left_name
+            return self.__convert_float(self.__get_line_data(left_sensor_name))
 
 
 class LedRGB(control_interfaces.LedRGBInterface):

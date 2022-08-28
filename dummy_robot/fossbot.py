@@ -207,6 +207,3 @@ class FossBot(robot_interface.FossBotInterface):
     def exit(self) -> None:
         ''' Exits. '''
         print('Exit.')
-
-    def __del__(self) -> None:
-        print('__del__ executed')
