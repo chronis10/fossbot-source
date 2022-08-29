@@ -27,6 +27,12 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         print('Moving distance.')
 
+    def reset_dir(self) -> None:
+        '''
+        Resets all motors direction to default (forward).
+        '''
+        print('Direction reset.')
+
     def stop(self) -> None:
         """ Stop moving. """
         print('Stop.')
@@ -37,12 +43,6 @@ class FossBot(robot_interface.FossBotInterface):
         Param: time_s: the time (seconds) of sleep.
         '''
         print('Sleeping...')
-
-    def reset_dir(self) -> None:
-        '''
-        Resets all motors direction to default (forward).
-        '''
-        print('Direction reset.')
 
     # moving forward
     def move_forward_distance(self, dist: int) -> None:

@@ -24,6 +24,12 @@ class FossBotInterface(ABC):
         '''
 
     @abstractmethod
+    def reset_dir(self) -> None:
+        '''
+        Resets all motors direction to default (forward).
+        '''
+
+    @abstractmethod
     def stop(self) -> None:
         """ Stop moving. """
 
@@ -32,12 +38,6 @@ class FossBotInterface(ABC):
         '''
         Waits (sleeps) for an amount of time.
         Param: time_s: the time (seconds) of sleep.
-        '''
-
-    @abstractmethod
-    def reset_dir(self) -> None:
-        '''
-        Resets all motors direction to default (forward).
         '''
 
     # moving forward

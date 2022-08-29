@@ -227,7 +227,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
 
 class GenOutput():
     '''
-    Class gen_output(pin)
+    Class GenOutput(pin)
     Deafult pin 5
     Functions:
     set_on() set High the output pin
@@ -304,7 +304,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
 
 class Noise(control_interfaces.NoiseInterface):
     '''
-    Class gen_input(pin)
+    Class Noise(pin)
     Default pin 4
     Functions:
     get_state(): Returns state 0 (False) or 1 (True)
