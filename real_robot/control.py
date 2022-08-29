@@ -225,7 +225,42 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         return value
 
 
-class GenOutput():
+class Noise(control_interfaces.NoiseInterface):
+    '''
+    Class Noise(pin).
+    Default pin 4
+    Functions:
+    detect_noise(): Returns True only if noise is detected.
+    '''
+    def __init__(self, pin: int = 4) -> None:
+        self.pin = pin
+        GPIO.setup(self.pin, GPIO.IN)
+
+    def detect_noise(self) -> bool:
+        '''
+        Returns True only if noise was detected.
+        '''
+        return bool(GPIO.input(self.pin))
+
+# Hardware section
+class GenInput(control_interfaces.GenInputInterface):
+    '''
+    Class GenInput(pin).
+    Default pin 4.
+    Functions:
+    get_state(): Returns state 0 or 1.
+    '''
+    def __init__(self, pin: int = 4) -> None:
+        self.pin = pin
+        GPIO.setup(self.pin, GPIO.IN)
+
+    def get_state(self) -> int:
+        '''
+        Returns state 0 or 1
+        '''
+        return GPIO.input(self.pin)
+
+class GenOutput(control_interfaces.GenOutputInterface):
     '''
     Class GenOutput(pin)
     Deafult pin 5
@@ -300,21 +335,3 @@ class LedRGB(control_interfaces.LedRGBInterface):
             self.p_r.set_off()
             self.p_b.set_off()
             self.p_g.set_off()
-
-
-class Noise(control_interfaces.NoiseInterface):
-    '''
-    Class Noise(pin)
-    Default pin 4
-    Functions:
-    get_state(): Returns state 0 (False) or 1 (True)
-    '''
-    def __init__(self, pin: int = 4) -> None:
-        self.pin = pin
-        GPIO.setup(self.pin, GPIO.IN)
-
-    def get_state(self) -> int:
-        '''
-        Returns state 0 or 1
-        '''
-        return GPIO.input(self.pin)

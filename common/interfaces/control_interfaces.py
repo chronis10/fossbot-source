@@ -125,6 +125,50 @@ class AnalogueReadingsInterface(ABC):
         Returns: the reading of the requested sensor.
         '''
 
+class NoiseInterface(ABC):
+    '''
+    Interface for noise (detection).
+    Functions:
+    detect_noise(): Returns True only if noise is detected.
+    '''
+    @abstractmethod
+    def detect_noise(self) -> bool:
+        '''
+        Returns True only if noise was detected.
+        '''
+
+# Hardware section
+class GenInputInterface(ABC):
+    '''
+    Interface for GenInput.
+    Functions:
+    get_state(): Returns state 0 or 1.
+    '''
+    @abstractmethod
+    def get_state(self) -> int:
+        '''
+        Returns state 0 or 1
+        '''
+
+class GenOutputInterface(ABC):
+    '''
+    Interface for GenOutput.
+    Functions:
+    set_on() set High the output pin
+    set_off() set Low the output pin
+    '''
+    @abstractmethod
+    def set_on(self) -> None:
+        '''
+        Set High the output pin
+        '''
+
+    @abstractmethod
+    def set_off(self) -> None:
+        '''
+        Set Low the output pin
+        '''
+
 class LedRGBInterface(ABC):
     '''
     Interface for Led control.
@@ -138,16 +182,4 @@ class LedRGBInterface(ABC):
         Changes the color of a led
         Param: color: the wanted color
         For closing the led, use color == 'closed'
-        '''
-
-class NoiseInterface(ABC):
-    '''
-    Interface for noise (detection).
-    Functions:
-    get_state(): Returns state 0 (False) or 1 (True).
-    '''
-    @abstractmethod
-    def get_state(self) -> int:
-        '''
-        Returns state 0 (False) or 1 (True).
         '''

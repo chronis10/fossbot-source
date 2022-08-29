@@ -15,7 +15,11 @@ def main(robot: robot_interface.FossBotInterface) -> None:
 
 def ultimate_test(robot: robot_interface.FossBotInterface) -> None:
     '''Tests important functions of robot'''
-    robot.move_distance(21)
+    robot.move_distance(10)
+    robot.wait(1)
+    robot.motor_left.set_speed(50)
+    robot.motor_right.set_speed(50)
+    robot.move_distance(11)
     robot.wait(1)
     robot.rotate_clockwise_90()
     robot.rotate_counterclockwise_90()
@@ -32,6 +36,17 @@ def ultimate_test(robot: robot_interface.FossBotInterface) -> None:
     print('Changing led colors...')
     change_color(robot)
 
+def follow_line(robot: robot_interface.FossBotInterface) -> None:
+    while(True):
+        middle = robot.check_on_line(1)
+        right = robot.check_on_line(2)
+        left = robot.check_on_line(3)
+        if middle:
+            robot.move_forward_distance(1)
+        elif right:
+            robot.rotate_counterclockwise()
+        elif left:
+            robot.rotate_clockwise()
 
 def change_color(robot: robot_interface.FossBotInterface) -> None:
     ''' Changes the color of a led for some times '''
@@ -93,3 +108,4 @@ if __name__ == "__main__":
     main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
+    #follow_line(SIM_ROBOT)

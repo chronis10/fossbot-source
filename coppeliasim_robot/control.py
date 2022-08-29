@@ -96,6 +96,7 @@ class Motor(control_interfaces.MotorInterface):
         self.param = sim_param
         self.motor_name = motor_joint_name
         self.def_speed = def_speed
+        self.direction = 'forward'
 
     def __change_motor_velocity(self, velocity: float) -> int:
         '''
@@ -116,19 +117,24 @@ class Motor(control_interfaces.MotorInterface):
         Change motor direction to input direction.
         Param: direction: the direction to be headed to.
         '''
-        if direction == 'forward':
-            self.__change_motor_velocity(-self.def_speed)
-        elif direction == "reverse":
-            self.__change_motor_velocity(self.def_speed)
-        else:
+        if direction not in ['forward', 'reverse']:
             print("Motor accepts only forward and reverse values")
+        else:
+            self.direction = direction
 
     def move(self, direction: str = "forward") -> None:
         '''
         Start moving motor with default speed towards input direction.
         Param: direction: the direction to be headed to.
         '''
-        self.dir_control(direction)
+        if direction == 'forward':
+            self.dir_control(direction)
+            self.__change_motor_velocity(-self.def_speed)
+        elif direction == "reverse":
+            self.dir_control(direction)
+            self.__change_motor_velocity(self.def_speed)
+        else:
+            print("Motor accepts only forward and reverse values")
 
     def set_speed(self, speed: int) -> None:
         '''
@@ -139,7 +145,7 @@ class Motor(control_interfaces.MotorInterface):
             print("The motor speed is a percentage of total motor power. Accepted values 0-100.")
         else:
             self.def_speed = self.def_speed * speed / 100
-            self.__change_motor_velocity(self.def_speed)
+            self.move(self.direction)
 
     def stop(self) -> None:
         '''Stops the motor.'''
@@ -364,6 +370,57 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             return self.__convert_float(self.__get_line_data(left_sensor_name))
 
 
+#!FIXME -- implement this class with microphone (real hw)
+class Noise(control_interfaces.NoiseInterface):
+    '''
+    Class Noise() -> Handles Noise Detection.
+    Functions:
+    detect_noise() Returns True only if noise is detected.
+    '''
+    #!FIXME
+    def detect_noise(self) -> bool:
+        '''
+        Returns True only if noise was detected.
+        '''
+        # do it with microphone (real hw)
+        raise NotImplementedError
+
+
+# Hardware section
+class GenInput(control_interfaces.GenInputInterface):
+    '''
+    Class GenInput(pin).
+    Default pin 4.
+    Functions:
+    get_state(): Returns state 0 or 1.
+    '''
+    def get_state(self) -> int:
+        '''
+        Returns state 0 or 1
+        '''
+        raise NotImplementedError
+
+class GenOutput(control_interfaces.GenOutputInterface):
+    '''
+    Class GenOutput(pin).
+    Deafult pin 5.
+    Functions:
+    set_on() set High the output pin.
+    set_off() set Low the output pin.
+    '''
+    def set_on(self) -> None:
+        '''
+        Set High the output pin
+        '''
+        raise NotImplementedError
+
+    def set_off(self) -> None:
+        '''
+        Set Low the output pin
+        '''
+        raise NotImplementedError
+
+
 class LedRGB(control_interfaces.LedRGBInterface):
     '''
     Class LedRGB(sim_param) -> Led control.
@@ -408,23 +465,3 @@ class LedRGB(control_interfaces.LedRGBInterface):
                                 'set_color_led', in_floats=color_rbg)
             if res == sim.simx_return_ok:
                 break
-
-
-#!FIXME -- implement this class with microphone (real hw)
-class Noise(control_interfaces.NoiseInterface):
-    '''
-    Class Noise() -> Handles Noise Detection.
-    Functions:
-    get_state() Returns state 0 (False) or 1 (True).
-    '''
-
-    def __init__(self) -> None:
-        pass
-
-    #!FIXME
-    def get_state(self) -> int:
-        '''
-        Returns state 0 (if noise not detected) or 1 (if noise detected).
-        '''
-        # do it with microphone (real hw)
-        raise NotImplementedError

@@ -328,9 +328,9 @@ class FossBot(robot_interface.FossBotInterface):
     # noise detection
     def get_noise_detection(self) -> bool:
         """ Returns True only if noise is detected """
-        state = self.noise.get_state()
+        state = self.noise.detect_noise()
         print(state)
-        return bool(state) #not bool(state)
+        return state
 
     # exit
     def exit(self) -> None:

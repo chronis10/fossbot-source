@@ -162,14 +162,52 @@ class Noise(control_interfaces.NoiseInterface):
     '''
     Class Noise() -> Handles Noise Detection.
     Functions:
-    get_state() Returns state 0 (False) or 1 (True)
+    detect_noise(): Returns True only if noise was detected.
     '''
 
     def __init__(self) -> None:
         print('Noise detector initialized.')
+
+    def detect_noise(self) -> bool:
+        '''
+        Returns True only if noise was detected.
+        '''
+        return bool(random.randint(0, 1))
+
+# Hardware section
+class GenInput(control_interfaces.GenInputInterface):
+    '''
+    Class GenInput().
+    Functions:
+    get_state(): Returns state 0 or 1.
+    '''
+    def __init__(self) -> None:
+        print('GenInput initialized.')
 
     def get_state(self) -> int:
         '''
         Returns state 0 or 1
         '''
         return random.randint(0, 1)
+
+class GenOutput(control_interfaces.GenOutputInterface):
+    '''
+    Class GenOutput()
+    Functions:
+    set_on() set High the output pin
+    set_off() set Low the output pin
+    '''
+    def __init__(self) -> None:
+        print('GenOutput initialized.')
+
+    def set_on(self) -> None:
+        '''
+        Set High the output pin
+        '''
+        print('GenOutput was set on.')
+
+    def set_off(self) -> None:
+        '''
+        Set Low the output pin
+        '''
+        print('GenOutput was set off.')
