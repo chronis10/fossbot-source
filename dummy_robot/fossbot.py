@@ -7,10 +7,6 @@ from common.interfaces import robot_interface
 
 class FossBot(robot_interface.FossBotInterface):
     """ Real robot """
-
-    def __init__(self) -> None:
-        print('Fossbot initialized.')
-
     # movement
     def just_move(self, direction: str = "forward") -> None:
         """

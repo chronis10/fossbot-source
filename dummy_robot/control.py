@@ -13,9 +13,6 @@ class Motor(control_interfaces.MotorInterface):
     set_speed(speed) Set speed immediately 0-100% range.
     stop() Stops the motor.
     """
-    def __init__(self) -> None:
-        print('Motor initialized.')
-
     def set_speed(self, speed: int) -> None:
         '''
         Set speed immediately 0-100% range.
@@ -51,9 +48,6 @@ class Odometer(control_interfaces.OdometerInterface):
     get_distance() Returns the traveled distance in cm.
     reset() Resets the steps counter.
     '''
-    def __init__(self) -> None:
-        print('Odometer initialized.')
-
     def count_revolutions(self) -> None:
         '''Increase total steps by one.'''
         print('Steps increased.')
@@ -81,10 +75,6 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     Functions:
     get_distance() return distance in cm.
     '''
-
-    def __init__(self) -> None:
-        print('Ultrasonic Sensor initialized.')
-
     def get_distance(self) -> float:
         '''
         Gets the distance to the closest obstacle.
@@ -99,10 +89,6 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     Functions:
     get_reading(pin) Gets reading of a specific sensor specified by input pin.
     '''
-
-    def __init__(self) -> None:
-        print('Analogue Reading initialized.')
-
     def get_reading(self, pin: int) -> float:
         '''
         Gets reading of a specific sensor specified by input pin.
@@ -117,10 +103,6 @@ class LedRGB(control_interfaces.LedRGBInterface):
     Class LedRGB() -> Led control
     set_on(color): sets led to input color.
     '''
-
-    def __init__(self) -> None:
-        print('Led initialized.')
-
     def set_on(self, color: str) -> None:
         '''
         Changes the color of a led
@@ -137,10 +119,6 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
     get_acceleration(dimension) Returns the acceleration for a specific dimension.
     get_gyro(dimension) Returns the gyroscope for a specific dimension.
     '''
-
-    def __init__(self) -> None:
-        print('Accelerometer/Gyroscope initialized.')
-
     def get_acceleration(self, dimension: str) -> float:
         '''
         Gets the acceleration for a specific dimension.
@@ -164,10 +142,6 @@ class Noise(control_interfaces.NoiseInterface):
     Functions:
     detect_noise(): Returns True only if noise was detected.
     '''
-
-    def __init__(self) -> None:
-        print('Noise detector initialized.')
-
     def detect_noise(self) -> bool:
         '''
         Returns True only if noise was detected.
@@ -181,9 +155,6 @@ class GenInput(control_interfaces.GenInputInterface):
     Functions:
     get_state(): Returns state 0 or 1.
     '''
-    def __init__(self) -> None:
-        print('GenInput initialized.')
-
     def get_state(self) -> int:
         '''
         Returns state 0 or 1
@@ -197,9 +168,6 @@ class GenOutput(control_interfaces.GenOutputInterface):
     set_on() set High the output pin
     set_off() set Low the output pin
     '''
-    def __init__(self) -> None:
-        print('GenOutput initialized.')
-
     def set_on(self) -> None:
         '''
         Set High the output pin
