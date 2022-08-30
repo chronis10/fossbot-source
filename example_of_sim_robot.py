@@ -37,7 +37,8 @@ def ultimate_test(robot: robot_interface.FossBotInterface) -> None:
     change_color(robot)
 
 def follow_line(robot: robot_interface.FossBotInterface) -> None:
-    while(True):
+    '''Follows black line.'''
+    while True:
         middle = robot.check_on_line(1)
         right = robot.check_on_line(2)
         left = robot.check_on_line(3)
@@ -68,22 +69,23 @@ def change_color(robot: robot_interface.FossBotInterface) -> None:
     print('Closing led...')
     robot.rgb_set_color('closed')
 
-def change_path_test(client_id: int) -> None:
+def change_path_test(client_id: int, floor_name: str = 'Floor') -> None:
     '''
-    Changes the path on the floor with test paths
-    Param: client_id: the client's id
+    "Draws" images-paths on the floor.
+    Param: client_id: the client's id.
+           floor_name: the name of the floor in the scene (vrep default == 'Floor').
     '''
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path1.jpg')
+    f.draw_path_auto(client_id, 'Path1.jpg', floor_name)
     time.sleep(3)
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path2.jpg')
+    f.draw_path_auto(client_id, 'Path2.jpg', floor_name)
     time.sleep(3)
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path3.jpg')
+    f.draw_path_auto(client_id, 'Path3.jpg', floor_name)
     time.sleep(3)
     print('Clearing Path...')
-    f.clear_path(client_id)
+    f.clear_path(client_id, floor_name)
 
 if __name__ == "__main__":
     # Load parameters from yml file
@@ -105,8 +107,8 @@ if __name__ == "__main__":
 
     # Create a simu robot
     SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
-    #main(SIM_ROBOT)
+    main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
-    change_path_test(SIM_ROBOT.client_id)
+    #change_path_test(SIM_ROBOT.client_id, SIM_IDS.floor_name)

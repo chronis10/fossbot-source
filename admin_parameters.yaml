@@ -55,3 +55,4 @@ simulator_ids:
   accelerometer_name: Accelerometer
   gyroscope_name: GyroSensor
   led_name: led_light
+  floor_name: Floor

@@ -39,7 +39,8 @@ def ultimate_test(robot: robot_interface.FossBotInterface) -> None:
     robot.rgb_set_color('closed')
 
 def follow_line(robot: robot_interface.FossBotInterface) -> None:
-    while(True):
+    '''Follows black line.'''
+    while True:
         middle = robot.check_on_line(1)
         right = robot.check_on_line(2)
         left = robot.check_on_line(3)
