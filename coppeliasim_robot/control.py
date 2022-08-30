@@ -312,18 +312,18 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
 
-    def __get_line_data(self, line_sensor_name: str) -> list:
+    def __get_line_data(self, line_sensor_name: str) -> float:
         '''
         Retrieves image data of requested line sensor.
         Param: line_sensor_name: the name of the wanted line sensor.
         Returns: image data of requested line_sensor.
         '''
         while True:
-            res, image, _, _, _ = exec_vrep_script(
+            res, _, image, _, _ = exec_vrep_script(
                 self.client_id, line_sensor_name,
-                'get_line_image')
+                'get_color')
             if res == sim.simx_return_ok:
-                return image
+                return image[0]
 
     def __get_light_data(self) -> float:
         '''
@@ -336,15 +336,15 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             if res == sim.simx_return_ok:
                 return light_opacity[0]
 
-    def __convert_float(self, reading: list) -> float:
+    def __convert_float(self, reading: float) -> float:
         '''
         Converts list of image data to float number.
         Param: reading: the list of image data to be transformed
         Returns: 23.0 if reading is black line, else 0.0
         '''
-        # [23, 23, 23] => black line
-        if reading == [23, 23, 23]:
-            return 23.0
+        # black <= 10%
+        if reading <= 0.1:
+            return 0.1
         return 0.0
 
     def get_reading(self, pin: int) -> float:
@@ -354,18 +354,14 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         Returns: the reading of the requested sensor.
         '''
         if pin == self.param.simulation.light_sensor_id:
-            time.sleep(0.1) # has to have this 'break' else error occurs
             return self.__get_light_data()
         if pin == self.param.simulation.sensor_middle_id:
-            time.sleep(0.1)
             mid_sensor_name = self.param.simulation.sensor_middle_name
             return self.__convert_float(self.__get_line_data(mid_sensor_name))
         if pin == self.param.simulation.sensor_right_id:
-            time.sleep(0.1)
             right_sensor_name = self.param.simulation.sensor_right_name
             return self.__convert_float(self.__get_line_data(right_sensor_name))
         if pin == self.param.simulation.sensor_left_id:
-            time.sleep(0.1)
             left_sensor_name = self.param.simulation.sensor_left_name
             return self.__convert_float(self.__get_line_data(left_sensor_name))
 

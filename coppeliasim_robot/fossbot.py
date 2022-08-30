@@ -3,6 +3,7 @@ Simulated robot implementation.
 """
 
 import time
+import os
 import subprocess
 from common.data_structures import configuration
 from common.interfaces import robot_interface
@@ -265,7 +266,7 @@ class FossBot(robot_interface.FossBotInterface):
         if sensor_id not in [mid_id, left_id, right_id]:
             print(f'Sensor id {sensor_id} is out of bounds.')
             return False
-        if self.analogue_reader.get_reading(sensor_id) == 23.0:
+        if self.analogue_reader.get_reading(sensor_id) == 0.1:
             return True
         return False
 
@@ -342,3 +343,53 @@ class FossBot(robot_interface.FossBotInterface):
 
     def __del__(self) -> None:
         sim.simxFinish(self.client_id)
+
+# change path functions:
+def draw_path(client_id: int, file_name: str, floor_name: str = 'Floor', scale_x: float = 5.0, scale_y: float = 5.0) -> None:
+    '''
+    Changes the path of the scene.
+    Param: client_id: the client's id
+           file_name: the name of the picture to change the path to (save picture-path in paths folder).
+           floor_name: the floor's name in the scene (vrep default name == 'Floor')
+           scale_x: scale x for image on the floor
+           scale_y: scale y for image on the floor
+    '''
+    PATH_DIR_B = os.path.join(os.path.dirname(__file__), 'paths')
+    PATH_DRAW = os.path.join(PATH_DIR_B, file_name)
+    if not os.path.exists(PATH_DRAW):
+        print('Cannot find requested image.')
+        raise FileNotFoundError
+    while True:
+        res, _, _, _, _ = control.exec_vrep_script(
+            client_id, floor_name, 'draw_path',
+            in_floats=[scale_x, scale_y], in_strings=[PATH_DRAW])
+        if res == sim.simx_return_ok:
+            break
+
+def draw_path_auto(client_id: int, file_name: str, floor_name: str = 'Floor') -> None:
+    '''
+    Changes the path of the scene and scales it automatically on the floor.
+    Param: client_id: the client's id
+           file_name: the name of the picture to change the path to (save picture-path in paths folder).
+           floor_name: the floor's name in the scene (vrep default name == 'Floor')
+    '''
+    PATH_DIR_B = os.path.join(os.path.dirname(__file__), 'paths')
+    PATH_DRAW = os.path.join(PATH_DIR_B, file_name)
+    if not os.path.exists(PATH_DRAW):
+        print('Cannot find requested image.')
+        raise FileNotFoundError
+    while True:
+        res, _, _, _, _ = control.exec_vrep_script(
+            client_id, floor_name, 'draw_path_auto', in_strings=[PATH_DRAW])
+        if res == sim.simx_return_ok:
+            break
+
+def clear_path(client_id: int, floor_name: str = 'Floor') -> None:
+    '''
+    Clears the path of the scene.
+    Param: client_id: the client's id
+    '''
+    while True:
+        res, _, _, _, _ = control.exec_vrep_script(client_id, floor_name, 'clear_path')
+        if res == sim.simx_return_ok:
+            break
