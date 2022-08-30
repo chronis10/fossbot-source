@@ -44,7 +44,7 @@ rotate_90:
   default: 12
 
 simulator_ids:
-  client_id: None
+  client_id: ~  # ~ is None (or empty value)
   left_motor_name: left_motor
   right_motor_name: right_motor
   light_sensor_name: light_sensor

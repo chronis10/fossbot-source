@@ -4,7 +4,7 @@ import time
 from parameters_parser.parser import load_parameters
 from common.data_structures import configuration
 from common.interfaces import robot_interface
-import coppeliasim_robot.fossbot as f
+from coppeliasim_robot.fossbot import EnvironmentHandler as Environment
 from coppeliasim_robot.fossbot import FossBot as SimuFossBot
 
 def main(robot: robot_interface.FossBotInterface) -> None:
@@ -69,23 +69,23 @@ def change_color(robot: robot_interface.FossBotInterface) -> None:
     print('Closing led...')
     robot.rgb_set_color('closed')
 
-def change_path_test(client_id: int, floor_name: str = 'Floor') -> None:
+def change_path_test(env_handler: Environment) -> None:
     '''
     "Draws" images-paths on the floor.
     Param: client_id: the client's id.
            floor_name: the name of the floor in the scene (vrep default == 'Floor').
     '''
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path1.jpg', floor_name)
+    env_handler.draw_path_auto('Path1.jpg')
     time.sleep(3)
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path2.jpg', floor_name)
+    env_handler.draw_path_auto('Path2.jpg')
     time.sleep(3)
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path3.jpg', floor_name)
+    env_handler.draw_path_auto('Path3.jpg')
     time.sleep(3)
     print('Clearing Path...')
-    f.clear_path(client_id, floor_name)
+    env_handler.clear_path()
 
 if __name__ == "__main__":
     # Load parameters from yml file
@@ -106,9 +106,13 @@ if __name__ == "__main__":
         simulation=SIM_IDS)
 
     # Create a simu robot
-    SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
-    main(SIM_ROBOT)
+    #SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
+    #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
-    #change_path_test(SIM_ROBOT.client_id, SIM_IDS.floor_name)
+
+    # Environment Handler:
+    ENVIRONMENT_HANDLER = Environment(parameters=SIM_PARAM)
+    #hange_path_test(ENVIRONMENT_HANDLER)
+    ENVIRONMENT_HANDLER.change_brightness(0)
