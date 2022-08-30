@@ -2,7 +2,7 @@ step:
   name: Βήμα ένα, εκατοστά
   value: 15
   default: 15
-  
+
 motor_left:
   name: Ταχύτητα αριστερού μοτέρ
   value: 0.9
