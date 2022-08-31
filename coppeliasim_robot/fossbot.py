@@ -344,6 +344,17 @@ class FossBot(robot_interface.FossBotInterface):
     def __del__(self) -> None:
         sim.simxFinish(self.client_id)
 
+    def check_collision(self) -> bool:
+        '''
+        Returns True if robot collides with other (collidable) object.
+        '''
+        while True:
+            res, collision, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.body_name,
+                'check_collision')
+            if res == sim.simx_return_ok and collision[0] != -1:
+                return bool(collision[0])
+
 
 class EnvironmentHandler():
 

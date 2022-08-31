@@ -1,6 +1,7 @@
 """ Example of a real and simulated robot"""
 
 import time
+from coppeliasim_robot import control
 from parameters_parser.parser import load_parameters
 from common.data_structures import configuration
 from common.interfaces import robot_interface
@@ -87,6 +88,14 @@ def change_path_test(env_handler: Environment) -> None:
     print('Clearing Path...')
     env_handler.clear_path()
 
+def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
+    # displays all handles and names of objects in the scene:
+    #control.get_object_children(SIM_IDS.client_id, print_all=True)
+    while True:
+        c = robot.check_collision()
+        if c:
+            print(c)
+
 if __name__ == "__main__":
     # Load parameters from yml file
     FILE_PARAM = load_parameters()
@@ -106,13 +115,14 @@ if __name__ == "__main__":
         simulation=SIM_IDS)
 
     # Create a simu robot
-    #SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
+    SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
     #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
+    check_collision_test(SIM_ROBOT)
 
     # Environment Handler:
-    ENVIRONMENT_HANDLER = Environment(parameters=SIM_PARAM)
+    #ENVIRONMENT_HANDLER = Environment(parameters=SIM_PARAM)
     #hange_path_test(ENVIRONMENT_HANDLER)
-    ENVIRONMENT_HANDLER.change_brightness(0)
+    #ENVIRONMENT_HANDLER.change_brightness(0)
