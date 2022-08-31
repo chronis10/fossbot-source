@@ -232,6 +232,10 @@ class FossBot(robot_interface.FossBotInterface):
         '''Returns True only if fossbot is on the floor.'''
         return bool(random.randint(0, 1))
 
+    def check_orientation(self) -> bool:
+        '''Returns True only if fossbot has its initial orientation.'''
+        return bool(random.randint(0, 1))
+
     def reset_orientation(self) -> None:
         '''Resets fossbot orientation (if it has flipped etc).'''
         print('Orientation reset.')

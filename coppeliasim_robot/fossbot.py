@@ -409,6 +409,14 @@ class FossBot(robot_interface.FossBotInterface):
             if res == sim.simx_return_ok:
                 return bool(in_bounds[0])
 
+    def check_orientation(self) -> bool:
+        '''Returns True only if fossbot has its initial orientation.'''
+        while True:
+            res, check_orient, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.fossbot_name,
+                'check_orientation')
+            if res == sim.simx_return_ok:
+                return bool(check_orient[0])
 
     def reset_orientation(self) -> None:
         '''Resets fossbot orientation (if it has flipped etc).'''

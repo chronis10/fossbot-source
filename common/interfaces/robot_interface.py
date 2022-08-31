@@ -233,5 +233,9 @@ class FossBotInterface(ABC):
         '''Returns True only if fossbot is on the floor.'''
 
     @abstractmethod
+    def check_orientation(self) -> bool:
+        '''Returns True only if fossbot has its initial orientation.'''
+
+    @abstractmethod
     def reset_orientation(self) -> None:
         '''Resets fossbot orientation (if it has flipped etc).'''

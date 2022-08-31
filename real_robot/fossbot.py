@@ -305,6 +305,10 @@ class FossBot(robot_interface.FossBotInterface):
         '''Returns True only if fossbot is on the floor.'''
         raise NotImplementedError
 
+    def check_orientation(self) -> bool:
+        '''Returns True only if fossbot has its initial orientation.'''
+        raise NotImplementedError
+
     def reset_orientation(self) -> None:
         '''Resets fossbot orientation (if it has flipped etc).'''
         raise NotImplementedError

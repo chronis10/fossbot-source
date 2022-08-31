@@ -131,7 +131,7 @@ def teleport_empty_space(robot: robot_interface.FossBotInterface, env: Environme
                 target_time = env.get_simulation_time() + time_diff
         time.sleep(time_diff*0.5)
         robot.reset_orientation()
-        if not robot.check_collision() and robot.check_in_bounds():
+        if not robot.check_collision() and robot.check_in_bounds() and robot.check_orientation():
             break
     print('Teleport success.')
 
