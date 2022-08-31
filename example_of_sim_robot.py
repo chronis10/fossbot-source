@@ -165,5 +165,6 @@ if __name__ == "__main__":
 
     # Environment Handler:
     #ENVIRONMENT_HANDLER = Environment(parameters=SIM_PARAM)
-    #hange_path_test(ENVIRONMENT_HANDLER)
+    #ENVIRONMENT_HANDLER.clear_path()
+    #change_path_test(ENVIRONMENT_HANDLER)
     #ENVIRONMENT_HANDLER.change_brightness(0)
