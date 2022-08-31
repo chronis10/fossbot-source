@@ -5,6 +5,7 @@ Simulated robot implementation.
 import time
 import os
 import subprocess
+import random
 from common.data_structures import configuration
 from common.interfaces import robot_interface
 from coppeliasim_robot import control
@@ -355,13 +356,85 @@ class FossBot(robot_interface.FossBotInterface):
             if res == sim.simx_return_ok and collision[0] != -1:
                 return bool(collision[0])
 
+    def teleport(self, pos_x: float, pos_y: float, height: float = 0.19, in_bounds: bool = True) -> None:
+        '''
+        Teleports fossbot to input location.
+        Param: pos_x: the x position to teleport to.
+               pos_y: the y position to teleport to.
+               hegiht: the height to teleport to (default == 0.19).
+               in_bounds: if True, fossbot does not fall off the floor bounds.
+        '''
+        floor_path = '/' + self.parameters.simulation.floor_name
+        func_name = 'teleport'
+        fossbot_name = self.parameters.simulation.fossbot_name
+        if in_bounds:
+            func_name = 'teleport_inbounds'
+        while True:
+            res, _, _, _, _ = control.exec_vrep_script(
+                self.client_id, fossbot_name,
+                func_name, in_floats=[pos_x, pos_y, height],
+                in_strings=[floor_path])
+            if res == sim.simx_return_ok:
+                break
+
+    def teleport_random(self, in_bounds: bool = True) -> None:
+        '''
+        Teleports fossbot to random location.
+        Param: in_bounds: if True, fossbot does not fall off the floor bounds.
+        '''
+        floor_path = '/' + self.parameters.simulation.floor_name
+        fossbot_name = self.parameters.simulation.fossbot_name
+        if in_bounds:
+            while True:
+                res, _, limits, _, _ = control.exec_vrep_script(
+                    self.client_id, fossbot_name, 'get_bounds',
+                    in_strings=[floor_path])
+                if res == sim.simx_return_ok:
+                    pos_x = random.uniform(-limits[0], limits[0])
+                    pos_y = random.uniform(-limits[1], limits[1])
+                    break
+        else:
+            i = random.randint(0, 1000)
+            pos_x = random.uniform(-i, i)
+            pos_y = random.uniform(-i, i)
+        self.teleport(pos_x, pos_y, in_bounds=in_bounds)
+
+    def check_in_bounds(self) -> bool:
+        '''Returns True only if fossbot is on the floor.'''
+        floor_path = '/' + self.parameters.simulation.floor_name
+        while True:
+            res, in_bounds, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.fossbot_name,
+                'check_in_bounds', in_strings=[floor_path])
+            if res == sim.simx_return_ok:
+                return bool(in_bounds[0])
+
+
+    def reset_orientation(self) -> None:
+        '''Resets fossbot orientation (if it has flipped etc).'''
+        while True:
+            res, _, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.fossbot_name,
+                'reset_orientation')
+            if res == sim.simx_return_ok:
+                break
+
 
 class EnvironmentHandler():
-
+    """
+    EnvironmentHandler(sim_param) -> Environment control.
+    Functions:
+    draw_path(file_name,scale_x,scale_y) Changes the path of the scene.
+    draw_path_auto(file_name) Changes the path of the scene and scales
+                              it automatically on the floor.
+    clear_path(): Clears the path of the scene.
+    change_brightness(brightness): Changes scene's brightness.
+    default_brightness(): Sets scene's brightness to default brightness (50%).
+    """
     def __init__(self, parameters: configuration.SimRobotParameters) -> None:
         self.parameters = parameters
         # connects to server if not already connected:
-        if self.parameters.simulation.client_id == None:
+        if self.parameters.simulation.client_id is None:
             self.client_id = connect_vrep()
             if self.client_id == -1:
                 print('Failed connecting to remote API server')
@@ -442,3 +515,11 @@ class EnvironmentHandler():
     def default_brightness(self) -> None:
         '''Sets scene's brightness to default brightness (50%).'''
         self.change_brightness(50)
+
+    def get_simulation_time(self) -> float:
+        '''Returns current time of simulation.'''
+        while True:
+            res, _, sim_time, _, _ = control.exec_vrep_script(self.client_id,
+                self.parameters.simulation.def_camera_name, 'get_sim_time')
+            if res == sim.simx_return_ok:
+                return sim_time[0]

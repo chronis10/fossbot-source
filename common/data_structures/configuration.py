@@ -83,6 +83,8 @@ class SimRobotIds:
     led_name: str
     floor_name: str
     body_name: str
+    fossbot_name: str
+    def_camera_name: str
     light_sensor_id: int = 0
     sensor_middle_id: int = 1
     sensor_right_id: int = 2

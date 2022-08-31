@@ -1,5 +1,4 @@
 """ Example of a real and simulated robot"""
-
 import time
 from coppeliasim_robot import control
 from parameters_parser.parser import load_parameters
@@ -73,8 +72,6 @@ def change_color(robot: robot_interface.FossBotInterface) -> None:
 def change_path_test(env_handler: Environment) -> None:
     '''
     "Draws" images-paths on the floor.
-    Param: client_id: the client's id.
-           floor_name: the name of the floor in the scene (vrep default == 'Floor').
     '''
     print('Changing Path...')
     env_handler.draw_path_auto('Path1.jpg')
@@ -89,12 +86,54 @@ def change_path_test(env_handler: Environment) -> None:
     env_handler.clear_path()
 
 def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
+    '''
+    Prints True if fossbot has collided with collidable object.
+    '''
     # displays all handles and names of objects in the scene:
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     while True:
-        c = robot.check_collision()
-        if c:
-            print(c)
+        c_check = robot.check_collision()
+        if c_check:
+            print(c_check)
+
+def check_inbounds_teleport(robot: robot_interface.FossBotInterface) -> None:
+    '''
+    Tests teleportation with big values (so the robot will stay in bounds).
+    Reminder:
+        abs(max_x) = 2.3, abs(max_y) = 2.3
+        (aka almost the half of the scale of floor), z==height.
+        floor_scale: x==5, y==5.
+    '''
+    robot.teleport(100, 100, in_bounds=True)
+    time.sleep(2)
+    robot.teleport(-100, 100, in_bounds=True)
+    time.sleep(2)
+    robot.teleport(100, -100, in_bounds=True)
+    time.sleep(2)
+    robot.teleport(-100, -100, in_bounds=True)
+    time.sleep(2)
+
+def teleport_empty_space(robot: robot_interface.FossBotInterface, env: Environment = None, time_diff: int = 0.5) -> None:
+    '''
+    Teleports fossbot to location with no obstacles (on the floor).
+    Param: time_diff: the time to check successfull teleportation.
+    '''
+    if env is None:
+        env = Environment(robot.parameters)
+    while True:
+        print('Teleporting...')
+        robot.teleport_random(in_bounds=True)
+        target_time = env.get_simulation_time() + time_diff
+        while env.get_simulation_time() < target_time:
+            if robot.check_collision():
+                print('Teleporting...')
+                robot.teleport_random(in_bounds=True)
+                target_time = env.get_simulation_time() + time_diff
+        time.sleep(time_diff*0.5)
+        robot.reset_orientation()
+        if not robot.check_collision() and robot.check_in_bounds():
+            break
+    print('Teleport success.')
 
 if __name__ == "__main__":
     # Load parameters from yml file
@@ -120,7 +159,9 @@ if __name__ == "__main__":
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
-    check_collision_test(SIM_ROBOT)
+    #check_collision_test(SIM_ROBOT)
+    #check_inbounds_teleport(SIM_ROBOT)
+    teleport_empty_space(SIM_ROBOT)
 
     # Environment Handler:
     #ENVIRONMENT_HANDLER = Environment(parameters=SIM_PARAM)
