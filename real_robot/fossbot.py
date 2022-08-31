@@ -276,3 +276,35 @@ class FossBot(robot_interface.FossBotInterface):
 
     def __del__(self) -> None:
         control.clean()
+
+    def check_collision(self) -> bool:
+        '''
+        Returns True if robot collides with other (collidable) object.
+        '''
+        raise NotImplementedError
+
+    def teleport(self, pos_x: float, pos_y: float, height: float = 0.19, in_bounds: bool = True) -> None:
+        '''
+        Teleports fossbot to input location.
+        Param: pos_x: the x position to teleport to.
+               pos_y: the y position to teleport to.
+               hegiht: the height to teleport to (default == 0.19).
+               in_bounds: if True, fossbot does not fall off the floor bounds.
+        '''
+        raise NotImplementedError
+
+
+    def teleport_random(self, in_bounds: bool = True) -> None:
+        '''
+        Teleports fossbot to random location.
+        Param: in_bounds: if True, fossbot does not fall off the floor bounds.
+        '''
+        raise NotImplementedError
+
+    def check_in_bounds(self) -> bool:
+        '''Returns True only if fossbot is on the floor.'''
+        raise NotImplementedError
+
+    def reset_orientation(self) -> None:
+        '''Resets fossbot orientation (if it has flipped etc).'''
+        raise NotImplementedError

@@ -489,8 +489,9 @@ class EnvironmentHandler():
         Param: client_id: the client's id.
         '''
         while True:
-            res, _, _, _, _ = control.exec_vrep_script(self.client_id,
-                self.parameters.simulation.floor_name, 'clear_path')
+            res, _, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.floor_name,
+                'clear_path')
             if res == sim.simx_return_ok:
                 break
 
@@ -506,9 +507,9 @@ class EnvironmentHandler():
             print('Changing brightness...')
             brightness = brightness / 100
             while True:
-                res, _, _, _, _ = control.exec_vrep_script(self.client_id,
-                    self.parameters.simulation.floor_name, 'change_brightness',
-                    in_floats=[brightness, brightness, brightness])
+                res, _, _, _, _ = control.exec_vrep_script(
+                    self.client_id, self.parameters.simulation.floor_name,
+                    'change_brightness', in_floats=[brightness, brightness, brightness])
                 if res == sim.simx_return_ok:
                     break
 
@@ -519,7 +520,8 @@ class EnvironmentHandler():
     def get_simulation_time(self) -> float:
         '''Returns current time of simulation.'''
         while True:
-            res, _, sim_time, _, _ = control.exec_vrep_script(self.client_id,
-                self.parameters.simulation.def_camera_name, 'get_sim_time')
+            res, _, sim_time, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.def_camera_name,
+                'get_sim_time')
             if res == sim.simx_return_ok:
                 return sim_time[0]
