@@ -345,6 +345,7 @@ class FossBot(robot_interface.FossBotInterface):
     def __del__(self) -> None:
         sim.simxFinish(self.client_id)
 
+    # implemented only in simulation
     def check_collision(self) -> bool:
         '''
         Returns True if robot collides with other (collidable) object.
@@ -362,7 +363,7 @@ class FossBot(robot_interface.FossBotInterface):
         Param: pos_x: the x position to teleport to.
                pos_y: the y position to teleport to.
                hegiht: the height to teleport to (default == 0.19).
-               in_bounds: if True, fossbot does not fall off the floor bounds.
+               in_bounds: if True, fossbot teleports within the floor bounds.
         '''
         floor_path = '/' + self.parameters.simulation.floor_name
         func_name = 'teleport'
@@ -380,7 +381,7 @@ class FossBot(robot_interface.FossBotInterface):
     def teleport_random(self, in_bounds: bool = True) -> None:
         '''
         Teleports fossbot to random location.
-        Param: in_bounds: if True, fossbot does not fall off the floor bounds.
+        Param: in_bounds: if True, fossbot teleports within the floor bounds.
         '''
         floor_path = '/' + self.parameters.simulation.floor_name
         fossbot_name = self.parameters.simulation.fossbot_name
@@ -494,7 +495,6 @@ class EnvironmentHandler():
     def clear_path(self) -> None:
         '''
         Clears the path of the scene.
-        Param: client_id: the client's id.
         '''
         while True:
             res, _, _, _, _ = control.exec_vrep_script(
