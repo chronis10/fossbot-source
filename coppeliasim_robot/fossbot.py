@@ -429,7 +429,8 @@ class FossBot(robot_interface.FossBotInterface):
                 break
 
 
-class EnvironmentHandler():
+# used only in simulation robot:
+class EnvironmentHandler(robot_interface.EnvironmentHandlerInterface):
     """
     EnvironmentHandler(sim_param) -> Environment control.
     Functions:
@@ -439,6 +440,7 @@ class EnvironmentHandler():
     clear_path(): Clears the path of the scene.
     change_brightness(brightness): Changes scene's brightness.
     default_brightness(): Sets scene's brightness to default brightness (50%).
+    get_simulation_time(): Returns current time of simulation.
     """
     def __init__(self, parameters: configuration.SimRobotParameters) -> None:
         self.parameters = parameters

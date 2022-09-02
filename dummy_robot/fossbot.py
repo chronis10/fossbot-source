@@ -6,7 +6,7 @@ from common.interfaces import robot_interface
 
 
 class FossBot(robot_interface.FossBotInterface):
-    """ Real robot """
+    """ Dummy robot """
     # movement
     def just_move(self, direction: str = "forward") -> None:
         """
@@ -240,3 +240,59 @@ class FossBot(robot_interface.FossBotInterface):
     def reset_orientation(self) -> None:
         '''Resets fossbot orientation (if it has flipped etc).'''
         print('Orientation reset.')
+
+# used only in simulation robot:
+class EnvironmentHandler(robot_interface.EnvironmentHandlerInterface):
+    """
+    EnvironmentHandler() -> Environment control.
+    Functions:
+    draw_path(file_name,scale_x,scale_y) Changes the path of the scene.
+    draw_path_auto(file_name) Changes the path of the scene and scales
+                              it automatically on the floor.
+    clear_path(): Clears the path of the scene.
+    change_brightness(brightness): Changes scene's brightness.
+    default_brightness(): Sets scene's brightness to default brightness (50%).
+    get_simulation_time(): Returns current time of simulation.
+    """
+
+    # change path functions:
+    def draw_path(self, file_name: str, scale_x: float = 5.0, scale_y: float = 5.0) -> None:
+        '''
+        Changes the path of the scene.
+        Param: file_name: the name of the picture to change the path to
+               (save picture-path in paths folder).
+               scale_x: scale x for image on the floor.
+               scale_y: scale y for image on the floor.
+        '''
+        print(f'Path was created (image used: {file_name})')
+        print(f'Dimensions scale = ({scale_x}, {scale_y}).')
+
+    def draw_path_auto(self, file_name: str) -> None:
+        '''
+        Changes the path of the scene and scales it automatically on the floor.
+        Param: file_name: the name of the picture to change the path to
+               (save picture-path in paths folder).
+        '''
+        print(f'Path was created and auto-scaled (image used: {file_name}).')
+
+    def clear_path(self) -> None:
+        '''
+        Clears the path of the scene.
+        '''
+        print('Path cleared.')
+
+    def change_brightness(self, brightness: int = 50) -> None:
+        '''
+        Changes scene's brightness.
+        Param: brightness: the percentage of the brightness to be changed to
+               (default brightness == 50%).
+        '''
+        print(f'Brightness was changed to {brightness}%.')
+
+    def default_brightness(self) -> None:
+        '''Sets scene's brightness to default brightness (50%).'''
+        print('Brightness was changed to default.')
+
+    def get_simulation_time(self) -> float:
+        '''Returns current time of simulation.'''
+        return random.random()
