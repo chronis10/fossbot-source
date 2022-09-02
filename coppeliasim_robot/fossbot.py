@@ -3,7 +3,6 @@ Simulated robot implementation.
 """
 
 import time
-import os
 import subprocess
 import random
 from common.data_structures import configuration
@@ -21,19 +20,10 @@ except FileNotFoundError:
     print('--------------------------------------------------------------')
     print('')
 
-def connect_vrep() -> int:
-    '''
-    Connects to Coppelia Server.
-    Returns: the client's id.
-    '''
-    print('Program started')
-    sim.simxFinish(-1) # just in case, close all opened connections
-    return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
-
 class FossBot(robot_interface.FossBotInterface):
     """ Sim robot """
     def __init__(self, parameters: configuration.SimRobotParameters) -> None:
-        self.client_id = connect_vrep()
+        self.client_id = self.__connect_vrep()
         if self.client_id == -1:
             print('Failed connecting to remote API server')
             raise ConnectionError
@@ -54,9 +44,18 @@ class FossBot(robot_interface.FossBotInterface):
         self.analogue_reader = control.AnalogueReadings(self.parameters)
         self.accelerometer = control.Accelerometer(self.parameters)
         self.rgb_led = control.LedRGB(self.parameters)
-        self.environment = sim_gym.Environment(self.parameters)
         #!FIXME -- implement constructor of Noise and input its parameters here:
         self.noise = control.Noise()
+        self.environment = sim_gym.Environment(self)
+
+    def __connect_vrep(self) -> int:
+        '''
+        Connects to Coppelia Server.
+        Returns: the client's id.
+        '''
+        print('Program started')
+        sim.simxFinish(-1) # just in case, close all opened connections
+        return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
 
     # movement
     def just_move(self, direction: str = "forward") -> None:

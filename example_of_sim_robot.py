@@ -142,7 +142,7 @@ if __name__ == "__main__":
     SIM_ROBOT.teleport_empty_space()
 
     # Environment Handler:
-    #ENVIRONMENT_HANDLER = Environment(SIM_PARAM)
+    #ENVIRONMENT_HANDLER = Environment(SIM_ROBOT)
     #ENVIRONMENT_HANDLER.clear_path()
     #change_path_test(ENVIRONMENT_HANDLER)
     #ENVIRONMENT_HANDLER.change_brightness(0)
