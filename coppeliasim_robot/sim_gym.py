@@ -1,17 +1,8 @@
 import os
 from coppeliasim_robot import control
-from common.interfaces import robot_interface, sim_gym_interface
-
-try:
-    from coppeliasim_robot import sim
-except FileNotFoundError:
-    print('--------------------------------------------------------------')
-    print('"sim.py" could not be imported. This means very probably that')
-    print('either "sim.py" or the remoteApi library could not be found.')
-    print('Make sure both are in the same folder as this file,')
-    print('or appropriately adjust the file "sim.py"')
-    print('--------------------------------------------------------------')
-    print('')
+from common.interfaces import sim_gym_interface
+from common.data_structures import configuration
+from coppeliasim_robot.fossbot import connect_vrep, sim
 
 # used only in simulation robot:
 class Environment(sim_gym_interface.EnvironmentInterface):
@@ -26,9 +17,18 @@ class Environment(sim_gym_interface.EnvironmentInterface):
     default_brightness(): Sets scene's brightness to default brightness (50%).
     get_simulation_time(): Returns current time of simulation.
     """
-    def __init__(self, fossbot: robot_interface.FossBotInterface) -> None:
-        self.parameters = fossbot.parameters
-        self.client_id = self.parameters.simulation.client_id
+    def __init__(self, parameters: configuration.SimRobotParameters) -> None:
+        self.parameters = parameters
+        # connects to server if not already connected:
+        if self.parameters.simulation.client_id == None:
+            self.client_id = connect_vrep()
+            if self.client_id == -1:
+                print('Failed connecting to remote API server')
+                raise ConnectionError
+            print('Connected to remote API server')
+            self.parameters.simulation.client_id = self.client_id
+        else:
+            self.client_id = self.parameters.simulation.client_id
 
     # change path functions:
     def draw_path(self, file_name: str, scale_x: float = 5.0, scale_y: float = 5.0) -> None:

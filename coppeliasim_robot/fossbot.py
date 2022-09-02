@@ -8,7 +8,7 @@ import subprocess
 import random
 from common.data_structures import configuration
 from common.interfaces import robot_interface
-from coppeliasim_robot import control
+from coppeliasim_robot import control, sim_gym
 
 try:
     from coppeliasim_robot import sim
@@ -21,10 +21,19 @@ except FileNotFoundError:
     print('--------------------------------------------------------------')
     print('')
 
+def connect_vrep() -> int:
+    '''
+    Connects to Coppelia Server.
+    Returns: the client's id.
+    '''
+    print('Program started')
+    sim.simxFinish(-1) # just in case, close all opened connections
+    return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
+
 class FossBot(robot_interface.FossBotInterface):
     """ Sim robot """
     def __init__(self, parameters: configuration.SimRobotParameters) -> None:
-        self.client_id = self.__connect_vrep()
+        self.client_id = connect_vrep()
         if self.client_id == -1:
             print('Failed connecting to remote API server')
             raise ConnectionError
@@ -45,17 +54,9 @@ class FossBot(robot_interface.FossBotInterface):
         self.analogue_reader = control.AnalogueReadings(self.parameters)
         self.accelerometer = control.Accelerometer(self.parameters)
         self.rgb_led = control.LedRGB(self.parameters)
+        self.environment = sim_gym.Environment(self.parameters)
         #!FIXME -- implement constructor of Noise and input its parameters here:
         self.noise = control.Noise()
-
-    def __connect_vrep(self) -> int:
-        '''
-        Connects to Coppelia Server.
-        Returns: the client's id.
-        '''
-        print('Program started')
-        sim.simxFinish(-1) # just in case, close all opened connections
-        return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
 
     # movement
     def just_move(self, direction: str = "forward") -> None:
@@ -398,6 +399,27 @@ class FossBot(robot_interface.FossBotInterface):
             pos_x = random.uniform(-i, i)
             pos_y = random.uniform(-i, i)
         self.teleport(pos_x, pos_y, in_bounds=in_bounds)
+
+    def teleport_empty_space(self, time_diff: int = 0.5) -> None:
+        '''
+        Teleports fossbot to location with no obstacles (on the floor).
+        Param: time_diff: the time to check successfull teleportation.
+        '''
+        env = self.environment
+        while True:
+            print('Teleporting...')
+            self.teleport_random(in_bounds=True)
+            target_time = env.get_simulation_time() + time_diff
+            while env.get_simulation_time() < target_time:
+                if self.check_collision():
+                    print('Teleporting...')
+                    self.teleport_random(in_bounds=True)
+                    target_time = env.get_simulation_time() + time_diff
+            time.sleep(time_diff*0.5)
+            self.reset_orientation()
+            if not self.check_collision() and self.check_in_bounds() and self.check_orientation():
+                break
+        print('Teleport success.')
 
     def check_in_bounds(self) -> bool:
         '''Returns True only if fossbot is on the floor.'''
