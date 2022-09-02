@@ -4,7 +4,7 @@ from coppeliasim_robot import control
 from parameters_parser.parser import load_parameters
 from common.data_structures import configuration
 from common.interfaces import robot_interface
-from coppeliasim_robot.fossbot import EnvironmentHandler as Environment
+from coppeliasim_robot.sim_gym import Environment
 from coppeliasim_robot.fossbot import FossBot as SimuFossBot
 
 def main(robot: robot_interface.FossBotInterface) -> None:
@@ -119,7 +119,7 @@ def teleport_empty_space(robot: robot_interface.FossBotInterface, env: Environme
     Param: time_diff: the time to check successfull teleportation.
     '''
     if env is None:
-        env = Environment(robot.parameters)
+        env = Environment(robot)
     while True:
         print('Teleporting...')
         robot.teleport_random(in_bounds=True)
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     teleport_empty_space(SIM_ROBOT)
 
     # Environment Handler:
-    #ENVIRONMENT_HANDLER = Environment(parameters=SIM_PARAM)
+    #ENVIRONMENT_HANDLER = Environment(SIM_ROBOT)
     #ENVIRONMENT_HANDLER.clear_path()
     #change_path_test(ENVIRONMENT_HANDLER)
     #ENVIRONMENT_HANDLER.change_brightness(0)
