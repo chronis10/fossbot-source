@@ -69,21 +69,21 @@ def change_color(robot: robot_interface.FossBotInterface) -> None:
     print('Closing led...')
     robot.rgb_set_color('closed')
 
-def change_path_test(environment: Environment) -> None:
+def change_path_test(robot: robot_interface.FossBotInterface, environment: Environment) -> None:
     '''
     "Draws" images-paths on the floor.
     '''
     print('Changing Path...')
-    environment.draw_path_auto('Path1.jpg')
+    environment.draw_path_auto(robot, 'Path1.jpg')
     time.sleep(3)
     print('Changing Path...')
-    environment.draw_path_auto('Path2.jpg')
+    environment.draw_path_auto(robot, 'Path2.jpg')
     time.sleep(3)
     print('Changing Path...')
-    environment.draw_path_auto('Path3.jpg')
+    environment.draw_path_auto(robot, 'Path3.jpg')
     time.sleep(3)
     print('Clearing Path...')
-    environment.clear_path()
+    environment.clear_path(robot)
 
 def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
     '''
@@ -96,7 +96,7 @@ def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
         if c_check:
             print(c_check)
 
-def inbounds_teleport_test(robot: robot_interface.FossBotInterface) -> None:
+def inbounds_teleport_test(robot: robot_interface.FossBotInterface, environment: Environment) -> None:
     '''
     Tests teleportation with big values (so the robot will stay in bounds).
     Reminder:
@@ -104,13 +104,13 @@ def inbounds_teleport_test(robot: robot_interface.FossBotInterface) -> None:
         (aka almost the half of the scale of floor), z==height.
         floor_scale: x==5, y==5.
     '''
-    robot.teleport(100, 100, in_bounds=True)
+    environment.teleport(robot, 100, 100, in_bounds=True)
     time.sleep(2)
-    robot.teleport(-100, 100, in_bounds=True)
+    environment.teleport(robot, -100, 100, in_bounds=True)
     time.sleep(2)
-    robot.teleport(100, -100, in_bounds=True)
+    environment.teleport(robot, 100, -100, in_bounds=True)
     time.sleep(2)
-    robot.teleport(-100, -100, in_bounds=True)
+    environment.teleport(robot, -100, -100, in_bounds=True)
     time.sleep(2)
 
 if __name__ == "__main__":
@@ -133,16 +133,17 @@ if __name__ == "__main__":
 
     # Create a simu robot
     SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
+    # Create environment
+    ENVIRONMENT = Environment()
     #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
-    #inbounds_teleport_test(SIM_ROBOT)
-    SIM_ROBOT.teleport_empty_space()
+    #inbounds_teleport_test(SIM_ROBOT, ENVIRONMENT)
 
-    # Environment Handler:
-    #ENVIRONMENT_HANDLER = Environment(SIM_ROBOT)
-    #ENVIRONMENT_HANDLER.clear_path()
-    #change_path_test(ENVIRONMENT_HANDLER)
-    #ENVIRONMENT_HANDLER.change_brightness(0)
+    # Environment Handler Testing:
+    ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
+    #ENVIRONMENT.clear_path(SIM_ROBOT)
+    #change_path_test(SIM_ROBOT, ENVIRONMENT)
+    #ENVIRONMENT.change_brightness(SIM_ROBOT, 0)

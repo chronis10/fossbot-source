@@ -7,7 +7,7 @@ import subprocess
 import random
 from common.data_structures import configuration
 from common.interfaces import robot_interface
-from coppeliasim_robot import control, sim_gym
+from coppeliasim_robot import control
 
 try:
     from coppeliasim_robot import sim
@@ -46,7 +46,6 @@ class FossBot(robot_interface.FossBotInterface):
         self.rgb_led = control.LedRGB(self.parameters)
         #!FIXME -- implement constructor of Noise and input its parameters here:
         self.noise = control.Noise()
-        self.environment = sim_gym.Environment(self)
 
     def __connect_vrep(self) -> int:
         '''
@@ -355,70 +354,6 @@ class FossBot(robot_interface.FossBotInterface):
                 'check_collision')
             if res == sim.simx_return_ok and collision[0] != -1:
                 return bool(collision[0])
-
-    def teleport(self, pos_x: float, pos_y: float, height: float = 0.19, in_bounds: bool = True) -> None:
-        '''
-        Teleports fossbot to input location.
-        Param: pos_x: the x position to teleport to.
-               pos_y: the y position to teleport to.
-               hegiht: the height to teleport to (default == 0.19).
-               in_bounds: if True, fossbot teleports within the floor bounds.
-        '''
-        floor_path = '/' + self.parameters.simulation.floor_name
-        func_name = 'teleport'
-        fossbot_name = self.parameters.simulation.fossbot_name
-        if in_bounds:
-            func_name = 'teleport_inbounds'
-        while True:
-            res, _, _, _, _ = control.exec_vrep_script(
-                self.client_id, fossbot_name,
-                func_name, in_floats=[pos_x, pos_y, height],
-                in_strings=[floor_path])
-            if res == sim.simx_return_ok:
-                break
-
-    def teleport_random(self, in_bounds: bool = True) -> None:
-        '''
-        Teleports fossbot to random location.
-        Param: in_bounds: if True, fossbot teleports within the floor bounds.
-        '''
-        floor_path = '/' + self.parameters.simulation.floor_name
-        fossbot_name = self.parameters.simulation.fossbot_name
-        if in_bounds:
-            while True:
-                res, _, limits, _, _ = control.exec_vrep_script(
-                    self.client_id, fossbot_name, 'get_bounds',
-                    in_strings=[floor_path])
-                if res == sim.simx_return_ok:
-                    pos_x = random.uniform(-limits[0], limits[0])
-                    pos_y = random.uniform(-limits[1], limits[1])
-                    break
-        else:
-            i = random.randint(0, 1000)
-            pos_x = random.uniform(-i, i)
-            pos_y = random.uniform(-i, i)
-        self.teleport(pos_x, pos_y, in_bounds=in_bounds)
-
-    def teleport_empty_space(self, time_diff: int = 0.5) -> None:
-        '''
-        Teleports fossbot to location with no obstacles (on the floor).
-        Param: time_diff: the time to check successfull teleportation.
-        '''
-        env = self.environment
-        while True:
-            print('Teleporting...')
-            self.teleport_random(in_bounds=True)
-            target_time = env.get_simulation_time() + time_diff
-            while env.get_simulation_time() < target_time:
-                if self.check_collision():
-                    print('Teleporting...')
-                    self.teleport_random(in_bounds=True)
-                    target_time = env.get_simulation_time() + time_diff
-            time.sleep(time_diff*0.5)
-            self.reset_orientation()
-            if not self.check_collision() and self.check_in_bounds() and self.check_orientation():
-                break
-        print('Teleport success.')
 
     def check_in_bounds(self) -> bool:
         '''Returns True only if fossbot is on the floor.'''
