@@ -93,7 +93,9 @@ class Environment(sim_gym_interface.EnvironmentInterface):
             if res == sim.simx_return_ok:
                 break
 
-    def change_brightness(self, robot: robot_interface.FossBotInterface, brightness: int = 50) -> None:
+    def change_brightness(
+        self, robot: robot_interface.FossBotInterface,
+        brightness: int = 50) -> None:
         '''
         Changes scene's brightness.
         Param: robot: an instance of fossbot.
@@ -109,7 +111,7 @@ class Environment(sim_gym_interface.EnvironmentInterface):
             brightness = brightness / 100
             while True:
                 res, _, _, _, _ = control.exec_vrep_script(
-                    client_id, parameters.simulation.floor_name,
+                    client_id, parameters.simulation.def_camera_name,
                     'change_brightness', in_floats=[brightness, brightness, brightness])
                 if res == sim.simx_return_ok:
                     break

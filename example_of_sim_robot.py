@@ -96,7 +96,9 @@ def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
         if c_check:
             print(c_check)
 
-def inbounds_teleport_test(robot: robot_interface.FossBotInterface, environment: Environment) -> None:
+def inbounds_teleport_test(
+    robot: robot_interface.FossBotInterface,
+    environment: Environment) -> None:
     '''
     Tests teleportation with big values (so the robot will stay in bounds).
     Reminder:
@@ -111,6 +113,19 @@ def inbounds_teleport_test(robot: robot_interface.FossBotInterface, environment:
     environment.teleport(robot, 100, -100, in_bounds=True)
     time.sleep(2)
     environment.teleport(robot, -100, -100, in_bounds=True)
+    time.sleep(2)
+
+def change_brightness_test(
+    robot: robot_interface.FossBotInterface,
+    environment: Environment) -> None:
+    '''Test for changing brightness.'''
+    environment.change_brightness(robot, 0)
+    time.sleep(2)
+    environment.change_brightness(robot, 100)
+    time.sleep(2)
+    environment.change_brightness(robot, 50)
+    time.sleep(2)
+    environment.change_brightness(robot, 70)
     time.sleep(2)
 
 if __name__ == "__main__":
@@ -143,7 +158,7 @@ if __name__ == "__main__":
     #inbounds_teleport_test(SIM_ROBOT, ENVIRONMENT)
 
     # Environment Handler Testing:
-    ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
+    #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
     #ENVIRONMENT.clear_path(SIM_ROBOT)
     #change_path_test(SIM_ROBOT, ENVIRONMENT)
-    #ENVIRONMENT.change_brightness(SIM_ROBOT, 0)
+    change_brightness_test(SIM_ROBOT, ENVIRONMENT)
