@@ -1,8 +1,9 @@
 """
-Real robot implementation
+Simulated robot implementation.
 """
 
 import time
+import os
 import subprocess
 from common.data_structures import configuration
 from common.interfaces import robot_interface
@@ -31,7 +32,7 @@ def connect_vrep() -> int:
 
 class FossBot(robot_interface.FossBotInterface):
     """ Sim robot """
-    def __init__(self, parameters: configuration.SimRobotParameters):
+    def __init__(self, parameters: configuration.SimRobotParameters) -> None:
         self.client_id = connect_vrep()
         if self.client_id == -1:
             print('Failed connecting to remote API server')
@@ -53,19 +54,10 @@ class FossBot(robot_interface.FossBotInterface):
         self.analogue_reader = control.AnalogueReadings(self.parameters)
         self.accelerometer = control.Accelerometer(self.parameters)
         self.rgb_led = control.LedRGB(self.parameters)
-        #self.noise = control.gen_input(pin=4)
+        #!FIXME -- implement constructor of Noise and input its parameters here:
+        self.noise = control.Noise()
 
-    def get_distance(self) -> float:
-        '''Returns distance of nearest obstacle in cm.'''
-        return self.ultrasonic.get_distance()
-
-    def check_for_obstacle(self) -> bool:
-        '''Returns True only if an obstacle is detected.'''
-        i = self.ultrasonic.get_distance()
-        if i <= self.parameters.sensor_distance.value:
-            return True
-        return False
-
+    # movement
     def just_move(self, direction: str = "forward") -> None:
         """
         Move forward/backwards forever.
@@ -75,129 +67,6 @@ class FossBot(robot_interface.FossBotInterface):
         self.odometer_left.reset()
         self.motor_right.move(direction=direction)
         self.motor_left.move(direction=direction)
-
-    def stop(self) -> None:
-        """ Stop moving. """
-        self.motor_left.stop()
-        self.motor_right.stop()
-        print('stop')
-        self.odometer_right.reset()
-        self.odometer_left.reset()
-
-    def wait(self, time_s: int) -> None:
-        '''
-        Waits (sleeps) for an amount of time.
-        Param: time_s: the time (seconds) of sleep.
-        '''
-        time.sleep(time_s)
-
-    def __del__(self):
-        sim.simxFinish(self.client_id)
-
-    def exit(self) -> None:
-        '''
-        Exits the program - closes connection to vrep.
-        '''
-        sim.simxFinish(self.client_id)
-        print('Program ended')
-
-    def just_rotate(self, dir_id: int) -> None:
-        '''
-        Rotates fossbot towards the specified dir_id (forever).
-        Param: dir_id: the direction id to rotate to:
-               - clockwise: dir_id == 0
-               - counterclockwise: dir_id == 1
-        '''
-        if dir_id not in [0, 1]:
-            print('Uknown Direction!')
-            raise RuntimeError
-        self.odometer_right.reset()
-        self.odometer_left.reset()
-        left_dir = "reverse" if dir_id == 1 else "forward"
-        right_dir = "reverse" if dir_id == 0 else "forward"
-        self.motor_left.move(direction=left_dir)
-        self.motor_right.move(direction=right_dir)
-
-    #moving forward
-    def move_forward_distance(self, dist: int) -> None:
-        '''
-        Moves robot forward input distance.
-        Param: dist: the distance (cm) to be moved by robot.
-        '''
-        self.move_distance(dist)
-
-    def move_forward_default(self) -> None:
-        '''
-        Moves robot forward default distance.
-        '''
-        self.move_distance(self.parameters.default_step.value)
-
-    def rotate_clockwise(self) -> None:
-        '''
-        Rotates robot clockwise (forever).
-        '''
-        self.just_rotate(1)
-
-    def rotate_counterclockwise(self) -> None:
-        '''
-        Rotates robot counterclockwise (forever).
-        '''
-        self.just_rotate(0)
-
-    def move_forward(self) -> None:
-        '''
-        Moves robot forwards (forever).
-        '''
-        self.just_move()
-
-    def rotate_clockwise_90(self) -> None:
-        '''
-        Rotates robot 90 degrees clockwise.
-        '''
-        self.rotate_90(1)
-
-    def rotate_counterclockwise_90(self) -> None:
-        '''
-        Rotates robot 90 degrees counterclockwise.
-        '''
-        self.rotate_90(0)
-
-    #moving reverse
-    def move_reverse_distance(self, dist: int) -> None:
-        '''
-        Moves robot input distance in reverse.
-        Param: dist: the distance (cm) to be moved by robot.
-        '''
-        self.move_distance(dist, direction="reverse")
-
-    def move_reverse_default(self) -> None:
-        '''
-        Moves robot default distance in reverse.
-        '''
-        self.move_distance(self.parameters.default_step.value, direction="reverse")
-
-    def move_reverse(self) -> None:
-        '''
-        Moves robot in reverse (forever).
-        '''
-        self.just_move(direction="reverse")
-
-    def rotate_90(self, dir_id: int) -> None:
-        '''
-        Rotates fossbot 90 degrees towards the specified dir_id.
-        Param: dir_id: the direction id to rotate 90 degrees:
-               - clockwise: dir_id == 0
-               - counterclockwise: dir_id == 1
-        '''
-        self.just_rotate(dir_id)
-        rotations = self.parameters.rotate_90.value
-        steps_r = self.odometer_right.get_steps()
-        steps_l = self.odometer_left.get_steps()
-        while steps_r <= rotations and steps_l <= rotations:
-            steps_r = self.odometer_right.get_steps()
-            steps_l = self.odometer_left.get_steps()
-            time.sleep(0.01)
-        self.stop()
 
     def move_distance(self, dist: int, direction: str = "forward") -> None:
         '''
@@ -222,7 +91,133 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_left.dir_control("forward")
         self.motor_right.dir_control("forward")
 
-    #sound
+    def stop(self) -> None:
+        """ Stop moving. """
+        self.motor_left.stop()
+        self.motor_right.stop()
+        print('stop')
+        self.odometer_right.reset()
+        self.odometer_left.reset()
+
+    def wait(self, time_s: int) -> None:
+        '''
+        Waits (sleeps) for an amount of time.
+        Param: time_s: the time (seconds) of sleep.
+        '''
+        time.sleep(time_s)
+
+    # moving forward
+    def move_forward_distance(self, dist: int) -> None:
+        '''
+        Moves robot forward input distance.
+        Param: dist: the distance (cm) to be moved by robot.
+        '''
+        self.move_distance(dist)
+
+    def move_forward_default(self) -> None:
+        '''
+        Moves robot forward default distance.
+        '''
+        self.move_distance(self.parameters.default_step.value)
+
+    def move_forward(self) -> None:
+        '''
+        Moves robot forwards (forever).
+        '''
+        self.just_move()
+
+    # moving reverse
+    def move_reverse_distance(self, dist: int) -> None:
+        '''
+        Moves robot input distance in reverse.
+        Param: dist: the distance (cm) to be moved by robot.
+        '''
+        self.move_distance(dist, direction="reverse")
+
+    def move_reverse_default(self) -> None:
+        '''
+        Moves robot default distance in reverse.
+        '''
+        self.move_distance(self.parameters.default_step.value, direction="reverse")
+
+    def move_reverse(self) -> None:
+        '''
+        Moves robot in reverse (forever).
+        '''
+        self.just_move(direction="reverse")
+
+    # rotation
+    def just_rotate(self, dir_id: int) -> None:
+        '''
+        Rotates fossbot towards the specified dir_id (forever).
+        Param: dir_id: the direction id to rotate to:
+               - clockwise: dir_id == 0
+               - counterclockwise: dir_id == 1
+        '''
+        if dir_id not in [0, 1]:
+            print('Uknown Direction!')
+            raise RuntimeError
+        self.odometer_right.reset()
+        self.odometer_left.reset()
+        left_dir = "reverse" if dir_id == 1 else "forward"
+        right_dir = "reverse" if dir_id == 0 else "forward"
+        self.motor_left.move(direction=left_dir)
+        self.motor_right.move(direction=right_dir)
+
+    def rotate_90(self, dir_id: int) -> None:
+        '''
+        Rotates fossbot 90 degrees towards the specified dir_id.
+        Param: dir_id: the direction id to rotate 90 degrees:
+                - clockwise: dir_id == 0
+                - counterclockwise: dir_id == 1
+        '''
+        self.just_rotate(dir_id)
+        rotations = self.parameters.rotate_90.value
+        steps_r = self.odometer_right.get_steps()
+        steps_l = self.odometer_left.get_steps()
+        while steps_r <= rotations and steps_l <= rotations:
+            steps_r = self.odometer_right.get_steps()
+            steps_l = self.odometer_left.get_steps()
+            time.sleep(0.01)
+        self.stop()
+
+    def rotate_clockwise(self) -> None:
+        '''
+        Rotates robot clockwise (forever).
+        '''
+        self.just_rotate(1)
+
+    def rotate_counterclockwise(self) -> None:
+        '''
+        Rotates robot counterclockwise (forever).
+        '''
+        self.just_rotate(0)
+
+    def rotate_clockwise_90(self) -> None:
+        '''
+        Rotates robot 90 degrees clockwise.
+        '''
+        self.rotate_90(1)
+
+    def rotate_counterclockwise_90(self) -> None:
+        '''
+        Rotates robot 90 degrees counterclockwise.
+        '''
+        self.rotate_90(0)
+
+    # ultrasonic sensor
+    def get_distance(self) -> float:
+        '''Returns distance of nearest obstacle in cm.'''
+        return self.ultrasonic.get_distance()
+
+    def check_for_obstacle(self) -> bool:
+        '''Returns True only if an obstacle is detected.'''
+        i = self.ultrasonic.get_distance()
+        if i <= self.parameters.sensor_distance.value:
+            return True
+        return False
+
+    # sound
     def play_sound(self, audio_id: int) -> None:
         '''
         Plays mp3 file specified by input audio_id.
@@ -243,6 +238,7 @@ class FossBot(robot_interface.FossBotInterface):
         elif audio_id == 7:
             subprocess.run(["mpg123", "../robot_lib/soundfx/machine_gun.mp3"], check=True)
 
+    # floor sensors
     def get_floor_sensor(self, sensor_id: int) -> float:
         '''
         Gets reading of a floor - line sensor specified by sensor_id.
@@ -270,10 +266,11 @@ class FossBot(robot_interface.FossBotInterface):
         if sensor_id not in [mid_id, left_id, right_id]:
             print(f'Sensor id {sensor_id} is out of bounds.')
             return False
-        if self.analogue_reader.get_reading(sensor_id) == 23.0:
+        if self.analogue_reader.get_reading(sensor_id) == 0.1:
             return True
         return False
 
+    # accelerometer
     def get_acceleration(self, axis: str) -> float:
         '''
         Gets acceleration of specified axis.
@@ -294,7 +291,7 @@ class FossBot(robot_interface.FossBotInterface):
         print(value)
         return value
 
-    #rgb
+    # rgb
     def rgb_set_color(self, color: str) -> None:
         '''
         Sets a led to input color.
@@ -302,6 +299,7 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         self.rgb_led.set_on(color)
 
+    # light sensor
     def __transf_1024(self, value: float) -> float:
         '''
         Transforms a value from (initial) range [0, 1] to range [0, 1024].
@@ -310,7 +308,6 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         return value * 1024
 
-    #light sensor
     def get_light_sensor(self) -> float:
         '''
         Returns the reading of the light sensor.
@@ -329,8 +326,72 @@ class FossBot(robot_interface.FossBotInterface):
         print(self.__transf_1024(value))
         return bool(value < grey_color)
 
-    #!FIXME
+    # noise detection
     def get_noise_detection(self) -> bool:
         """ Returns True only if noise is detected """
-        # do it with microphone (real hw)
-        raise NotImplementedError
+        state = self.noise.detect_noise()
+        print(state)
+        return state
+
+    # exit
+    def exit(self) -> None:
+        '''
+        Exits the program - closes connection to vrep.
+        '''
+        sim.simxFinish(self.client_id)
+        print('Program ended.')
+
+    def __del__(self) -> None:
+        sim.simxFinish(self.client_id)
+
+# change path functions:
+def draw_path(client_id: int, file_name: str, floor_name: str = 'Floor', scale_x: float = 5.0, scale_y: float = 5.0) -> None:
+    '''
+    Changes the path of the scene.
+    Param: client_id: the client's id.
+           file_name: the name of the picture to change the path to
+           (save picture-path in paths folder).
+           floor_name: the floor's name in the scene (vrep default name == 'Floor').
+           scale_x: scale x for image on the floor.
+           scale_y: scale y for image on the floor.
+    '''
+    path_dir_b = os.path.join(os.path.dirname(__file__), 'paths')
+    path_draw = os.path.join(path_dir_b, file_name)
+    if not os.path.exists(path_draw):
+        print('Cannot find requested image.')
+        raise FileNotFoundError
+    while True:
+        res, _, _, _, _ = control.exec_vrep_script(
+            client_id, floor_name, 'draw_path',
+            in_floats=[scale_x, scale_y], in_strings=[path_draw])
+        if res == sim.simx_return_ok:
+            break
+
+def draw_path_auto(client_id: int, file_name: str, floor_name: str = 'Floor') -> None:
+    '''
+    Changes the path of the scene and scales it automatically on the floor.
+    Param: client_id: the client's id.
+           file_name: the name of the picture to change the path to
+           (save picture-path in paths folder).
+           floor_name: the floor's name in the scene (vrep default name == 'Floor').
+    '''
+    path_dir_b = os.path.join(os.path.dirname(__file__), 'paths')
+    path_draw = os.path.join(path_dir_b, file_name)
+    if not os.path.exists(path_draw):
+        print('Cannot find requested image.')
+        raise FileNotFoundError
+    while True:
+        res, _, _, _, _ = control.exec_vrep_script(
+            client_id, floor_name, 'draw_path_auto', in_strings=[path_draw])
+        if res == sim.simx_return_ok:
+            break
+
+def clear_path(client_id: int, floor_name: str = 'Floor') -> None:
+    '''
+    Clears the path of the scene.
+    Param: client_id: the client's id.
+    '''
+    while True:
+        res, _, _, _, _ = control.exec_vrep_script(client_id, floor_name, 'clear_path')
+        if res == sim.simx_return_ok:
+            break

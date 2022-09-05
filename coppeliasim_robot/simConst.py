@@ -1,4 +1,6 @@
-#constants
+"""
+Constants used in coppelia sim (vrep)
+"""
 #Scene object types. Values are serialized
 sim_object_shape_type           =0
 sim_object_joint_type           =1

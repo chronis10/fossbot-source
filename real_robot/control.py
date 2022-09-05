@@ -9,48 +9,19 @@ from mpu6050 import mpu6050
 import Adafruit_MCP3008
 from common.interfaces import control_interfaces
 
-class GenInput():
+# General functions
+def start_lib() -> None:
     '''
-    Class gen_input(pin)
-    Default pin 4
-    Functions:
-    get_state() return True/False
+    This function sets the GPIO pins to input output mode with GPIO number syntax.
     '''
-    def __init__(self, pin: int = 4):
-        self.pin = pin
-        GPIO.setup(self.pin, GPIO.IN)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
 
-    def get_state(self) -> int:
-        '''
-        Returns state 0 or 1
-        '''
-        return GPIO.input(self.pin)
-
-class GenOutput():
+def clean() -> None:
     '''
-    Class gen_output(pin)
-    Deafult pin 5
-    Functions:
-    set_on() set High the output pin
-    set_off() set Low the output pin
+    This function releases all the GPIO pins .
     '''
-    def __init__(self, pin: int = 5):
-        self.pin = pin
-        GPIO.setup(self.pin, GPIO.OUT)
-        GPIO.output(self.pin, False)
-
-    def set_on(self) -> None:
-        '''
-        Set High the output pin
-        '''
-        GPIO.output(self.pin, True)
-
-    def set_off(self) -> None:
-        '''
-        Set Low the output pin
-        '''
-        GPIO.output(self.pin, False)
-
+    GPIO.cleanup()
 
 
 class Motor(control_interfaces.MotorInterface):
@@ -63,7 +34,7 @@ class Motor(control_interfaces.MotorInterface):
     stop() Stops the motor.
     """
 
-    def __init__(self, speed_pin: int, terma_pin: int, termb_pin: int, dc_value: int = 70):
+    def __init__(self, speed_pin: int, terma_pin: int, termb_pin: int, dc_value: int = 70) -> None:
         GPIO.setup(speed_pin, GPIO.OUT)
         GPIO.setup(terma_pin, GPIO.OUT)
         GPIO.setup(termb_pin, GPIO.OUT)
@@ -124,7 +95,7 @@ class Odometer(control_interfaces.OdometerInterface):
     get_distance() Returns the traveled distance in cm.
     reset() Resets the steps counter.
     '''
-    def __init__(self, pin: int):
+    def __init__(self, pin: int) -> None:
         self.pin = pin
         self.sensor_disc = 20
         self.steps = 0
@@ -168,7 +139,7 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     get_distance() return distance in cm.
     '''
 
-    def __init__(self, echo_pin: int = 14, trig_pin: int = 15):
+    def __init__(self, echo_pin: int = 14, trig_pin: int = 15) -> None:
         self.echo_pin = echo_pin
         self.trig_pin = trig_pin
         GPIO.setup(self.echo_pin, GPIO.IN)
@@ -195,6 +166,44 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
         return distance
 
 
+class Accelerometer(control_interfaces.AccelerometerInterface):
+    '''
+    Class Accelerometer(address) -> Handles accelerometer and gyroscope.
+    Functions:
+    get_acceleration(dimension) Returns the acceleration for a specific dimension.
+    get_gyro(dimension) Returns the gyroscope for a specific dimension.
+    '''
+
+    #!FIXME what datatype is address (hexademical)?
+    def __init__(self, address: int = 0x68) -> None:
+        #hex(104) == 0x68
+        self.sensor = mpu6050(address)
+
+    def get_acceleration(self, dimension: str) -> float:
+        '''
+        Gets the acceleration for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the acceleration for a specific dimension.
+        '''
+        accel = self.sensor.get_accel_data()
+        if dimension in ('x', 'y', 'z'):
+            return accel[dimension]
+        print("Dimension not recognized!!")
+        return 0.0
+
+    def get_gyro(self, dimension: str) -> float:
+        '''
+        Gets gyroscope for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the gyroscope for a specific dimension.
+        '''
+        gyro = self.sensor.get_gyro_data()
+        if dimension in ('x', 'y', 'z'):
+            return gyro[dimension]
+        print("Dimension not recognized!!")
+        return 0.0
+
+
 class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     '''
     Class AnalogueReadings(clk_p,miso_p,mosi_p,cs_p) -> Handles Analogue Readings.
@@ -202,7 +211,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     get_reading(pin) Gets reading of a specific sensor specified by input pin.
     '''
 
-    def __init__(self, clk_p: int = 11, miso_p: int = 9, mosi_p: int = 10, cs_p: int = 8):
+    def __init__(self, clk_p: int = 11, miso_p: int = 9, mosi_p: int = 10, cs_p: int = 8) -> None:
         self.mcp = Adafruit_MCP3008.MCP3008(clk=clk_p, cs=cs_p, miso=miso_p, mosi=mosi_p)
 
     def get_reading(self, pin: int) -> float:
@@ -216,13 +225,74 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         return value
 
 
+class Noise(control_interfaces.NoiseInterface):
+    '''
+    Class Noise(pin).
+    Default pin 4
+    Functions:
+    detect_noise(): Returns True only if noise is detected.
+    '''
+    def __init__(self, pin: int = 4) -> None:
+        self.pin = pin
+        GPIO.setup(self.pin, GPIO.IN)
+
+    def detect_noise(self) -> bool:
+        '''
+        Returns True only if noise was detected.
+        '''
+        return bool(GPIO.input(self.pin))
+
+# Hardware section
+class GenInput(control_interfaces.GenInputInterface):
+    '''
+    Class GenInput(pin).
+    Default pin 4.
+    Functions:
+    get_state(): Returns state 0 or 1.
+    '''
+    def __init__(self, pin: int = 4) -> None:
+        self.pin = pin
+        GPIO.setup(self.pin, GPIO.IN)
+
+    def get_state(self) -> int:
+        '''
+        Returns state 0 or 1
+        '''
+        return GPIO.input(self.pin)
+
+class GenOutput(control_interfaces.GenOutputInterface):
+    '''
+    Class GenOutput(pin)
+    Deafult pin 5
+    Functions:
+    set_on() set High the output pin
+    set_off() set Low the output pin
+    '''
+    def __init__(self, pin: int = 5) -> None:
+        self.pin = pin
+        GPIO.setup(self.pin, GPIO.OUT)
+        GPIO.output(self.pin, False)
+
+    def set_on(self) -> None:
+        '''
+        Set High the output pin
+        '''
+        GPIO.output(self.pin, True)
+
+    def set_off(self) -> None:
+        '''
+        Set Low the output pin
+        '''
+        GPIO.output(self.pin, False)
+
+
 class LedRGB(control_interfaces.LedRGBInterface):
     '''
     Class LedRGB(pin_r,pin_b,pin_g) -> Led control
     set_on(color): sets led to input color.
     '''
 
-    def __init__(self, pin_r: int = 16, pin_b: int = 19, pin_g: int = 12):
+    def __init__(self, pin_r: int = 16, pin_b: int = 19, pin_g: int = 12) -> None:
         self.p_r = GenOutput(pin_r)
         self.p_b = GenOutput(pin_b)
         self.p_g = GenOutput(pin_g)
@@ -265,58 +335,3 @@ class LedRGB(control_interfaces.LedRGBInterface):
             self.p_r.set_off()
             self.p_b.set_off()
             self.p_g.set_off()
-
-
-class Accelerometer(control_interfaces.AccelerometerInterface):
-    '''
-    Class Accelerometer(address) -> Handles accelerometer and gyroscope.
-    Functions:
-    get_acceleration(dimension = "all") Returns the acceleration for a specific or
-                                        all dimensions.
-    get_gyro(dimension = "all") Returns the gyroscope for a specific or
-                                all dimensions.
-    '''
-
-    #!FIXME what datatype is address (hexademical)?
-    def __init__(self, address: int = 0x68):
-        #hex(104) == 0x68
-        self.sensor = mpu6050(address)
-
-    def get_acceleration(self, dimension: str) -> float:
-        '''
-        Gets the acceleration for a specific dimension.
-        Param: dimension: the dimension requested.
-        Returns: the acceleration for a specific dimension.
-        '''
-        accel = self.sensor.get_accel_data()
-        if dimension in ('x', 'y', 'z'):
-            return accel[dimension]
-        print("Dimension not recognized!!")
-        return 0.0
-
-    def get_gyro(self, dimension: str) -> float:
-        '''
-        Gets gyroscope for a specific dimension.
-        Param: dimension: the dimension requested.
-        Returns: the gyroscope for a specific dimension.
-        '''
-        gyro = self.sensor.get_gyro_data()
-        if dimension in ('x', 'y', 'z'):
-            return gyro[dimension]
-        print("Dimension not recognized!!")
-        return 0.0
-
-
-#General functions
-def start_lib() -> None:
-    '''
-    This function sets the GPIO pins to input output mode with GPIO number syntax.
-    '''
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-
-def clean() -> None:
-    '''
-    This function releases all the GPIO pins .
-    '''
-    GPIO.cleanup()

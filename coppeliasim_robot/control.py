@@ -1,5 +1,5 @@
 """
-Implementation of simulated control
+Implementation of simulated control.
 """
 
 import math
@@ -8,11 +8,12 @@ from common.interfaces import control_interfaces
 from common.data_structures import configuration
 from coppeliasim_robot import sim
 
+# General Functions
 def init_component(client_id: int, component_name: str) -> int:
     '''
     Initializes a component (like motors, sensors etc) of the simulation.
-    Param: component_name: the name of the component (example: 'left_motor')
-    Returns: the component in the simulation
+    Param: component_name: the name of the component (example: 'left_motor').
+    Returns: the component in the simulation.
     '''
     _, component = sim.simxGetObjectHandle(client_id, component_name, sim.simx_opmode_blocking)
     return component
@@ -22,20 +23,20 @@ def exec_vrep_script(client_id: int, script_component_name: str, script_function
                      in_ints: list = [], in_floats: list = [], in_strings: list = [],
                      in_buffer: bytearray = bytearray()) -> tuple:
     '''
-    Executes a function of a lua script in vrep
-    Param: client_id: the client's id
-           script_component_name: the name of the object that has the script in the scene
-           script_function_name: the name of the function inside the script to be executed
-           in_ints: list of input integers used for the function (can be [ ])
-           in_floats: list of input floats used for the function (can be [ ])
-           in_strings: list of input strings used for the function (can be [ ])
-           in_buffer: input bytearray used for the function
+    Executes a function of a lua script in vrep.
+    Param: client_id: the client's id.
+           script_component_name: the name of the object that has the script in the scene.
+           script_function_name: the name of the function inside the script to be executed.
+           in_ints: list of input integers used for the function (can be [ ]).
+           in_floats: list of input floats used for the function (can be [ ]).
+           in_strings: list of input strings used for the function (can be [ ]).
+           in_buffer: input bytearray used for the function.
     Returns: returnCode: to show if function has been executed correctly
-             => (successful execution: sim.simx_return_ok)
-             out_ints: list of integer values returned by the function
-             out_floats: list of float values returned by the function
-             out_strings: list of string values returned by the function
-             out_buffer: bytearray returned by the function
+             => (successful execution: sim.simx_return_ok).
+             out_ints: list of integer values returned by the function.
+             out_floats: list of float values returned by the function.
+             out_strings: list of string values returned by the function.
+             out_buffer: bytearray returned by the function.
     '''
     return sim.simxCallScriptFunction(
         client_id, script_component_name, sim.sim_scripttype_childscript,
@@ -43,26 +44,26 @@ def exec_vrep_script(client_id: int, script_component_name: str, script_function
         sim.simx_opmode_blocking)
 
 
-def get_object_children(client_id: int, object_name: str = '/', print_all = False) -> tuple:
+def get_object_children(client_id: int, object_name: str = '/', print_all=False) -> tuple:
     '''
-    Retrieves handles of all the children of an object
-    Default object_name: '/': retrieves all the objects handles in the scene
-    Recommended object_name: 'fossbot': retrieves all children of fossbot
-    Param: client_id: the client id
-           object_name: the object's name in the scene
-           print_all: prints all the handles and their corresponding object's path in the scene
-    Returns: object_children_list: a list of all the childrens handles of the requested object
+    Retrieves handles of all the children of an object.
+    Default object_name: '/': retrieves all the objects handles in the scene.
+    Recommended object_name: 'fossbot': retrieves all children of fossbot.
+    Param: client_id: the client id.
+           object_name: the object's name in the scene.
+           print_all: prints all the handles and their corresponding object's path in the scene.
+    Returns: object_children_list: a list of all the childrens handles of the requested object.
              object_children_dict: a dictionary with keys the handles and values the
-                                  corresponding path in the scene of the requested object
+                                   corresponding path in the scene of the requested object.
     '''
     sim.simxGetObjectGroupData(client_id, sim.sim_appobj_object_type, 21, sim.simx_opmode_streaming)
     time.sleep(0.1)
     _, handle, _, _, name = sim.simxGetObjectGroupData(
-                                client_id, sim.sim_appobj_object_type,
-                                21, sim.simx_opmode_blocking)
+        client_id, sim.sim_appobj_object_type,
+        21, sim.simx_opmode_blocking)
 
-    object_children_list=[]
-    object_children_dict={}
+    object_children_list = []
+    object_children_dict = {}
 
     if not object_name.startswith('/'):
         object_name = '/' + object_name
@@ -81,73 +82,6 @@ def get_object_children(client_id: int, object_name: str = '/', print_all = Fals
     return object_children_list, object_children_dict
 
 
-class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
-    '''
-    Class AnalogueReadings(sim_param) -> Handles Analogue Readings.
-    Functions:
-    get_reading(pin) Gets reading of a specific sensor specified by input pin.
-    '''
-    def __init__(self, sim_param: configuration.SimRobotParameters):
-        self.client_id = sim_param.simulation.client_id
-        self.param = sim_param
-
-    def __get_line_data(self, line_sensor_name: str) -> list:
-        '''
-        Retrieves image data of requested line sensor.
-        Param: line_sensor_name: the name of the wanted line sensor.
-        Returns: image data of requested line_sensor.
-        '''
-        while True:
-            res, image, _,_ ,_ = exec_vrep_script(
-                                    self.client_id, line_sensor_name,
-                                    'get_line_image')
-            if res == sim.simx_return_ok:
-                return image
-
-    def __get_light_data(self) -> float:
-        '''
-        Returns light opacity from light sensor.
-        '''
-        light_sensor = self.param.simulation.light_sensor_name
-        while True:
-            res, _, light_opacity,_ ,_ = exec_vrep_script(self.client_id, light_sensor, 'get_light')
-            if res == sim.simx_return_ok:
-                return light_opacity[0]
-
-    def __convert_float(self, reading: list) -> float:
-        '''
-        Converts list of image data to float number.
-        Param: reading: the list of image data to be transformed
-        Returns: 23.0 if reading is black line, else 0.0
-        '''
-        # [23, 23, 23] => black line
-        if reading == [23, 23, 23]:
-            return 23.0
-        return 0.0
-
-    def get_reading(self, pin: int) -> float:
-        '''
-        Gets reading of a specific sensor specified by input pin.
-        Param: pin: the pin of the sensor.
-        Returns: the reading of the requested sensor.
-        '''
-        if pin == self.param.simulation.light_sensor_id:
-            time.sleep(0.1) # has to have this 'break' else error occurs
-            return self.__get_light_data()
-        if pin == self.param.simulation.sensor_middle_id:
-            time.sleep(0.1)
-            mid_sensor_name = self.param.simulation.sensor_middle_name
-            return self.__convert_float(self.__get_line_data(mid_sensor_name))
-        if pin == self.param.simulation.sensor_right_id:
-            time.sleep(0.1)
-            right_sensor_name = self.param.simulation.sensor_right_name
-            return self.__convert_float(self.__get_line_data(right_sensor_name))
-        if pin == self.param.simulation.sensor_left_id:
-            time.sleep(0.1)
-            left_sensor_name = self.param.simulation.sensor_left_name
-            return self.__convert_float(self.__get_line_data(left_sensor_name))
-
-
 class Motor(control_interfaces.MotorInterface):
     """
     Motor(sim_param,motor_joint_name,def_speed) -> Motor control.
@@ -157,11 +91,12 @@ class Motor(control_interfaces.MotorInterface):
     set_speed(speed) Set speed immediately 0-100% range.
     stop() Stops the motor.
     """
-    def __init__(self, sim_param: configuration.SimRobotParameters, motor_joint_name: str, def_speed: int):
+    def __init__(self, sim_param: configuration.SimRobotParameters, motor_joint_name: str, def_speed: int) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
         self.motor_name = motor_joint_name
         self.def_speed = def_speed
+        self.direction = 'forward'
 
     def __change_motor_velocity(self, velocity: float) -> int:
         '''
@@ -171,9 +106,9 @@ class Motor(control_interfaces.MotorInterface):
         Returns: a return code of the API function.
         '''
         while True:
-            res, _, _,_ ,_ = exec_vrep_script(
-                                self.client_id, self.motor_name,
-                                'change_vel', in_floats=[velocity])
+            res, _, _, _, _ = exec_vrep_script(
+                self.client_id, self.motor_name,
+                'change_vel', in_floats=[velocity])
             if res == sim.simx_return_ok:
                 return res
 
@@ -182,19 +117,24 @@ class Motor(control_interfaces.MotorInterface):
         Change motor direction to input direction.
         Param: direction: the direction to be headed to.
         '''
-        if direction == 'forward':
-            self.__change_motor_velocity(-self.def_speed)
-        elif direction == "reverse":
-            self.__change_motor_velocity(self.def_speed)
-        else:
+        if direction not in ['forward', 'reverse']:
             print("Motor accepts only forward and reverse values")
+        else:
+            self.direction = direction
 
     def move(self, direction: str = "forward") -> None:
         '''
         Start moving motor with default speed towards input direction.
         Param: direction: the direction to be headed to.
         '''
-        self.dir_control(direction)
+        if direction == 'forward':
+            self.dir_control(direction)
+            self.__change_motor_velocity(-self.def_speed)
+        elif direction == "reverse":
+            self.dir_control(direction)
+            self.__change_motor_velocity(self.def_speed)
+        else:
+            print("Motor accepts only forward and reverse values")
 
     def set_speed(self, speed: int) -> None:
         '''
@@ -205,7 +145,7 @@ class Motor(control_interfaces.MotorInterface):
             print("The motor speed is a percentage of total motor power. Accepted values 0-100.")
         else:
             self.def_speed = self.def_speed * speed / 100
-            self.__change_motor_velocity(self.def_speed)
+            self.move(self.direction)
 
     def stop(self) -> None:
         '''Stops the motor.'''
@@ -221,7 +161,7 @@ class Odometer(control_interfaces.OdometerInterface):
     get_distance() Returns the traveled distance in cm.
     reset() Resets the steps counter.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters, motor_name: str):
+    def __init__(self, sim_param: configuration.SimRobotParameters, motor_name: str) -> None:
         self.sensor_disc = 20   #by default 20 lines sensor disc
         self.steps = 0
         self.wheel_diameter = 6.65  #by default the wheel diameter is 6.6
@@ -234,8 +174,8 @@ class Odometer(control_interfaces.OdometerInterface):
         '''Increase total steps by one.'''
         while True:
             res, steps, _, _, _ = exec_vrep_script(
-                                    self.client_id, self.motor_name,
-                                    'count_revolutions')
+                self.client_id, self.motor_name,
+                'count_revolutions')
             if res == sim.simx_return_ok:
                 self.steps = steps[0]
                 break
@@ -281,7 +221,7 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     Functions:
     get_distance() return distance in cm.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters):
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
         self.precision = 2  #by default the distance is rounded in 2 digits
@@ -295,9 +235,9 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
         max_dist = 999.9
         ultrasonic_name = self.param.simulation.ultrasonic_name
         while True:
-            res, handle, distance,_ ,_ = exec_vrep_script(
-                                            self.client_id, ultrasonic_name,
-                                            'get_distance')
+            res, handle, distance, _, _ = exec_vrep_script(
+                self.client_id, ultrasonic_name,
+                'get_distance')
             if res == sim.simx_return_ok:
                 break
         #Detected Handle: handle[0], Distance (in meters): distance[0]
@@ -309,12 +249,10 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
     '''
     Class Accelerometer(sim_param) -> Handles accelerometer and gyroscope.
     Functions:
-    get_acceleration(dimension = "all") Returns the acceleration for a specific or
-                                        all dimensions.
-    get_gyro(dimension = "all") Returns the gyroscope for a specific or
-                                all dimensions.
+    get_acceleration(dimension) Returns the acceleration for a specific dimension.
+    get_gyro(dimension) Returns the gyroscope for a specific dimension.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters):
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
 
@@ -336,9 +274,8 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         while True:
             # res_1 -> function executed correctly
             # res_2 -> data was successfully collected
-            res_1, res_2, accel_data,_ ,_ = exec_vrep_script(
-                                                self.client_id,
-                                                accel_name, 'get_accel')
+            res_1, res_2, accel_data, _, _ = exec_vrep_script(
+                self.client_id, accel_name, 'get_accel')
             if res_1 == sim.simx_return_ok and res_2[0] == sim.simx_return_ok:
                 break
         accel_data = self.__create_force_dict(accel_data)
@@ -355,7 +292,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         '''
         gyro_name = self.param.simulation.gyroscope_name
         while True:
-            res, _, gyro_data,_ ,_ = exec_vrep_script(self.client_id, gyro_name, 'get_gyro')
+            res, _, gyro_data, _, _ = exec_vrep_script(self.client_id, gyro_name, 'get_gyro')
             if res == sim.simx_return_ok:
                 break
         gyro_data = self.__create_force_dict(gyro_data)
@@ -365,21 +302,136 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         return 0.0
 
 
+class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
+    '''
+    Class AnalogueReadings(sim_param) -> Handles Analogue Readings.
+    Functions:
+    get_reading(pin) Gets reading of a specific sensor specified by input pin.
+    '''
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
+        self.client_id = sim_param.simulation.client_id
+        self.param = sim_param
+
+    def __get_line_data(self, line_sensor_name: str) -> float:
+        '''
+        Retrieves image data of requested line sensor.
+        Param: line_sensor_name: the name of the wanted line sensor.
+        Returns: image data of requested line_sensor.
+        '''
+        while True:
+            res, _, image, _, _ = exec_vrep_script(
+                self.client_id, line_sensor_name,
+                'get_color')
+            if res == sim.simx_return_ok:
+                return image[0]
+
+    def __get_light_data(self) -> float:
+        '''
+        Returns light opacity from light sensor.
+        '''
+        light_sensor = self.param.simulation.light_sensor_name
+        while True:
+            res, _, light_opacity, _, _ = exec_vrep_script(
+                self.client_id, light_sensor, 'get_light')
+            if res == sim.simx_return_ok:
+                return light_opacity[0]
+
+    def __convert_float(self, reading: float) -> float:
+        '''
+        Converts list of image data to float number.
+        Param: reading: the list of image data to be transformed
+        Returns: 23.0 if reading is black line, else 0.0
+        '''
+        # black <= 10%
+        if reading <= 0.1:
+            return 0.1
+        return 0.0
+
+    def get_reading(self, pin: int) -> float:
+        '''
+        Gets reading of a specific sensor specified by input pin.
+        Param: pin: the pin of the sensor.
+        Returns: the reading of the requested sensor.
+        '''
+        if pin == self.param.simulation.light_sensor_id:
+            return self.__get_light_data()
+        if pin == self.param.simulation.sensor_middle_id:
+            mid_sensor_name = self.param.simulation.sensor_middle_name
+            return self.__convert_float(self.__get_line_data(mid_sensor_name))
+        if pin == self.param.simulation.sensor_right_id:
+            right_sensor_name = self.param.simulation.sensor_right_name
+            return self.__convert_float(self.__get_line_data(right_sensor_name))
+        if pin == self.param.simulation.sensor_left_id:
+            left_sensor_name = self.param.simulation.sensor_left_name
+            return self.__convert_float(self.__get_line_data(left_sensor_name))
+
+
+#!FIXME -- implement this class with microphone (real hw)
+class Noise(control_interfaces.NoiseInterface):
+    '''
+    Class Noise() -> Handles Noise Detection.
+    Functions:
+    detect_noise() Returns True only if noise is detected.
+    '''
+    #!FIXME
+    def detect_noise(self) -> bool:
+        '''
+        Returns True only if noise was detected.
+        '''
+        # do it with microphone (real hw)
+        raise NotImplementedError
+
+
+# Hardware section
+class GenInput(control_interfaces.GenInputInterface):
+    '''
+    Class GenInput(pin).
+    Default pin 4.
+    Functions:
+    get_state(): Returns state 0 or 1.
+    '''
+    def get_state(self) -> int:
+        '''
+        Returns state 0 or 1
+        '''
+        raise NotImplementedError
+
+class GenOutput(control_interfaces.GenOutputInterface):
+    '''
+    Class GenOutput(pin).
+    Deafult pin 5.
+    Functions:
+    set_on() set High the output pin.
+    set_off() set Low the output pin.
+    '''
+    def set_on(self) -> None:
+        '''
+        Set High the output pin
+        '''
+        raise NotImplementedError
+
+    def set_off(self) -> None:
+        '''
+        Set Low the output pin
+        '''
+        raise NotImplementedError
+
 
 class LedRGB(control_interfaces.LedRGBInterface):
     '''
-    Class LedRGB(sim_param) -> Led control
+    Class LedRGB(sim_param) -> Led control.
+    Functions:
     set_on(color): sets led to input color.
     '''
-    def __init__(self, sim_param: configuration.SimRobotParameters):
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
         self.client_id = sim_param.simulation.client_id
         self.param = sim_param
 
     def set_on(self, color: str) -> None:
         '''
-        Changes the color of a led
-        Param: color: the wanted color
-        For closing the led, use color == 'closed'
+        Changes the color of a led.
+        Param: color: the wanted color.
+        For closing the led, use color == 'closed'.
         '''
         color_rbg = [0, 0, 0]   #red, blue, green
         if color == 'red':

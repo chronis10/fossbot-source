@@ -1,185 +1,181 @@
 """
-Interfaces for control parts.
+Implementation for control (dummy).
 """
+import random
+from common.interfaces import control_interfaces
 
-from abc import ABC, abstractmethod
-
-class MotorInterface(ABC):
+class Motor(control_interfaces.MotorInterface):
     """
-    Interface for Motor control.
+    Motor() -> Motor control.
     Functions:
     dir_control(direction) Change motor direction to input direction.
     move(direction) Start moving motor with default speed towards input direction.
     set_speed(speed) Set speed immediately 0-100% range.
     stop() Stops the motor.
     """
-
-    @abstractmethod
     def set_speed(self, speed: int) -> None:
         '''
         Set speed immediately 0-100% range.
         Param: speed: the range 0 - 100% that speed will be changed to.
         '''
+        print('Speed set.')
 
-    @abstractmethod
     def dir_control(self, direction: str) -> None:
         '''
         Change motor direction to input direction.
         Param: direction: the direction to be headed to.
         '''
+        print(f'Direction changed to {direction}.')
 
-    @abstractmethod
     def move(self, direction: str = "forward") -> None:
         '''
         Start moving motor with default speed towards input direction.
         Param: direction: the direction to be headed to.
         '''
+        print(f'Moving {direction}.')
 
-    @abstractmethod
     def stop(self) -> None:
         '''Stops the motor.'''
+        print('Stopping.')
 
 
-class OdometerInterface(ABC):
+class Odometer(control_interfaces.OdometerInterface):
     '''
-    Interface for Odometer control.
+    Class Odometer() -> Odometer control.
     Functions:
     count_revolutions() Increases the counter of revolutions.
     get_revolutions() Returns the number of revolutions.
     get_distance() Returns the traveled distance in cm.
     reset() Resets the steps counter.
     '''
-
-    @abstractmethod
     def count_revolutions(self) -> None:
         '''Increase total steps by one.'''
+        print('Steps increased.')
 
-    @abstractmethod
     def get_steps(self) -> int:
         ''' Returns total number of steps. '''
+        return random.randint(0, 1000)
 
-    @abstractmethod
     def get_revolutions(self) -> float:
         ''' Returns total number of revolutions. '''
+        return random.random()
 
-    @abstractmethod
     def get_distance(self) -> float:
         ''' Return the total distance traveled so far (in cm). '''
+        return random.random()
 
-    @abstractmethod
     def reset(self) -> None:
         ''' Reset the total traveled distance and revolutions. '''
+        print('Steps reset.')
 
 
-class UltrasonicSensorInterface(ABC):
+class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
     '''
-    Interface for Ultrasonic sensor control.
+    Class UltrasonicSensor() -> Ultrasonic sensor control.
     Functions:
     get_distance() return distance in cm.
     '''
-
     def get_distance(self) -> float:
         '''
         Gets the distance to the closest obstacle.
         Returns: the distance to the closest obstacle (in cm).
         '''
+        return random.random()
 
 
-class AccelerometerInterface(ABC):
+class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
     '''
-    Interface for accelerometer and gyroscope.
-    Functions:
-    get_acceleration(dimension) Returns the acceleration for a specific dimension.
-    get_gyro(dimension) Returns the gyroscope for a specific dimension.
-    '''
-
-    @abstractmethod
-    def get_acceleration(self, dimension: str) -> float:
-        '''
-        Gets the acceleration for a specific dimension.
-        Param: dimension: the dimension requested.
-        Returns: the acceleration for a specific dimension.
-        '''
-
-    @abstractmethod
-    def get_gyro(self, dimension: str) -> float:
-        '''
-        Gets gyroscope for a specific dimension.
-        Param: dimension: the dimension requested.
-        Returns: the gyroscope for a specific dimension.
-        '''
-
-
-class AnalogueReadingsInterface(ABC):
-    '''
-    Interface for Analogue Readings.
+    Class AnalogueReadings() -> Handles Analogue Readings.
     Functions:
     get_reading(pin) Gets reading of a specific sensor specified by input pin.
     '''
-
-    @abstractmethod
     def get_reading(self, pin: int) -> float:
         '''
         Gets reading of a specific sensor specified by input pin.
         Param: pin: the pin of the sensor.
         Returns: the reading of the requested sensor.
         '''
+        return random.random()
 
-class NoiseInterface(ABC):
-    '''
-    Interface for noise (detection).
-    Functions:
-    detect_noise(): Returns True only if noise is detected.
-    '''
-    @abstractmethod
-    def detect_noise(self) -> bool:
-        '''
-        Returns True only if noise was detected.
-        '''
 
-# Hardware section
-class GenInputInterface(ABC):
+class LedRGB(control_interfaces.LedRGBInterface):
     '''
-    Interface for GenInput.
-    Functions:
-    get_state(): Returns state 0 or 1.
-    '''
-    @abstractmethod
-    def get_state(self) -> int:
-        '''
-        Returns state 0 or 1
-        '''
-
-class GenOutputInterface(ABC):
-    '''
-    Interface for GenOutput.
-    Functions:
-    set_on() set High the output pin
-    set_off() set Low the output pin
-    '''
-    @abstractmethod
-    def set_on(self) -> None:
-        '''
-        Set High the output pin
-        '''
-
-    @abstractmethod
-    def set_off(self) -> None:
-        '''
-        Set Low the output pin
-        '''
-
-class LedRGBInterface(ABC):
-    '''
-    Interface for Led control.
-    Functions:
+    Class LedRGB() -> Led control
     set_on(color): sets led to input color.
     '''
-
-    @abstractmethod
     def set_on(self, color: str) -> None:
         '''
         Changes the color of a led
         Param: color: the wanted color
         For closing the led, use color == 'closed'
         '''
+        print(f'Color {color} set.')
+
+
+class Accelerometer(control_interfaces.AccelerometerInterface):
+    '''
+    Class Accelerometer() -> Handles accelerometer and gyroscope.
+    Functions:
+    get_acceleration(dimension) Returns the acceleration for a specific dimension.
+    get_gyro(dimension) Returns the gyroscope for a specific dimension.
+    '''
+    def get_acceleration(self, dimension: str) -> float:
+        '''
+        Gets the acceleration for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the acceleration for a specific dimension.
+        '''
+        return random.random()
+
+
+    def get_gyro(self, dimension: str) -> float:
+        '''
+        Gets gyroscope for a specific dimension.
+        Param: dimension: the dimension requested.
+        Returns: the gyroscope for a specific dimension.
+        '''
+        return random.random()
+
+class Noise(control_interfaces.NoiseInterface):
+    '''
+    Class Noise() -> Handles Noise Detection.
+    Functions:
+    detect_noise(): Returns True only if noise was detected.
+    '''
+    def detect_noise(self) -> bool:
+        '''
+        Returns True only if noise was detected.
+        '''
+        return bool(random.randint(0, 1))
+
+# Hardware section
+class GenInput(control_interfaces.GenInputInterface):
+    '''
+    Class GenInput().
+    Functions:
+    get_state(): Returns state 0 or 1.
+    '''
+    def get_state(self) -> int:
+        '''
+        Returns state 0 or 1
+        '''
+        return random.randint(0, 1)
+
+class GenOutput(control_interfaces.GenOutputInterface):
+    '''
+    Class GenOutput()
+    Functions:
+    set_on() set High the output pin
+    set_off() set Low the output pin
+    '''
+    def set_on(self) -> None:
+        '''
+        Set High the output pin
+        '''
+        print('GenOutput was set on.')
+
+    def set_off(self) -> None:
+        '''
+        Set Low the output pin
+        '''
+        print('GenOutput was set off.')

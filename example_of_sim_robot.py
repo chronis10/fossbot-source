@@ -4,7 +4,7 @@ import time
 from parameters_parser.parser import load_parameters
 from common.data_structures import configuration
 from common.interfaces import robot_interface
-from real_robot.fossbot import FossBot as RealFossBot
+import coppeliasim_robot.fossbot as f
 from coppeliasim_robot.fossbot import FossBot as SimuFossBot
 
 def main(robot: robot_interface.FossBotInterface) -> None:
@@ -15,7 +15,11 @@ def main(robot: robot_interface.FossBotInterface) -> None:
 
 def ultimate_test(robot: robot_interface.FossBotInterface) -> None:
     '''Tests important functions of robot'''
-    robot.move_distance(21)
+    robot.move_distance(10)
+    robot.wait(1)
+    robot.motor_left.set_speed(50)
+    robot.motor_right.set_speed(50)
+    robot.move_distance(11)
     robot.wait(1)
     robot.rotate_clockwise_90()
     robot.rotate_counterclockwise_90()
@@ -32,6 +36,18 @@ def ultimate_test(robot: robot_interface.FossBotInterface) -> None:
     print('Changing led colors...')
     change_color(robot)
 
+def follow_line(robot: robot_interface.FossBotInterface) -> None:
+    '''Follows black line.'''
+    while True:
+        middle = robot.check_on_line(1)
+        right = robot.check_on_line(2)
+        left = robot.check_on_line(3)
+        if middle:
+            robot.move_forward()
+        elif right:
+            robot.rotate_counterclockwise()
+        elif left:
+            robot.rotate_clockwise()
 
 def change_color(robot: robot_interface.FossBotInterface) -> None:
     ''' Changes the color of a led for some times '''
@@ -50,32 +66,34 @@ def change_color(robot: robot_interface.FossBotInterface) -> None:
         robot.wait(2)
         robot.rgb_set_color('violet')
         robot.wait(2)
+    print('Closing led...')
     robot.rgb_set_color('closed')
+
+def change_path_test(client_id: int, floor_name: str = 'Floor') -> None:
+    '''
+    "Draws" images-paths on the floor.
+    Param: client_id: the client's id.
+           floor_name: the name of the floor in the scene (vrep default == 'Floor').
+    '''
+    print('Changing Path...')
+    f.draw_path_auto(client_id, 'Path1.jpg', floor_name)
+    time.sleep(3)
+    print('Changing Path...')
+    f.draw_path_auto(client_id, 'Path2.jpg', floor_name)
+    time.sleep(3)
+    print('Changing Path...')
+    f.draw_path_auto(client_id, 'Path3.jpg', floor_name)
+    time.sleep(3)
+    print('Clearing Path...')
+    f.clear_path(client_id, floor_name)
 
 if __name__ == "__main__":
     # Load parameters from yml file
     FILE_PARAM = load_parameters()
 
-    # Real robot test ================================================
-    parameters = configuration.RobotParameters(
-        sensor_distance=configuration.SensorDistance(**FILE_PARAM["sensor_distance"]),
-        motor_left_speed=configuration.MotorLeftSpeed(**FILE_PARAM["motor_left"]),
-        motor_right_speed=configuration.MotorRightSpeed(**FILE_PARAM["motor_right"]),
-        default_step=configuration.DefaultStep(**FILE_PARAM["step"]),
-        light_sensor=configuration.LightSensor(**FILE_PARAM["light_sensor"]),
-        line_sensor_left=configuration.LineSensorLeft(**FILE_PARAM["line_sensor_left"]),
-        line_sensor_center=configuration.LineSensorCenter(**FILE_PARAM["line_sensor_center"]),
-        line_sensor_right=configuration.LineSensorRight(**FILE_PARAM["line_sensor_right"]),
-        rotate_90=configuration.Rotate90(**FILE_PARAM["rotate_90"]))
-
-    # Create a real robot
-    my_real_robot = RealFossBot(parameters=parameters)
-    main(my_real_robot)
-
-
     # Simulation robot test ===========================================
-    parameters_sim = configuration.SimRobotIds(**FILE_PARAM["simulator_ids"])
-    parameters = configuration.SimRobotParameters(
+    SIM_IDS = configuration.SimRobotIds(**FILE_PARAM["simulator_ids"])
+    SIM_PARAM = configuration.SimRobotParameters(
         sensor_distance=configuration.SensorDistance(**FILE_PARAM["sensor_distance"]),
         motor_left_speed=configuration.MotorLeftSpeed(**FILE_PARAM["motor_left"]),
         motor_right_speed=configuration.MotorRightSpeed(**FILE_PARAM["motor_right"]),
@@ -85,10 +103,12 @@ if __name__ == "__main__":
         line_sensor_center=configuration.LineSensorCenter(**FILE_PARAM["line_sensor_center"]),
         line_sensor_right=configuration.LineSensorRight(**FILE_PARAM["line_sensor_right"]),
         rotate_90=configuration.Rotate90(**FILE_PARAM["rotate_90"]),
-        simulation=parameters_sim)
+        simulation=SIM_IDS)
 
     # Create a simu robot
-    my_simu_robot = SimuFossBot(parameters=parameters)
-    main(my_simu_robot)
-    #ultimate_test(my_simu_robot)
-    #change_color(my_simu_robot)
+    SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
+    main(SIM_ROBOT)
+    #ultimate_test(SIM_ROBOT)
+    #change_color(SIM_ROBOT)
+    #follow_line(SIM_ROBOT)
+    #change_path_test(SIM_ROBOT.client_id, SIM_IDS.floor_name)
