@@ -1,4 +1,4 @@
-'''Gym for simulated environment.'''
+'''Gym interface for simulated environment.'''
 
 from abc import ABC, abstractmethod
 from common.interfaces import robot_interface
@@ -17,14 +17,15 @@ class EnvironmentInterface(ABC):
     get_simulation_time(robot): Returns current time of simulation.
     teleport(robot,pos_x,pos_y,height,in_bounds): Teleports fossbot to input location.
     teleport_random(robot,in_bounds): Teleports fossbot to random location.
-    teleport_empty_space(robot,time_diff): Teleports fossbot to location with no obstacles (on the floor).
+    teleport_empty_space(robot,time_diff): Teleports fossbot to location
+                                           with no obstacles (on the floor).
     """
 
     # change path functions:
     @abstractmethod
     def draw_path(
-        self, robot: robot_interface.FossBotInterface, file_name: str,
-        scale_x: float = 5.0, scale_y: float = 5.0) -> None:
+            self, robot: robot_interface.FossBotInterface, file_name: str,
+            scale_x: float = 5.0, scale_y: float = 5.0) -> None:
         '''
         Changes the path of the scene.
         Param: robot: an instance of fossbot.
@@ -51,7 +52,9 @@ class EnvironmentInterface(ABC):
         '''
 
     @abstractmethod
-    def change_brightness(self, robot: robot_interface.FossBotInterface, brightness: int = 50) -> None:
+    def change_brightness(
+            self, robot: robot_interface.FossBotInterface,
+            brightness: int = 50) -> None:
         '''
         Changes scene's brightness.
         Param: robot: an instance of fossbot.
@@ -76,9 +79,9 @@ class EnvironmentInterface(ABC):
     # fossbot teleport
     @abstractmethod
     def teleport(
-        self, robot: robot_interface.FossBotInterface,
-        pos_x: float, pos_y: float, height: float = 0.19,
-        in_bounds: bool = True) -> None:
+            self, robot: robot_interface.FossBotInterface,
+            pos_x: float, pos_y: float, height: float = 0.19,
+            in_bounds: bool = True) -> None:
         '''
         Teleports fossbot to input location.
         Param: robot: the instance of fossbot to be teleported.
@@ -89,7 +92,9 @@ class EnvironmentInterface(ABC):
         '''
 
     @abstractmethod
-    def teleport_random(self, robot: robot_interface.FossBotInterface, in_bounds: bool = True) -> None:
+    def teleport_random(
+            self, robot: robot_interface.FossBotInterface,
+            in_bounds: bool = True) -> None:
         '''
         Teleports fossbot to random location.
         Param: robot: the instance of fossbot to be teleported.
@@ -97,7 +102,9 @@ class EnvironmentInterface(ABC):
         '''
 
     @abstractmethod
-    def teleport_empty_space(self, robot: robot_interface.FossBotInterface, time_diff: int = 0.5) -> None:
+    def teleport_empty_space(
+            self, robot: robot_interface.FossBotInterface,
+            time_diff: int = 0.5) -> None:
         '''
         Teleports fossbot to location with no obstacles (on the floor).
         Param: robot: the instance of fossbot to be teleported.

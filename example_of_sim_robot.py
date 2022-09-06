@@ -1,6 +1,6 @@
 """ Example of a real and simulated robot"""
 import time
-from coppeliasim_robot import control
+#from coppeliasim_robot import control
 from parameters_parser.parser import load_parameters
 from common.data_structures import configuration
 from common.interfaces import robot_interface
@@ -97,8 +97,8 @@ def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
             print(c_check)
 
 def inbounds_teleport_test(
-    robot: robot_interface.FossBotInterface,
-    environment: Environment) -> None:
+        robot: robot_interface.FossBotInterface,
+        environment: Environment) -> None:
     '''
     Tests teleportation with big values (so the robot will stay in bounds).
     Reminder:
@@ -116,8 +116,8 @@ def inbounds_teleport_test(
     time.sleep(2)
 
 def change_brightness_test(
-    robot: robot_interface.FossBotInterface,
-    environment: Environment) -> None:
+        robot: robot_interface.FossBotInterface,
+        environment: Environment) -> None:
     '''Test for changing brightness.'''
     environment.change_brightness(robot, 0)
     time.sleep(2)

@@ -4,7 +4,6 @@ Simulated robot implementation.
 
 import time
 import subprocess
-import random
 from common.data_structures import configuration
 from common.interfaces import robot_interface
 from coppeliasim_robot import control
