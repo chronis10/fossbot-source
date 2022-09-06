@@ -128,6 +128,19 @@ def change_brightness_test(
     environment.change_brightness(robot, 70)
     time.sleep(2)
 
+def ultimate_environment_test(
+        environment: Environment,
+        robot: robot_interface.FossBotInterface) -> None:
+    '''Tests all environment functions.'''
+    inbounds_teleport_test(robot, environment)
+    environment.teleport_empty_space(robot)
+    environment.clear_path(robot)
+    change_path_test(robot, environment)
+    change_brightness_test(robot, environment)
+    environment.default_brightness(robot)
+    environment.teleport_random(robot, in_bounds=False)
+    environment.draw_path(robot, 'Path1.jpg', scale_x=3)
+
 if __name__ == "__main__":
     # Load parameters from yml file
     FILE_PARAM = load_parameters()
@@ -155,10 +168,6 @@ if __name__ == "__main__":
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
-    #inbounds_teleport_test(SIM_ROBOT, ENVIRONMENT)
 
-    # Environment Handler Testing:
-    #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
-    #ENVIRONMENT.clear_path(SIM_ROBOT)
-    #change_path_test(SIM_ROBOT, ENVIRONMENT)
-    change_brightness_test(SIM_ROBOT, ENVIRONMENT)
+    # Environment Testing:
+    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
