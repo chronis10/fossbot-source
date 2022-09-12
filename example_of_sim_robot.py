@@ -1,10 +1,10 @@
 """ Example of a real and simulated robot"""
-
 import time
+#from coppeliasim_robot import control
 from parameters_parser.parser import load_parameters
 from common.data_structures import configuration
 from common.interfaces import robot_interface
-import coppeliasim_robot.fossbot as f
+from coppeliasim_robot.sim_gym import Environment
 from coppeliasim_robot.fossbot import FossBot as SimuFossBot
 
 def main(robot: robot_interface.FossBotInterface) -> None:
@@ -69,23 +69,77 @@ def change_color(robot: robot_interface.FossBotInterface) -> None:
     print('Closing led...')
     robot.rgb_set_color('closed')
 
-def change_path_test(client_id: int, floor_name: str = 'Floor') -> None:
+def change_path_test(robot: robot_interface.FossBotInterface, environment: Environment) -> None:
     '''
     "Draws" images-paths on the floor.
-    Param: client_id: the client's id.
-           floor_name: the name of the floor in the scene (vrep default == 'Floor').
     '''
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path1.jpg', floor_name)
+    environment.draw_path_auto(robot, 'Path1.jpg')
     time.sleep(3)
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path2.jpg', floor_name)
+    environment.draw_path_auto(robot, 'Path2.jpg')
     time.sleep(3)
     print('Changing Path...')
-    f.draw_path_auto(client_id, 'Path3.jpg', floor_name)
+    environment.draw_path_auto(robot, 'Path3.jpg')
     time.sleep(3)
     print('Clearing Path...')
-    f.clear_path(client_id, floor_name)
+    environment.clear_path(robot)
+
+def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
+    '''
+    Prints True if fossbot has collided with collidable object.
+    '''
+    # displays all handles and names of objects in the scene:
+    #control.get_object_children(SIM_IDS.client_id, print_all=True)
+    while True:
+        c_check = robot.check_collision()
+        if c_check:
+            print(c_check)
+
+def inbounds_teleport_test(
+        robot: robot_interface.FossBotInterface,
+        environment: Environment) -> None:
+    '''
+    Tests teleportation with big values (so the robot will stay in bounds).
+    Reminder:
+        abs(max_x) = 2.3, abs(max_y) = 2.3
+        (aka almost the half of the scale of floor), z==height.
+        floor_scale: x==5, y==5.
+    '''
+    environment.teleport(robot, 100, 100, in_bounds=True)
+    time.sleep(2)
+    environment.teleport(robot, -100, 100, in_bounds=True)
+    time.sleep(2)
+    environment.teleport(robot, 100, -100, in_bounds=True)
+    time.sleep(2)
+    environment.teleport(robot, -100, -100, in_bounds=True)
+    time.sleep(2)
+
+def change_brightness_test(
+        robot: robot_interface.FossBotInterface,
+        environment: Environment) -> None:
+    '''Test for changing brightness.'''
+    environment.change_brightness(robot, 0)
+    time.sleep(2)
+    environment.change_brightness(robot, 100)
+    time.sleep(2)
+    environment.change_brightness(robot, 50)
+    time.sleep(2)
+    environment.change_brightness(robot, 70)
+    time.sleep(2)
+
+def ultimate_environment_test(
+        environment: Environment,
+        robot: robot_interface.FossBotInterface) -> None:
+    '''Tests all environment functions.'''
+    inbounds_teleport_test(robot, environment)
+    environment.teleport_empty_space(robot)
+    environment.clear_path(robot)
+    change_path_test(robot, environment)
+    change_brightness_test(robot, environment)
+    environment.default_brightness(robot)
+    environment.teleport_random(robot, in_bounds=False)
+    environment.draw_path(robot, 'Path1.jpg', scale_x=3)
 
 if __name__ == "__main__":
     # Load parameters from yml file
@@ -107,8 +161,13 @@ if __name__ == "__main__":
 
     # Create a simu robot
     SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
-    main(SIM_ROBOT)
+    # Create environment
+    ENVIRONMENT = Environment()
+    #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
-    #change_path_test(SIM_ROBOT.client_id, SIM_IDS.floor_name)
+    #check_collision_test(SIM_ROBOT)
+
+    # Environment Testing:
+    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)

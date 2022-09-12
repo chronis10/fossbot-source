@@ -44,7 +44,7 @@ rotate_90:
   default: 12
 
 simulator_ids:
-  client_id: None
+  client_id: ~  # ~ is None (or empty value)
   left_motor_name: left_motor
   right_motor_name: right_motor
   light_sensor_name: light_sensor
@@ -56,3 +56,6 @@ simulator_ids:
   gyroscope_name: GyroSensor
   led_name: led_light
   floor_name: Floor
+  body_name: body
+  fossbot_name: fossbot
+  def_camera_name: DefaultCamera

@@ -6,7 +6,7 @@ from common.interfaces import robot_interface
 
 
 class FossBot(robot_interface.FossBotInterface):
-    """ Real robot """
+    """ Dummy robot """
     # movement
     def just_move(self, direction: str = "forward") -> None:
         """

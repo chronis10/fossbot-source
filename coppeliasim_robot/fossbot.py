@@ -3,7 +3,6 @@ Simulated robot implementation.
 """
 
 import time
-import os
 import subprocess
 from common.data_structures import configuration
 from common.interfaces import robot_interface
@@ -20,20 +19,10 @@ except FileNotFoundError:
     print('--------------------------------------------------------------')
     print('')
 
-def connect_vrep() -> int:
-    '''
-    Connects to Coppelia Server.
-    Returns: the client's id.
-    '''
-    print('Program started')
-    sim.simxFinish(-1) # just in case, close all opened connections
-    return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
-
-
 class FossBot(robot_interface.FossBotInterface):
     """ Sim robot """
     def __init__(self, parameters: configuration.SimRobotParameters) -> None:
-        self.client_id = connect_vrep()
+        self.client_id = self.__connect_vrep()
         if self.client_id == -1:
             print('Failed connecting to remote API server')
             raise ConnectionError
@@ -56,6 +45,15 @@ class FossBot(robot_interface.FossBotInterface):
         self.rgb_led = control.LedRGB(self.parameters)
         #!FIXME -- implement constructor of Noise and input its parameters here:
         self.noise = control.Noise()
+
+    def __connect_vrep(self) -> int:
+        '''
+        Connects to Coppelia Server.
+        Returns: the client's id.
+        '''
+        print('Program started')
+        sim.simxFinish(-1) # just in case, close all opened connections
+        return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
 
     # movement
     def just_move(self, direction: str = "forward") -> None:
@@ -344,54 +342,42 @@ class FossBot(robot_interface.FossBotInterface):
     def __del__(self) -> None:
         sim.simxFinish(self.client_id)
 
-# change path functions:
-def draw_path(client_id: int, file_name: str, floor_name: str = 'Floor', scale_x: float = 5.0, scale_y: float = 5.0) -> None:
-    '''
-    Changes the path of the scene.
-    Param: client_id: the client's id.
-           file_name: the name of the picture to change the path to
-           (save picture-path in paths folder).
-           floor_name: the floor's name in the scene (vrep default name == 'Floor').
-           scale_x: scale x for image on the floor.
-           scale_y: scale y for image on the floor.
-    '''
-    path_dir_b = os.path.join(os.path.dirname(__file__), 'paths')
-    path_draw = os.path.join(path_dir_b, file_name)
-    if not os.path.exists(path_draw):
-        print('Cannot find requested image.')
-        raise FileNotFoundError
-    while True:
-        res, _, _, _, _ = control.exec_vrep_script(
-            client_id, floor_name, 'draw_path',
-            in_floats=[scale_x, scale_y], in_strings=[path_draw])
-        if res == sim.simx_return_ok:
-            break
+    # implemented only in simulation
+    def check_collision(self) -> bool:
+        '''
+        Returns True if robot collides with other (collidable) object.
+        '''
+        while True:
+            res, collision, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.body_name,
+                'check_collision')
+            if res == sim.simx_return_ok and collision[0] != -1:
+                return bool(collision[0])
 
-def draw_path_auto(client_id: int, file_name: str, floor_name: str = 'Floor') -> None:
-    '''
-    Changes the path of the scene and scales it automatically on the floor.
-    Param: client_id: the client's id.
-           file_name: the name of the picture to change the path to
-           (save picture-path in paths folder).
-           floor_name: the floor's name in the scene (vrep default name == 'Floor').
-    '''
-    path_dir_b = os.path.join(os.path.dirname(__file__), 'paths')
-    path_draw = os.path.join(path_dir_b, file_name)
-    if not os.path.exists(path_draw):
-        print('Cannot find requested image.')
-        raise FileNotFoundError
-    while True:
-        res, _, _, _, _ = control.exec_vrep_script(
-            client_id, floor_name, 'draw_path_auto', in_strings=[path_draw])
-        if res == sim.simx_return_ok:
-            break
+    def check_in_bounds(self) -> bool:
+        '''Returns True only if fossbot is on the floor.'''
+        floor_path = '/' + self.parameters.simulation.floor_name
+        while True:
+            res, in_bounds, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.fossbot_name,
+                'check_in_bounds', in_strings=[floor_path])
+            if res == sim.simx_return_ok:
+                return bool(in_bounds[0])
 
-def clear_path(client_id: int, floor_name: str = 'Floor') -> None:
-    '''
-    Clears the path of the scene.
-    Param: client_id: the client's id.
-    '''
-    while True:
-        res, _, _, _, _ = control.exec_vrep_script(client_id, floor_name, 'clear_path')
-        if res == sim.simx_return_ok:
-            break
+    def check_orientation(self) -> bool:
+        '''Returns True only if fossbot has its initial orientation.'''
+        while True:
+            res, check_orient, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.fossbot_name,
+                'check_orientation')
+            if res == sim.simx_return_ok:
+                return bool(check_orient[0])
+
+    def reset_orientation(self) -> None:
+        '''Resets fossbot orientation (if it has flipped etc).'''
+        while True:
+            res, _, _, _, _ = control.exec_vrep_script(
+                self.client_id, self.parameters.simulation.fossbot_name,
+                'reset_orientation')
+            if res == sim.simx_return_ok:
+                break
