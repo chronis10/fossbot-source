@@ -7,7 +7,7 @@ import time
 import RPi.GPIO as GPIO
 from mpu6050 import mpu6050
 import Adafruit_MCP3008
-from common.interfaces import control_interfaces
+from fossbot_lib.common.interfaces import control_interfaces
 
 # General functions
 def start_lib() -> None:

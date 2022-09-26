@@ -2,7 +2,7 @@
 Implementation for control (dummy).
 """
 import random
-from common.interfaces import control_interfaces
+from fossbot_lib.common.interfaces import control_interfaces
 
 class Motor(control_interfaces.MotorInterface):
     """

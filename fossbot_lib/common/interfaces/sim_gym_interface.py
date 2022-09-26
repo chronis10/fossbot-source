@@ -1,7 +1,7 @@
 '''Gym interface for simulated environment.'''
 
 from abc import ABC, abstractmethod
-from common.interfaces import robot_interface
+from fossbot_lib.common.interfaces import robot_interface
 
 # used only in simulation robot:
 class EnvironmentInterface(ABC):

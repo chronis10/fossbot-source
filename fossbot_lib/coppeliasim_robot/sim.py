@@ -6,7 +6,7 @@ import struct
 import sys
 import os
 import ctypes as ct
-from coppeliasim_robot.simConst import *
+from fossbot_lib.coppeliasim_robot.simConst import *
 
 # New code ===========================
 LIB_DIR_B=os.path.join(os.path.dirname(__file__), 'lib')
