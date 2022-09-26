@@ -1,0 +1,3 @@
+fossbot_lib/common
+fossbot_lib/coppeliasim_robot/
+fossbot_lib/parameters_parser
