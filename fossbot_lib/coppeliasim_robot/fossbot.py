@@ -4,7 +4,7 @@ Simulated robot implementation.
 
 import time
 import subprocess
-import fossbot_lib.common.data_structures import configuration
+from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.coppeliasim_robot import control
 
