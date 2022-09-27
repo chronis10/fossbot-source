@@ -1,38 +1,40 @@
 from setuptools import setup
 import sys
+from setuptools.command.install import install as _install
 
-cur_packages = ['fossbot_lib/coppeliasim_robot/',
-                'fossbot_lib/common/data_structures',
+cur_packages = ['fossbot_lib/common/data_structures',
                 'fossbot_lib/common/interfaces',
                 'fossbot_lib/parameters_parser']
-with open('fossbot_lib/coppeliasim_robot/requirements.txt') as f:
-    requirements = f.read().splitlines()
 
-# if len(sys.argv) < 2 :
-#     print('Argument --sim for simulator, --dummy for dummy and --real for real robot.')
-#     exit(1)
+requirements = []
 
-# if '--sim' in sys.argv:
-#     sys.argv.remove('--sim' )
-#     cur_packages = ['fossbot_lib/coppeliasim_robot/',
-#                     'fossbot_lib/common',
-#                     'fossbot_lib/parameters_parser']
-#     with open('fossbot_lib/coppeliasim_robot/requirements.txt') as f:
-#         requirements = f.read().splitlines()
-# elif '--real' in sys.argv:
-#     raise NotImplementedError
-# elif '--dummy' in sys.argv:
+class Install(_install):
+    user_options = _install.user_options + [('platform=', None, None)]
+    def initialize_options(self):
+        _install.initialize_options(self)
+        self.platform = None
 
-#     sys.argv.remove('--dummy')
-#     cur_packages = ['fossbot_lib/dummy_robot/',
-#                     'fossbot_lib/common',
-#                     'fossbot_lib/parameters_parser']
+    def finalize_options(self):
+        _install.finalize_options(self)
+    
+    def load_requirements(self,path):
+        with open(path) as f:
+            requirements = f.read().splitlines()
+        return requirements
 
-#     with open('fossbot_lib/dummy_robot/requirements.txt') as f:
-#         requirements = f.read().splitlines()
-# else:
-#     print('Argument not found')
-#     exit(1)
+    def run(self):
+        global cur_packages
+        global requirements
+        if self.platform == "sim":
+            cur_packages.append('fossbot_lib/coppeliasim_robot/')                            
+            requirements = self.load_requirements('fossbot_lib/coppeliasim_robot/requirements.txt')
+        elif self.platform == "real":
+            cur_packages.append('fossbot_lib/real_robot/')
+            requirements = self.load_requirements('fossbot_lib/real_robot/requirements.txt')
+        else:
+            cur_packages.append('fossbot_lib/dummy_robot/')
+            requirements = self.load_requirements('fossbot_lib/real_robot/requirements.txt')
+        _install.run(self)
 
 setup(
    name='fossbot_lib',
@@ -45,5 +47,6 @@ setup(
 #    license='LICENSE.txt',
    description='An awesome package that does something',
 #    long_description=open('README.txt').read(),
-   install_requires= requirements
+   install_requires= requirements,
+   cmdclass={'install': Install}
  )
