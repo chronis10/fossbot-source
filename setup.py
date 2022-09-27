@@ -3,6 +3,7 @@ import sys
 
 cur_packages = ['fossbot_lib/coppeliasim_robot/',
                 'fossbot_lib/common/data_structures',
+                'fossbot_lib/common/interfaces',
                 'fossbot_lib/parameters_parser']
 with open('fossbot_lib/coppeliasim_robot/requirements.txt') as f:
     requirements = f.read().splitlines()
