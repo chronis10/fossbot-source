@@ -7,7 +7,7 @@ from fossbot_lib.coppeliasim_robot import control
 from fossbot_lib.common.interfaces import robot_interface,sim_gym_interface
 
 try:
-    from coppeliasim_robot import sim
+    from fossbot_lib.coppeliasim_robot import sim
 except FileNotFoundError:
     print('--------------------------------------------------------------')
     print('"sim.py" could not be imported. This means very probably that')
