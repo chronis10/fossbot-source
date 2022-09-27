@@ -1,31 +1,37 @@
 from setuptools import setup
 import sys
 
-if len(sys.argv) < 2 :
-    print('Argument --sim for simulator, --dummy for dummy and --real for real robot.')
-    exit(1)
+cur_packages = ['fossbot_lib/coppeliasim_robot/',
+                'fossbot_lib/common',
+                'fossbot_lib/parameters_parser']
+with open('fossbot_lib/coppeliasim_robot/requirements.txt') as f:
+    requirements = f.read().splitlines()
 
-if '--sim' in sys.argv:
-    sys.argv.remove('--sim' )
-    cur_packages = ['fossbot_lib/coppeliasim_robot/',
-                    'fossbot_lib/common',
-                    'fossbot_lib/parameters_parser']
-    with open('fossbot_lib/coppeliasim_robot/requirements.txt') as f:
-        requirements = f.read().splitlines()
-elif '--real' in sys.argv:
-    raise NotImplementedError
-elif '--dummy' in sys.argv:
+# if len(sys.argv) < 2 :
+#     print('Argument --sim for simulator, --dummy for dummy and --real for real robot.')
+#     exit(1)
 
-    sys.argv.remove('--dummy')
-    cur_packages = ['fossbot_lib/dummy_robot/',
-                    'fossbot_lib/common',
-                    'fossbot_lib/parameters_parser']
+# if '--sim' in sys.argv:
+#     sys.argv.remove('--sim' )
+#     cur_packages = ['fossbot_lib/coppeliasim_robot/',
+#                     'fossbot_lib/common',
+#                     'fossbot_lib/parameters_parser']
+#     with open('fossbot_lib/coppeliasim_robot/requirements.txt') as f:
+#         requirements = f.read().splitlines()
+# elif '--real' in sys.argv:
+#     raise NotImplementedError
+# elif '--dummy' in sys.argv:
 
-    with open('fossbot_lib/dummy_robot/requirements.txt') as f:
-        requirements = f.read().splitlines()
-else:
-    print('Argument not found')
-    exit()
+#     sys.argv.remove('--dummy')
+#     cur_packages = ['fossbot_lib/dummy_robot/',
+#                     'fossbot_lib/common',
+#                     'fossbot_lib/parameters_parser']
+
+#     with open('fossbot_lib/dummy_robot/requirements.txt') as f:
+#         requirements = f.read().splitlines()
+# else:
+#     print('Argument not found')
+#     exit(1)
 
 setup(
    name='fossbot_lib',
