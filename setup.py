@@ -39,7 +39,7 @@ class Install(_install):
 setup(
    name='fossbot_lib',
    version='0.1.0',
-   author='Christos Chronis',
+   author='Christos Chronis & Manousos Linardakis',
    author_email='chronis@hua.gr',
    packages= cur_packages,
 #    scripts=['bin/script1','bin/script2'],
