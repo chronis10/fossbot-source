@@ -144,6 +144,15 @@ def ultimate_environment_test(
     current_path = pathlib.Path(__file__).parent.resolve()
     environment.draw_path(robot, f'{current_path}/paths/Path1.jpg', scale_x=3)
 
+def detect_noise_test(robot: robot_interface.FossBotInterface, for_time: float = 0.5) -> None:
+    '''
+    Noise detection test for specific amount of time.
+    Param: for_time: the time for the test to last.
+    '''
+    tar_time = time.time() + for_time
+    while time.time() < tar_time:
+        print(robot.get_noise_detection())
+
 if __name__ == "__main__":
     # Load parameters from yml file
     FILE_PARAM = load_parameters()
@@ -171,6 +180,7 @@ if __name__ == "__main__":
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
+    detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
-    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)

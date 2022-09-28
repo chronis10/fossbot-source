@@ -4,6 +4,9 @@ Implementation of simulated control.
 
 import math
 import time
+import threading
+import sounddevice as sd
+import numpy as np
 from fossbot_lib.common.interfaces import control_interfaces
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.coppeliasim_robot import sim
@@ -366,20 +369,36 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             return self.__convert_float(self.__get_line_data(left_sensor_name))
 
 
-#!FIXME -- implement this class with microphone (real hw)
 class Noise(control_interfaces.NoiseInterface):
     '''
     Class Noise() -> Handles Noise Detection.
     Functions:
     detect_noise() Returns True only if noise is detected.
     '''
-    #!FIXME
+    def __init__(self) -> None:
+        self.cur_vol = 0
+        self.step_thread = threading.Thread(target=self.__detect_noise_thread, daemon=True)
+        self.step_thread.start()
+
+    def __print_sound(self, indata, outdata, frames, time, status):
+        volume_norm = np.linalg.norm(indata)*10
+        volume_norm = int(volume_norm)
+        #print(volume_norm)
+        if volume_norm > 0:
+            self.cur_vol = 1
+        else:
+            self.cur_vol = 0
+
+    def __detect_noise_thread(self):
+        while True:
+            with sd.Stream(callback=self.__print_sound):
+                sd.sleep(1000)
+
     def detect_noise(self) -> bool:
         '''
         Returns True only if noise was detected.
         '''
-        # do it with microphone (real hw)
-        raise NotImplementedError
+        return bool(self.cur_vol)
 
 
 # Hardware section
