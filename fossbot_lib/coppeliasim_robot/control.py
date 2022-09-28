@@ -4,9 +4,9 @@ Implementation of simulated control.
 
 import math
 import time
-from common.interfaces import control_interfaces
-from common.data_structures import configuration
-from coppeliasim_robot import sim
+from fossbot_lib.common.interfaces import control_interfaces
+from fossbot_lib.common.data_structures import configuration
+from fossbot_lib.coppeliasim_robot import sim
 
 # General Functions
 def init_component(client_id: int, component_name: str) -> int:

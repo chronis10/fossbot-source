@@ -6,36 +6,17 @@ import struct
 import sys
 import os
 import ctypes as ct
-from coppeliasim_robot.simConst import *
+from fossbot_lib.coppeliasim_robot.simConst import *
 
-# New code ===========================
-LIB_DIR_B=os.path.join(os.path.dirname(__file__), 'lib')
-LIB_DIR = None
-# =========================
-
-#load library
-libsimx = None
 try:
-    file_extension = '.so'
-    if platform.system() =='cli':
-        file_extension = '.dll'
-        LIB_DIR=os.path.join(LIB_DIR_B,'Windows')
-    elif platform.system() =='Windows':
-        file_extension = '.dll'
-        LIB_DIR=os.path.join(LIB_DIR_B,'Windows')
-    elif platform.system() == 'Darwin':
-        file_extension = '.dylib'
-        LIB_DIR=os.path.join(LIB_DIR_B,'MacOS')
-    else:
-        import lsb_release as lr
-        file_extension = '.so'
-        ans=lr.get_os_release()
-        ans['RELEASE']=ans['RELEASE'].replace('.','_')
-        folderUbuntu = 'Ubuntu' + ans['RELEASE']
-        LIB_DIR=os.path.join(LIB_DIR_B,folderUbuntu)
 
-    libfullpath = os.path.join(LIB_DIR, 'remoteApi' + file_extension)
-    libsimx = ct.CDLL(libfullpath)
+    if platform.system() =='Windows':
+        file = 'remoteApi.dll'
+    elif platform.system() == 'Darwin':
+        file = 'file.dylib'
+    else:
+        file = 'remoteApi.so'
+    libsimx = ct.CDLL(file)
 except FileNotFoundError:
     print ('----------------------------------------------------')
     print ('The remoteApi library could not be loaded. Make sure')

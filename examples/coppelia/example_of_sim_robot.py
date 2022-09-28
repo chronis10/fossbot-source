@@ -1,11 +1,12 @@
 """ Example of a real and simulated robot"""
 import time
 #from coppeliasim_robot import control
-from parameters_parser.parser import load_parameters
-from common.data_structures import configuration
-from common.interfaces import robot_interface
-from coppeliasim_robot.sim_gym import Environment
-from coppeliasim_robot.fossbot import FossBot as SimuFossBot
+from fossbot_lib.parameters_parser.parser import load_parameters
+from fossbot_lib.common.data_structures import configuration
+from fossbot_lib.common.interfaces import robot_interface
+from fossbot_lib.coppeliasim_robot.sim_gym import Environment
+from fossbot_lib.coppeliasim_robot.fossbot import FossBot as SimuFossBot
+import pathlib
 
 def main(robot: robot_interface.FossBotInterface) -> None:
     """ A simple robot routine """
@@ -73,14 +74,15 @@ def change_path_test(robot: robot_interface.FossBotInterface, environment: Envir
     '''
     "Draws" images-paths on the floor.
     '''
+    current_path = pathlib.Path(__file__).parent.resolve()
     print('Changing Path...')
-    environment.draw_path_auto(robot, 'Path1.jpg')
+    environment.draw_path_auto(robot,f'{current_path}/paths/Path1.jpg')
     time.sleep(3)
     print('Changing Path...')
-    environment.draw_path_auto(robot, 'Path2.jpg')
+    environment.draw_path_auto(robot, f'{current_path}/paths/Path2.jpg')
     time.sleep(3)
     print('Changing Path...')
-    environment.draw_path_auto(robot, 'Path3.jpg')
+    environment.draw_path_auto(robot, f'{current_path}/paths/Path3.jpg')
     time.sleep(3)
     print('Clearing Path...')
     environment.clear_path(robot)
@@ -139,7 +141,8 @@ def ultimate_environment_test(
     change_brightness_test(robot, environment)
     environment.default_brightness(robot)
     environment.teleport_random(robot, in_bounds=False)
-    environment.draw_path(robot, 'Path1.jpg', scale_x=3)
+    current_path = pathlib.Path(__file__).parent.resolve()
+    environment.draw_path(robot, f'{current_path}/paths/Path1.jpg', scale_x=3)
 
 if __name__ == "__main__":
     # Load parameters from yml file
