@@ -24,24 +24,24 @@ class EnvironmentInterface(ABC):
     # change path functions:
     @abstractmethod
     def draw_path(
-            self, robot: robot_interface.FossBotInterface, file_name: str,
+            self, robot: robot_interface.FossBotInterface, path_to_file: str,
             scale_x: float = 5.0, scale_y: float = 5.0) -> None:
         '''
         Changes the path of the scene.
         Param: robot: an instance of fossbot.
-               file_name: the name of the picture to change the path to
-               (save picture-path in paths folder).
+               path_to_file: the path to the image for the
+               path in simulation to be changed to.
                scale_x: scale x for image on the floor.
                scale_y: scale y for image on the floor.
         '''
 
     @abstractmethod
-    def draw_path_auto(self, robot: robot_interface.FossBotInterface, file_name: str) -> None:
+    def draw_path_auto(self, robot: robot_interface.FossBotInterface, path_to_file: str) -> None:
         '''
         Changes the path of the scene and scales it automatically on the floor.
         Param: robot: an instance of fossbot.
-               file_name: the name of the picture to change the path to
-               (save picture-path in paths folder).
+               path_to_file: the path to the image for the
+               path in simulation to be changed to.
         '''
 
     @abstractmethod

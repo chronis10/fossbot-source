@@ -380,7 +380,8 @@ class Noise(control_interfaces.NoiseInterface):
         self.step_thread = threading.Thread(target=self.__detect_noise_thread, daemon=True)
         self.step_thread.start()
 
-    def __print_sound(self, indata, outdata, frames, time, status):
+    def __print_sound(self, indata, outdata, frames, time, status) -> None:
+        '''Function that calculates the volume.'''
         volume_norm = np.linalg.norm(indata)*10
         volume_norm = int(volume_norm)
         #print(volume_norm)
@@ -389,7 +390,8 @@ class Noise(control_interfaces.NoiseInterface):
         else:
             self.cur_vol = 0
 
-    def __detect_noise_thread(self):
+    def __detect_noise_thread(self) -> None:
+        '''Function executed in detect noise thread.'''
         while True:
             with sd.Stream(callback=self.__print_sound):
                 sd.sleep(1000)

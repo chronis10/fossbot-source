@@ -1,12 +1,12 @@
 """ Example of a real and simulated robot"""
 import time
+import os
 #from coppeliasim_robot import control
 from fossbot_lib.parameters_parser.parser import load_parameters
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.coppeliasim_robot.sim_gym import Environment
 from fossbot_lib.coppeliasim_robot.fossbot import FossBot as SimuFossBot
-import pathlib
 
 def main(robot: robot_interface.FossBotInterface) -> None:
     """ A simple robot routine """
@@ -74,15 +74,19 @@ def change_path_test(robot: robot_interface.FossBotInterface, environment: Envir
     '''
     "Draws" images-paths on the floor.
     '''
-    current_path = pathlib.Path(__file__).parent.resolve()
+    path_dir_b = os.path.join(os.path.dirname(__file__), 'scenes')
+    path_dir = os.path.join(path_dir_b, 'paths')
     print('Changing Path...')
-    environment.draw_path_auto(robot,f'{current_path}/paths/Path1.jpg')
+    file_path = os.path.join(path_dir, 'Path1.jpg')
+    environment.draw_path_auto(robot, file_path)
     time.sleep(3)
     print('Changing Path...')
-    environment.draw_path_auto(robot, f'{current_path}/paths/Path2.jpg')
+    file_path = os.path.join(path_dir, 'Path2.jpg')
+    environment.draw_path_auto(robot, file_path)
     time.sleep(3)
     print('Changing Path...')
-    environment.draw_path_auto(robot, f'{current_path}/paths/Path3.jpg')
+    file_path = os.path.join(path_dir, 'Path3.jpg')
+    environment.draw_path_auto(robot, file_path)
     time.sleep(3)
     print('Clearing Path...')
     environment.clear_path(robot)
@@ -141,8 +145,10 @@ def ultimate_environment_test(
     change_brightness_test(robot, environment)
     environment.default_brightness(robot)
     environment.teleport_random(robot, in_bounds=False)
-    current_path = pathlib.Path(__file__).parent.resolve()
-    environment.draw_path(robot, f'{current_path}/paths/Path1.jpg', scale_x=3)
+    path_dir_b = os.path.join(os.path.dirname(__file__), 'scenes')
+    path_dir = os.path.join(path_dir_b, 'paths')
+    file_path = os.path.join(path_dir, 'Path1.jpg')
+    environment.draw_path(robot, file_path, scale_x=3)
 
 def detect_noise_test(robot: robot_interface.FossBotInterface, for_time: float = 0.5) -> None:
     '''
@@ -180,7 +186,8 @@ if __name__ == "__main__":
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
-    detect_noise_test(SIM_ROBOT)
+    #detect_noise_test(SIM_ROBOT)
+    change_path_test(SIM_ROBOT, ENVIRONMENT)
 
     # Environment Testing:
-    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
