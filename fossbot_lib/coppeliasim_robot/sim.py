@@ -13,7 +13,7 @@ try:
     if platform.system() =='Windows':
         file = 'remoteApi.dll'
     elif platform.system() == 'Darwin':
-        file = 'file.dylib'
+        file = 'remoteApi.dylib'
     else:
         file = 'remoteApi.so'
     libsimx = ct.CDLL(file)
