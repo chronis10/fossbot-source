@@ -6,4 +6,7 @@ If coppelia (vrep) crashes with fossbot_final.ttt scene, please try out the foss
 
 This folder (scenes) has to include the folder "paths", which has all the available drawings that you want to use
 for changing the path in the simulation.
+
+Save your paths - drawings in the folder "paths".
+Please, draw the paths with black color.
 ***
