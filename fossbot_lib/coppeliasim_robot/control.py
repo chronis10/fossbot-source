@@ -5,11 +5,16 @@ Implementation of simulated control.
 import math
 import time
 import threading
-import sounddevice as sd
 import numpy as np
 from fossbot_lib.common.interfaces import control_interfaces
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.coppeliasim_robot import sim
+
+NO_SOUND = False
+try:
+    import sounddevice as sd
+except:
+    NO_SOUND = True
 
 # General Functions
 def init_component(client_id: int, component_name: str) -> int:
@@ -377,8 +382,11 @@ class Noise(control_interfaces.NoiseInterface):
     '''
     def __init__(self) -> None:
         self.cur_vol = 0
-        self.step_thread = threading.Thread(target=self.__detect_noise_thread, daemon=True)
-        self.step_thread.start()
+        if NO_SOUND is False:
+            self.step_thread = threading.Thread(target=self.__detect_noise_thread, daemon=True)
+            self.step_thread.start()
+        else:
+            print('Cannot detect noise. Microphone was not found.')
 
     def __print_sound(self, indata, outdata, frames, time, status) -> None:
         '''Function that calculates the volume.'''

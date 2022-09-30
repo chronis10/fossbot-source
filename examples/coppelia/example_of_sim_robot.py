@@ -1,6 +1,7 @@
 """ Example of a real and simulated robot"""
 import time
 import os
+import pathlib
 #from coppeliasim_robot import control
 from fossbot_lib.parameters_parser.parser import load_parameters
 from fossbot_lib.common.data_structures import configuration
@@ -74,7 +75,8 @@ def change_path_test(robot: robot_interface.FossBotInterface, environment: Envir
     '''
     "Draws" images-paths on the floor.
     '''
-    path_dir_b = os.path.join(os.path.dirname(__file__), 'scenes')
+    current_path = pathlib.Path(__file__).parent.resolve()
+    path_dir_b = os.path.join(current_path, 'scenes')
     path_dir = os.path.join(path_dir_b, 'paths')
     print('Changing Path...')
     file_path = os.path.join(path_dir, 'Path1.jpg')
@@ -145,7 +147,8 @@ def ultimate_environment_test(
     change_brightness_test(robot, environment)
     environment.default_brightness(robot)
     environment.teleport_random(robot, in_bounds=False)
-    path_dir_b = os.path.join(os.path.dirname(__file__), 'scenes')
+    current_path = pathlib.Path(__file__).parent.resolve()
+    path_dir_b = os.path.join(current_path, 'scenes')
     path_dir = os.path.join(path_dir_b, 'paths')
     file_path = os.path.join(path_dir, 'Path1.jpg')
     environment.draw_path(robot, file_path, scale_x=3)
@@ -186,8 +189,7 @@ if __name__ == "__main__":
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
-    #detect_noise_test(SIM_ROBOT)
-    change_path_test(SIM_ROBOT, ENVIRONMENT)
+    detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
-    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
