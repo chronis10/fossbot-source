@@ -189,7 +189,7 @@ if __name__ == "__main__":
     #change_color(SIM_ROBOT)
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
-    detect_noise_test(SIM_ROBOT)
+    #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
-    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)

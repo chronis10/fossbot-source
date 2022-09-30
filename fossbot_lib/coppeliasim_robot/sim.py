@@ -8,14 +8,16 @@ import os
 import ctypes as ct
 from fossbot_lib.coppeliasim_robot.simConst import *
 
-try:
+CURRENT_WORKING_DIR = os.getcwd()
 
-    if platform.system() =='Windows':
-        file = 'remoteApi.dll'
-    elif platform.system() == 'Darwin':
-        file = 'file.dylib'
-    else:
-        file = 'remoteApi.so'
+libsimx = None
+if platform.system() =='Windows':
+    file = os.path.join(CURRENT_WORKING_DIR, 'remoteApi.dll')
+elif platform.system() == 'Darwin':
+    file =  os.path.join(CURRENT_WORKING_DIR, 'remoteApi.dylib')
+else:
+    file =  os.path.join(CURRENT_WORKING_DIR, 'remoteApi.so')
+try:
     libsimx = ct.CDLL(file)
 except FileNotFoundError:
     print ('----------------------------------------------------')
