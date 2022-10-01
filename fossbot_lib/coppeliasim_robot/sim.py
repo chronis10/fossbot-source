@@ -19,7 +19,7 @@ else:
     file =  os.path.join(CURRENT_WORKING_DIR, 'remoteApi.so')
 try:
     libsimx = ct.CDLL(file)
-except FileNotFoundError:
+except:
     print ('----------------------------------------------------')
     print ('The remoteApi library could not be loaded. Make sure')
     print ('it is located in the same folder as "sim.py", or')
