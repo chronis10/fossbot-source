@@ -2,7 +2,7 @@
 import time
 import os
 import pathlib
-#from coppeliasim_robot import control
+#from fossbot_lib.coppeliasim_robot import control
 from fossbot_lib.parameters_parser.parser import load_parameters
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.common.interfaces import robot_interface
@@ -184,12 +184,15 @@ if __name__ == "__main__":
     SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
     # Create environment
     ENVIRONMENT = Environment()
+
+    # Environment Testing:
+    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+
+    # Fossbot Testing:
     #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
-    #follow_line(SIM_ROBOT)
+    #control.get_object_children(SIM_IDS.client_id, print_all=True)
+    follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
     #detect_noise_test(SIM_ROBOT)
-
-    # Environment Testing:
-    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)

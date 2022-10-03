@@ -27,7 +27,7 @@ class FossBot(robot_interface.FossBotInterface):
             print('Failed connecting to remote API server')
             raise ConnectionError
         print('Connected to remote API server')
-        self.parameters = parameters
+        self.parameters = self.__load_fossbot_paths(parameters)
         self.parameters.simulation.client_id = self.client_id
         self.motor_left = control.Motor(
             self.parameters, self.parameters.simulation.left_motor_name,
@@ -54,6 +54,27 @@ class FossBot(robot_interface.FossBotInterface):
         print('Program started')
         sim.simxFinish(-1) # just in case, close all opened connections
         return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
+
+    def __load_fossbot_paths(
+        self, parameters: configuration.SimRobotParameters) -> configuration.SimRobotParameters:
+        '''
+        Loads paramameters (paths) to match paths in scene.
+        Param: parameters: the simulation parameters.
+        Returns: the parameters match paths in scene.
+        '''
+        fossbot_name = parameters.simulation.fossbot_name
+        parameters.simulation.accelerometer_name = f'{fossbot_name}/{parameters.simulation.accelerometer_name}'
+        parameters.simulation.left_motor_name = f'{fossbot_name}/{parameters.simulation.left_motor_name}'
+        parameters.simulation.right_motor_name = f'{fossbot_name}/{parameters.simulation.right_motor_name}'
+        parameters.simulation.light_sensor_name = f'{fossbot_name}/{parameters.simulation.light_sensor_name}'
+        parameters.simulation.sensor_middle_name = f'{fossbot_name}/{parameters.simulation.sensor_middle_name}'
+        parameters.simulation.sensor_right_name = f'{fossbot_name}/{parameters.simulation.sensor_right_name}'
+        parameters.simulation.sensor_left_name = f'{fossbot_name}/{parameters.simulation.sensor_left_name}'
+        parameters.simulation.ultrasonic_name = f'{fossbot_name}/{parameters.simulation.ultrasonic_name}'
+        parameters.simulation.gyroscope_name = f'{fossbot_name}/{parameters.simulation.gyroscope_name}'
+        parameters.simulation.led_name = f'{fossbot_name}/{parameters.simulation.led_name}'
+        parameters.simulation.body_name = f'{fossbot_name}/{parameters.simulation.body_name}'
+        return parameters
 
     # movement
     def just_move(self, direction: str = "forward") -> None:
