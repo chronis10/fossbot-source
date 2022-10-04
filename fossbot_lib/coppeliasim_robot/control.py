@@ -46,6 +46,7 @@ def exec_vrep_script(client_id: int, script_component_name: str, script_function
              out_strings: list of string values returned by the function.
              out_buffer: bytearray returned by the function.
     '''
+    # print(f'Called {script_component_name}/{script_function_name}')
     return sim.simxCallScriptFunction(
         client_id, script_component_name, sim.sim_scripttype_childscript,
         script_function_name, in_ints, in_floats, in_strings, in_buffer,
@@ -184,7 +185,7 @@ class Odometer(control_interfaces.OdometerInterface):
             res, steps, _, _, _ = exec_vrep_script(
                 self.client_id, self.motor_name,
                 'count_revolutions')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(steps)>=1:
                 self.steps = steps[0]
                 break
 
@@ -192,7 +193,7 @@ class Odometer(control_interfaces.OdometerInterface):
         ''' Returns total number of steps. '''
         while True:
             res, steps, _, _, _ = exec_vrep_script(self.client_id, self.motor_name, 'get_steps')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(steps)>=1:
                 self.steps = steps[0]
                 return self.steps
 
@@ -246,7 +247,7 @@ class UltrasonicSensor(control_interfaces.UltrasonicSensorInterface):
             res, handle, distance, _, _ = exec_vrep_script(
                 self.client_id, ultrasonic_name,
                 'get_distance')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(distance)>=1:
                 break
         #Detected Handle: handle[0], Distance (in meters): distance[0]
         if distance[0] >= 1:
@@ -284,7 +285,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
             # res_2 -> data was successfully collected
             res_1, res_2, accel_data, _, _ = exec_vrep_script(
                 self.client_id, accel_name, 'get_accel')
-            if res_1 == sim.simx_return_ok and res_2[0] == sim.simx_return_ok:
+            if res_1 == sim.simx_return_ok and len(accel_data) == 3 and len(res_2)>=1 and res_2[0] == sim.simx_return_ok:
                 break
         accel_data = self.__create_force_dict(accel_data)
         if dimension in ('x', 'y', 'z'):
@@ -301,7 +302,7 @@ class Accelerometer(control_interfaces.AccelerometerInterface):
         gyro_name = self.param.simulation.gyroscope_name
         while True:
             res, _, gyro_data, _, _ = exec_vrep_script(self.client_id, gyro_name, 'get_gyro')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(gyro_data) == 3:
                 break
         gyro_data = self.__create_force_dict(gyro_data)
         if dimension in ('x', 'y', 'z'):
@@ -330,7 +331,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             res, _, image, _, _ = exec_vrep_script(
                 self.client_id, line_sensor_name,
                 'get_color')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(image)>=1:
                 return image[0]
 
     def __get_light_data(self) -> float:
@@ -341,7 +342,7 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         while True:
             res, _, light_opacity, _, _ = exec_vrep_script(
                 self.client_id, light_sensor, 'get_light')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(light_opacity)>=1:
                 return light_opacity[0]
 
     def __convert_float(self, reading: float) -> float:

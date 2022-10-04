@@ -134,7 +134,7 @@ class Environment(sim_gym_interface.EnvironmentInterface):
             res, _, sim_time, _, _ = control.exec_vrep_script(
                 client_id, parameters.simulation.def_camera_name,
                 'get_sim_time')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(sim_time) >= 1:
                 return sim_time[0]
 
     # fossbot teleport
@@ -180,7 +180,7 @@ class Environment(sim_gym_interface.EnvironmentInterface):
                 res, _, limits, _, _ = control.exec_vrep_script(
                     client_id, fossbot_name, 'get_bounds',
                     in_strings=[floor_path])
-                if res == sim.simx_return_ok:
+                if res == sim.simx_return_ok and len(limits) >= 2:
                     pos_x = random.uniform(-limits[0], limits[0])
                     pos_y = random.uniform(-limits[1], limits[1])
                     break

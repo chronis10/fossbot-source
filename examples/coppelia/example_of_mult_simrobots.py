@@ -2,12 +2,15 @@
 import time
 import os
 import pathlib
+import threading
 #from fossbot_lib.coppeliasim_robot import control
 from fossbot_lib.parameters_parser.parser import load_parameters
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.coppeliasim_robot.sim_gym import Environment
 from fossbot_lib.coppeliasim_robot.fossbot import FossBot as SimuFossBot
+
+CURRENT_PATH = pathlib.Path(__file__).parent.resolve()
 
 def main(robot: robot_interface.FossBotInterface) -> None:
     """ A simple robot routine """
@@ -75,7 +78,7 @@ def change_path_test(robot: robot_interface.FossBotInterface, environment: Envir
     '''
     "Draws" images-paths on the floor.
     '''
-    current_path = pathlib.Path(__file__).parent.resolve()
+    current_path = CURRENT_PATH
     path_dir_b = os.path.join(current_path, 'scenes')
     path_dir = os.path.join(path_dir_b, 'paths')
     print('Changing Path...')
@@ -147,7 +150,7 @@ def ultimate_environment_test(
     change_brightness_test(robot, environment)
     environment.default_brightness(robot)
     environment.teleport_random(robot, in_bounds=False)
-    current_path = pathlib.Path(__file__).parent.resolve()
+    current_path = CURRENT_PATH
     path_dir_b = os.path.join(current_path, 'scenes')
     path_dir = os.path.join(path_dir_b, 'paths')
     file_path = os.path.join(path_dir, 'Path1.jpg')
@@ -162,8 +165,9 @@ def detect_noise_test(robot: robot_interface.FossBotInterface, for_time: float =
     while time.time() < tar_time:
         print(robot.get_noise_detection())
 
-if __name__ == "__main__":
+def test(fossbot_name: str='/fossbot[0]'):
     # Load parameters from yml file
+    #time.sleep(2)
     FILE_PARAM = load_parameters()
 
     # Simulation robot test ===========================================
@@ -180,10 +184,14 @@ if __name__ == "__main__":
         rotate_90=configuration.Rotate90(**FILE_PARAM["rotate_90"]),
         simulation=SIM_IDS)
 
+    SIM_PARAM.simulation.fossbot_name = fossbot_name
+
     # Create a simu robot
     SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
     # Create environment
     ENVIRONMENT = Environment()
+
+    time.sleep(2)   # important for correct thread execution!
 
     # Fossbot Testing:
     #main(SIM_ROBOT)
@@ -192,7 +200,17 @@ if __name__ == "__main__":
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
-    detect_noise_test(SIM_ROBOT)
+    #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
-    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+
+    SIM_ROBOT.wait(10)   # important for correct thread execution!
+
+
+if __name__ == "__main__":
+    t1=threading.Thread(target = test, args=('/fossbot[0]',))
+    t2=threading.Thread(target = test, args=('/fossbot[1]',))
+    t2.start()
+    time.sleep(1)
+    t1.start()

@@ -372,7 +372,7 @@ class FossBot(robot_interface.FossBotInterface):
             res, collision, _, _, _ = control.exec_vrep_script(
                 self.client_id, self.parameters.simulation.body_name,
                 'check_collision')
-            if res == sim.simx_return_ok and collision[0] != -1:
+            if res == sim.simx_return_ok and len(collision)>=1 and collision[0] != -1:
                 return bool(collision[0])
 
     def check_in_bounds(self) -> bool:
@@ -382,7 +382,7 @@ class FossBot(robot_interface.FossBotInterface):
             res, in_bounds, _, _, _ = control.exec_vrep_script(
                 self.client_id, self.parameters.simulation.fossbot_name,
                 'check_in_bounds', in_strings=[floor_path])
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(in_bounds)>=1:
                 return bool(in_bounds[0])
 
     def check_orientation(self) -> bool:
@@ -391,7 +391,7 @@ class FossBot(robot_interface.FossBotInterface):
             res, check_orient, _, _, _ = control.exec_vrep_script(
                 self.client_id, self.parameters.simulation.fossbot_name,
                 'check_orientation')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(check_orient)>=1:
                 return bool(check_orient[0])
 
     def reset_orientation(self) -> None:
