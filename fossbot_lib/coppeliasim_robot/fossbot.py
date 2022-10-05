@@ -87,7 +87,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_right.move(direction=direction)
         self.motor_left.move(direction=direction)
 
-    def move_distance(self, dist: int, direction: str = "forward") -> None:
+    def move_distance(self, dist: float, direction: str = "forward") -> None:
         '''
         Moves to input direction (default == forward) a specified - input distance (cm).
         Param: dist: the distance to be moved (in cm).
@@ -126,7 +126,7 @@ class FossBot(robot_interface.FossBotInterface):
         time.sleep(time_s)
 
     # moving forward
-    def move_forward_distance(self, dist: int) -> None:
+    def move_forward_distance(self, dist: float) -> None:
         '''
         Moves robot forward input distance.
         Param: dist: the distance (cm) to be moved by robot.
@@ -146,7 +146,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.just_move()
 
     # moving reverse
-    def move_reverse_distance(self, dist: int) -> None:
+    def move_reverse_distance(self, dist: float) -> None:
         '''
         Moves robot input distance in reverse.
         Param: dist: the distance (cm) to be moved by robot.

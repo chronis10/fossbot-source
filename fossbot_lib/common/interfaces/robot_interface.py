@@ -16,7 +16,7 @@ class FossBotInterface(ABC):
         """
 
     @abstractmethod
-    def move_distance(self, dist: int, direction: str = "forward") -> None:
+    def move_distance(self, dist: float, direction: str = "forward") -> None:
         '''
         Moves to input direction (default == forward) a specified - input distance (cm).
         Param: dist: the distance to be moved (in cm).
@@ -42,7 +42,7 @@ class FossBotInterface(ABC):
 
     # moving forward
     @abstractmethod
-    def move_forward_distance(self, dist: int) -> None:
+    def move_forward_distance(self, dist: float) -> None:
         '''
         Moves robot forward input distance.
         Param: dist: the distance (cm) to be moved by robot.
@@ -62,7 +62,7 @@ class FossBotInterface(ABC):
 
     # moving reverse
     @abstractmethod
-    def move_reverse_distance(self, dist: int) -> None:
+    def move_reverse_distance(self, dist: float) -> None:
         '''
         Moves robot input distance in reverse.
         Param: dist: the distance (cm) to be moved by robot.

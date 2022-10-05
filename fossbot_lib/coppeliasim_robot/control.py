@@ -389,7 +389,7 @@ class Noise(control_interfaces.NoiseInterface):
         else:
             print('Cannot detect noise. Microphone was not found.')
 
-    def __print_sound(self, indata, outdata, frames, time, status) -> None:
+    def __print_sound(self, indata, outdata, frames, time_p, status) -> None:
         '''Function that calculates the volume.'''
         volume_norm = np.linalg.norm(indata)*10
         volume_norm = int(volume_norm)
