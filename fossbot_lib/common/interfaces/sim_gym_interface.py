@@ -110,3 +110,25 @@ class EnvironmentInterface(ABC):
         Param: robot: the instance of fossbot to be teleported.
                time_diff: the time to check successfull teleportation.
         '''
+
+    @abstractmethod
+    def change_floor_size(
+            self, robot: robot_interface.FossBotInterface,
+            x_size: float = 5.0, y_size: float = 5.0) -> None:
+        '''
+        Changes floor size.
+        Param: robot: an instance of fossbot.
+               x_size: the x scale to change the floor size to.
+               y_size: the y scale to change the floor size to.
+        '''
+
+    @abstractmethod
+    def save_curr_floor_size(self, robot: robot_interface.FossBotInterface) -> None:
+        '''Saves current floor size.'''
+
+    @abstractmethod
+    def save_curr_floor_img(self, robot: robot_interface.FossBotInterface) -> None:
+        '''
+        Saves current floor's image.
+        Param: img_path: the path to the wanted image to be saved on the floor.
+        '''

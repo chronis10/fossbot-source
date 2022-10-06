@@ -153,6 +153,22 @@ def ultimate_environment_test(
     file_path = os.path.join(path_dir, 'Path1.jpg')
     environment.draw_path(robot, file_path, scale_x=3)
 
+def test_saves(robot: robot_interface.FossBotInterface, environment: Environment) -> None:
+    current_path = pathlib.Path(__file__).parent.resolve()
+    path_dir_b = os.path.join(current_path, 'scenes')
+    path_dir = os.path.join(path_dir_b, 'paths')
+    file_path = os.path.join(path_dir, 'Path1.jpg')
+    environment.draw_path_auto(robot, file_path)
+    print('Changing Floor Size...')
+    environment.change_floor_size(robot, 7, 8)
+    time.sleep(2)
+    print('Saving Current Floor Size...')
+    environment.save_curr_floor_size(robot)
+    time.sleep(2)
+    print('Saving Current Image...')
+    environment.save_curr_floor_img(robot)
+
+
 def detect_noise_test(robot: robot_interface.FossBotInterface, for_time: float = 0.5) -> None:
     '''
     Noise detection test for specific amount of time.
@@ -187,12 +203,13 @@ if __name__ == "__main__":
 
     # Fossbot Testing:
     #main(SIM_ROBOT)
-    ultimate_test(SIM_ROBOT)
+    #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
-    detect_noise_test(SIM_ROBOT)
+    #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
-    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    test_saves(SIM_ROBOT, ENVIRONMENT)
