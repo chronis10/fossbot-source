@@ -79,7 +79,7 @@ class FossBot(robot_interface.FossBotInterface):
     # movement
     def just_move(self, direction: str = "forward") -> None:
         """
-        Move forward/backwards forever.
+        Move forward/backwards.
         Param: direction: the direction to be headed to.
         """
         self.odometer_right.reset()
@@ -141,7 +141,7 @@ class FossBot(robot_interface.FossBotInterface):
 
     def move_forward(self) -> None:
         '''
-        Moves robot forwards (forever).
+        Moves robot forwards.
         '''
         self.just_move()
 
@@ -161,14 +161,14 @@ class FossBot(robot_interface.FossBotInterface):
 
     def move_reverse(self) -> None:
         '''
-        Moves robot in reverse (forever).
+        Moves robot in reverse.
         '''
         self.just_move(direction="reverse")
 
     # rotation
     def just_rotate(self, dir_id: int) -> None:
         '''
-        Rotates fossbot towards the specified dir_id (forever).
+        Rotates fossbot towards the specified dir_id.
         Param: dir_id: the direction id to rotate to:
                - clockwise: dir_id == 0
                - counterclockwise: dir_id == 1
@@ -202,13 +202,13 @@ class FossBot(robot_interface.FossBotInterface):
 
     def rotate_clockwise(self) -> None:
         '''
-        Rotates robot clockwise (forever).
+        Rotates robot clockwise.
         '''
         self.just_rotate(1)
 
     def rotate_counterclockwise(self) -> None:
         '''
-        Rotates robot counterclockwise (forever).
+        Rotates robot counterclockwise.
         '''
         self.just_rotate(0)
 
