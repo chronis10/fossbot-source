@@ -114,7 +114,7 @@ class FossBot(robot_interface.FossBotInterface):
         """ Stop moving. """
         self.motor_left.stop()
         self.motor_right.stop()
-        print('stop')
+        #print('stop')
         self.odometer_right.reset()
         self.odometer_left.reset()
 
@@ -354,14 +354,14 @@ class FossBot(robot_interface.FossBotInterface):
 
     # exit
     def exit(self) -> None:
-        '''
-        Exits the program - closes connection to vrep.
-        '''
+        """ Exits. """
+        self.stop()
+        self.rgb_set_color('closed')
         sim.simxFinish(self.client_id)
         print('Program ended.')
 
     def __del__(self) -> None:
-        sim.simxFinish(self.client_id)
+        self.exit()
 
     # implemented only in simulation
     def check_collision(self) -> bool:

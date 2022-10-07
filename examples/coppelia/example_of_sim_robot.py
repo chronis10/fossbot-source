@@ -154,6 +154,7 @@ def ultimate_environment_test(
     environment.draw_path(robot, file_path, scale_x=3)
 
 def test_saves(robot: robot_interface.FossBotInterface, environment: Environment) -> None:
+    '''Tests all floor - image saves.'''
     current_path = pathlib.Path(__file__).parent.resolve()
     path_dir_b = os.path.join(current_path, 'scenes')
     path_dir = os.path.join(path_dir_b, 'paths')
@@ -201,15 +202,19 @@ if __name__ == "__main__":
     # Create environment
     ENVIRONMENT = Environment()
 
+    #while True:
+        #SIM_ROBOT.just_move()
+
     # Fossbot Testing:
     #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
-    #follow_line(SIM_ROBOT)
+    SIM_ROBOT.rgb_set_color('red')
+    follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
     #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
     #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
-    test_saves(SIM_ROBOT, ENVIRONMENT)
+    #test_saves(SIM_ROBOT, ENVIRONMENT)
