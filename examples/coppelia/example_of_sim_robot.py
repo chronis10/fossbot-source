@@ -174,7 +174,7 @@ def move_until_obstacle(robot: robot_interface.FossBotInterface):
     robot.just_move()
     while True:
         if robot.check_for_obstacle():
-            robot.stop()
+            #robot.stop()
             break
 
 def detect_noise_test(robot: robot_interface.FossBotInterface, for_time: float = 0.5) -> None:
