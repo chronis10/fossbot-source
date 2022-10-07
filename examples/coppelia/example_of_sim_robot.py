@@ -169,6 +169,13 @@ def test_saves(robot: robot_interface.FossBotInterface, environment: Environment
     print('Saving Current Image...')
     environment.save_curr_floor_img(robot)
 
+def move_until_obstacle(robot: robot_interface.FossBotInterface):
+    '''Moves robot until obstacle is detected.'''
+    robot.just_move()
+    while True:
+        if robot.check_for_obstacle():
+            robot.stop()
+            break
 
 def detect_noise_test(robot: robot_interface.FossBotInterface, for_time: float = 0.5) -> None:
     '''
@@ -205,13 +212,15 @@ if __name__ == "__main__":
     #while True:
         #SIM_ROBOT.just_move()
 
+    move_until_obstacle(SIM_ROBOT)
+
     # Fossbot Testing:
     #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
-    SIM_ROBOT.rgb_set_color('red')
-    follow_line(SIM_ROBOT)
+    #SIM_ROBOT.rgb_set_color('red')
+    #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
     #detect_noise_test(SIM_ROBOT)
 
