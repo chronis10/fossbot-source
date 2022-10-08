@@ -59,5 +59,6 @@ simulator_ids:
   gyroscope_name: GyroSensor
   led_name: led_light
   body_name: body
+  col_detector_name: coll_detector
   floor_name: Floor
   def_camera_name: DefaultCamera

@@ -95,14 +95,15 @@ def change_path_test(robot: robot_interface.FossBotInterface, environment: Envir
 
 def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
     '''
-    Prints True if fossbot has collided with collidable object.
+    Moves Fossbot, prints True if fossbot has collided with collidable object.
     '''
     # displays all handles and names of objects in the scene:
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
+    robot.just_move()
     while True:
-        c_check = robot.check_collision()
-        if c_check:
-            print(c_check)
+        if robot.check_collision():
+            print('Collision!')
+            break
 
 def inbounds_teleport_test(
         robot: robot_interface.FossBotInterface,
@@ -212,7 +213,9 @@ if __name__ == "__main__":
     #while True:
         #SIM_ROBOT.just_move()
 
-    move_until_obstacle(SIM_ROBOT)
+    #move_until_obstacle(SIM_ROBOT)
+
+    #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
 
     # Fossbot Testing:
     #main(SIM_ROBOT)
@@ -221,7 +224,7 @@ if __name__ == "__main__":
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #SIM_ROBOT.rgb_set_color('red')
     #follow_line(SIM_ROBOT)
-    #check_collision_test(SIM_ROBOT)
+    check_collision_test(SIM_ROBOT)
     #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:

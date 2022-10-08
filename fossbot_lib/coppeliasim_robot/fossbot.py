@@ -74,6 +74,7 @@ class FossBot(robot_interface.FossBotInterface):
         parameters.simulation.gyroscope_name = f'{fossbot_name}/{parameters.simulation.gyroscope_name}'
         parameters.simulation.led_name = f'{fossbot_name}/{parameters.simulation.led_name}'
         parameters.simulation.body_name = f'{fossbot_name}/{parameters.simulation.body_name}'
+        parameters.simulation.col_detector_name = f'{fossbot_name}/{parameters.simulation.col_detector_name}'
         return parameters
 
     # movement
@@ -370,7 +371,7 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         while True:
             res, collision, _, _, _ = control.exec_vrep_script(
-                self.client_id, self.parameters.simulation.body_name,
+                self.client_id, self.parameters.simulation.col_detector_name,
                 'check_collision')
             if res == sim.simx_return_ok and len(collision)>=1 and collision[0] != -1:
                 return bool(collision[0])
