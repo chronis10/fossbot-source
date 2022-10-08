@@ -224,9 +224,9 @@ if __name__ == "__main__":
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #SIM_ROBOT.rgb_set_color('red')
     #follow_line(SIM_ROBOT)
-    check_collision_test(SIM_ROBOT)
+    #check_collision_test(SIM_ROBOT)
     #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
-    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
     #test_saves(SIM_ROBOT, ENVIRONMENT)

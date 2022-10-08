@@ -77,6 +77,7 @@ class SimRobotIds:
     sensor_middle_name: str
     sensor_right_name: str
     sensor_left_name: str
+    ultrasonic_shape: str
     ultrasonic_name: str
     accelerometer_name: str
     gyroscope_name: str
@@ -85,7 +86,7 @@ class SimRobotIds:
     body_name: str
     col_detector_name: str
     fossbot_name: str
-    def_camera_name: str
+    foss_gui: str
     light_sensor_id: int = 0
     sensor_middle_id: int = 1
     sensor_right_id: int = 2

@@ -63,18 +63,19 @@ class FossBot(robot_interface.FossBotInterface):
         Returns: the parameters match paths in scene.
         '''
         fossbot_name = parameters.simulation.fossbot_name
-        parameters.simulation.accelerometer_name = f'{fossbot_name}/{parameters.simulation.accelerometer_name}'
+        body_name = parameters.simulation.body_name
+        parameters.simulation.accelerometer_name = f'{fossbot_name}/{body_name}/{parameters.simulation.accelerometer_name}'
         parameters.simulation.left_motor_name = f'{fossbot_name}/{parameters.simulation.left_motor_name}'
         parameters.simulation.right_motor_name = f'{fossbot_name}/{parameters.simulation.right_motor_name}'
-        parameters.simulation.light_sensor_name = f'{fossbot_name}/{parameters.simulation.light_sensor_name}'
+        parameters.simulation.light_sensor_name = f'{fossbot_name}/{body_name}/{parameters.simulation.light_sensor_name}'
         parameters.simulation.sensor_middle_name = f'{fossbot_name}/{parameters.simulation.sensor_middle_name}'
         parameters.simulation.sensor_right_name = f'{fossbot_name}/{parameters.simulation.sensor_right_name}'
         parameters.simulation.sensor_left_name = f'{fossbot_name}/{parameters.simulation.sensor_left_name}'
-        parameters.simulation.ultrasonic_name = f'{fossbot_name}/{parameters.simulation.ultrasonic_name}'
-        parameters.simulation.gyroscope_name = f'{fossbot_name}/{parameters.simulation.gyroscope_name}'
-        parameters.simulation.led_name = f'{fossbot_name}/{parameters.simulation.led_name}'
+        parameters.simulation.ultrasonic_name = f'{fossbot_name}/{parameters.simulation.ultrasonic_shape}/{parameters.simulation.ultrasonic_name}'
+        parameters.simulation.gyroscope_name = f'{fossbot_name}/{body_name}/{parameters.simulation.gyroscope_name}'
+        parameters.simulation.led_name = f'{fossbot_name}/{body_name}/{parameters.simulation.led_name}'
         parameters.simulation.body_name = f'{fossbot_name}/{parameters.simulation.body_name}'
-        parameters.simulation.col_detector_name = f'{fossbot_name}/{parameters.simulation.col_detector_name}'
+        parameters.simulation.col_detector_name = f'{fossbot_name}/{body_name}/{parameters.simulation.col_detector_name}'
         return parameters
 
     # movement

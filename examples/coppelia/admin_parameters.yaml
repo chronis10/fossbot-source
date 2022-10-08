@@ -54,11 +54,12 @@ simulator_ids:
   sensor_middle_name: MiddleSensor
   sensor_right_name: RightSensor
   sensor_left_name: LeftSensor
+  ultrasonic_shape: ultrasonic # ultrasonic is within a shape in example scene.
   ultrasonic_name: ultrasonic_sensor
   accelerometer_name: Accelerometer
   gyroscope_name: GyroSensor
   led_name: led_light
   body_name: body
   col_detector_name: coll_detector
-  floor_name: Floor
-  def_camera_name: DefaultCamera
+  floor_name: FossbotFloor
+  foss_gui: FossbotGUI

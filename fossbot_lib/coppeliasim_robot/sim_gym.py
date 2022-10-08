@@ -111,7 +111,7 @@ class Environment(sim_gym_interface.EnvironmentInterface):
             brightness = brightness / 100
             while True:
                 res, _, _, _, _ = control.exec_vrep_script(
-                    client_id, parameters.simulation.def_camera_name,
+                    client_id, parameters.simulation.foss_gui,
                     'change_brightness', in_floats=[brightness, brightness, brightness])
                 if res == sim.simx_return_ok:
                     break
@@ -132,7 +132,7 @@ class Environment(sim_gym_interface.EnvironmentInterface):
         parameters = robot.parameters
         while True:
             res, _, sim_time, _, _ = control.exec_vrep_script(
-                client_id, parameters.simulation.def_camera_name,
+                client_id, parameters.simulation.foss_gui,
                 'get_sim_time')
             if res == sim.simx_return_ok and len(sim_time) >= 1:
                 return sim_time[0]
