@@ -25,5 +25,5 @@ pip install . --install-option="--platform=sim"
 ### Installation from the Github Repository
 
 ```bash
-pip install git+https://github.com/chronis10/fossbot_source.git@fossbot_as_lib --install-option="--platform=sim"
+pip install git+https://github.com/chronis10/fossbot_source.git --install-option="--platform=sim"
 ```
