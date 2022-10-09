@@ -48,7 +48,7 @@ setup(
 #    license='LICENSE.txt',
    description='An awesome package that does something',
 #    long_description=open('README.txt').read(),
-   package_data = ,
+   package_data = mydata ,
    install_requires= requirements,
    cmdclass={'install': Install}
  )
