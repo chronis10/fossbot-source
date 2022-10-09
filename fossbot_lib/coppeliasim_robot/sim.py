@@ -12,11 +12,11 @@ CURRENT_WORKING_DIR = os.getcwd()
 
 libsimx = None
 if platform.system() =='Windows':
-    file = os.path.join(CURRENT_WORKING_DIR, 'remoteApi.dll')
+    file = os.path.join(CURRENT_WORKING_DIR, 'lib/Windows/remoteApi.dll')
 elif platform.system() == 'Darwin':
-    file =  os.path.join(CURRENT_WORKING_DIR, 'remoteApi.dylib')
+    file =  os.path.join(CURRENT_WORKING_DIR, 'lib/MacOS/remoteApi.dylib')
 else:
-    file =  os.path.join(CURRENT_WORKING_DIR, 'remoteApi.so')
+    file =  os.path.join(CURRENT_WORKING_DIR, 'lib/Linux/remoteApi.so')
 try:
     libsimx = ct.CDLL(file)
 except:
