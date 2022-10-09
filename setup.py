@@ -7,7 +7,7 @@ cur_packages = ['fossbot_lib/common/data_structures',
                 'fossbot_lib/parameters_parser']
 
 requirements = []
-mydata = None
+mydata = {'':[]}
 class Install(_install):
     user_options = _install.user_options + [('platform=', None, None)]
     def initialize_options(self):
