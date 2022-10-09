@@ -26,7 +26,7 @@ class Install(_install):
         global cur_packages
         global requirements
         if self.platform == "sim":
-            cur_packages.append('fossbot_lib/coppeliasim_robot/')                            
+            cur_packages.append('fossbot_lib/coppeliasim_robot/')
             requirements = self.load_requirements('fossbot_lib/coppeliasim_robot/requirements.txt')
         elif self.platform == "real":
             cur_packages.append('fossbot_lib/real_robot/')
@@ -47,7 +47,8 @@ setup(
 #    license='LICENSE.txt',
    description='An awesome package that does something',
 #    long_description=open('README.txt').read(),
-   data_files=['fossbot_lib/coppeliasim_robot/lib']
+   # data_files=[('coppeliasim_robot', ['fossbot_lib/coppeliasim_robot/lib/Linux/remoteApi.so'])], # -> saves coppeliasim lib (with remoteApi.so to site.USER_BASE)
+   package_data = {'fossbot_lib/coppeliasim_robot/':['lib/Linux/remoteApi.so']},
    install_requires= requirements,
    cmdclass={'install': Install}
  )
