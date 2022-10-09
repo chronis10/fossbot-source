@@ -213,7 +213,8 @@ if __name__ == "__main__":
     #while True:
         #SIM_ROBOT.just_move()
 
-    #move_until_obstacle(SIM_ROBOT)
+    SIM_ROBOT.rgb_set_color('red')
+    move_until_obstacle(SIM_ROBOT)
 
     #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
 
@@ -228,5 +229,5 @@ if __name__ == "__main__":
     #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
-    ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
     #test_saves(SIM_ROBOT, ENVIRONMENT)
