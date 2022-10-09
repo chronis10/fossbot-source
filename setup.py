@@ -47,7 +47,7 @@ setup(
 #    license='LICENSE.txt',
    description='An awesome package that does something',
 #    long_description=open('README.txt').read(),
-   package_data = mydata ,
+   package_data ={'fossbot_lib/coppeliasim_robot/':['lib/Linux/remoteApi.so','lib/Windows/remoteApi.dll','lib/MacOS/remoteApi.dylib']},
    install_requires= requirements,
    cmdclass={'install': Install}
  )
