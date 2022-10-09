@@ -47,6 +47,7 @@ setup(
 #    license='LICENSE.txt',
    description='An awesome package that does something',
 #    long_description=open('README.txt').read(),
+   data_files=['fossbot_lib/coppeliasim_robot/lib']
    install_requires= requirements,
    cmdclass={'install': Install}
  )
