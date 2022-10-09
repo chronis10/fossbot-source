@@ -10,12 +10,12 @@ class FossBot(robot_interface.FossBotInterface):
     # movement
     def just_move(self, direction: str = "forward") -> None:
         """
-        Move forward/backwards forever.
+        Move forward/backwards.
         Param: direction: the direction to be headed to.
         """
         print('Just moving.')
 
-    def move_distance(self, dist: int, direction: str = "forward") -> None:
+    def move_distance(self, dist: float, direction: str = "forward") -> None:
         '''
         Moves to input direction (default == forward) a specified - input distance (cm).
         Param: dist: the distance to be moved (in cm).
@@ -41,7 +41,7 @@ class FossBot(robot_interface.FossBotInterface):
         print('Sleeping...')
 
     # moving forward
-    def move_forward_distance(self, dist: int) -> None:
+    def move_forward_distance(self, dist: float) -> None:
         '''
         Moves robot forward input distance.
         Param: dist: the distance (cm) to be moved by robot.
@@ -56,12 +56,12 @@ class FossBot(robot_interface.FossBotInterface):
 
     def move_forward(self) -> None:
         '''
-        Moves robot forwards (forever).
+        Moves robot forwards.
         '''
         print('Moving forward.')
 
     # moving reverse
-    def move_reverse_distance(self, dist: int) -> None:
+    def move_reverse_distance(self, dist: float) -> None:
         '''
         Moves robot input distance in reverse.
         Param: dist: the distance (cm) to be moved by robot.
@@ -76,14 +76,14 @@ class FossBot(robot_interface.FossBotInterface):
 
     def move_reverse(self) -> None:
         '''
-        Moves robot in reverse (forever).
+        Moves robot in reverse.
         '''
         print('Moving in reverse.')
 
     # rotation
     def just_rotate(self, dir_id: int) -> None:
         '''
-        Rotates fossbot towards the specified dir_id (forever).
+        Rotates fossbot towards the specified dir_id.
         Param: dir_id: the direction id to rotate to:
                - clockwise: dir_id == 0
                - counterclockwise: dir_id == 1
@@ -101,13 +101,13 @@ class FossBot(robot_interface.FossBotInterface):
 
     def rotate_clockwise(self) -> None:
         '''
-        Rotates robot clockwise (forever).
+        Rotates robot clockwise.
         '''
         print('Rotating clockwise.')
 
     def rotate_counterclockwise(self) -> None:
         '''
-        Rotates robot counterclockwise (forever).
+        Rotates robot counterclockwise.
         '''
         print('Rotating counterclockwise.')
 

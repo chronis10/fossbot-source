@@ -1,12 +1,13 @@
 """ Example of a real and simulated robot"""
 import time
-#from coppeliasim_robot import control
+import os
+import pathlib
+#from fossbot_lib.coppeliasim_robot import control
 from fossbot_lib.parameters_parser.parser import load_parameters
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.coppeliasim_robot.sim_gym import Environment
 from fossbot_lib.coppeliasim_robot.fossbot import FossBot as SimuFossBot
-import pathlib
 
 def main(robot: robot_interface.FossBotInterface) -> None:
     """ A simple robot routine """
@@ -75,28 +76,34 @@ def change_path_test(robot: robot_interface.FossBotInterface, environment: Envir
     "Draws" images-paths on the floor.
     '''
     current_path = pathlib.Path(__file__).parent.resolve()
+    path_dir_b = os.path.join(current_path, 'scenes')
+    path_dir = os.path.join(path_dir_b, 'paths')
     print('Changing Path...')
-    environment.draw_path_auto(robot,f'{current_path}/paths/Path1.jpg')
+    file_path = os.path.join(path_dir, 'Path1.jpg')
+    environment.draw_path_auto(robot, file_path)
     time.sleep(3)
     print('Changing Path...')
-    environment.draw_path_auto(robot, f'{current_path}/paths/Path2.jpg')
+    file_path = os.path.join(path_dir, 'Path2.jpg')
+    environment.draw_path_auto(robot, file_path)
     time.sleep(3)
     print('Changing Path...')
-    environment.draw_path_auto(robot, f'{current_path}/paths/Path3.jpg')
+    file_path = os.path.join(path_dir, 'Path3.jpg')
+    environment.draw_path_auto(robot, file_path)
     time.sleep(3)
     print('Clearing Path...')
     environment.clear_path(robot)
 
 def check_collision_test(robot: robot_interface.FossBotInterface) -> None:
     '''
-    Prints True if fossbot has collided with collidable object.
+    Moves Fossbot, prints True if fossbot has collided with collidable object.
     '''
     # displays all handles and names of objects in the scene:
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
+    robot.just_move()
     while True:
-        c_check = robot.check_collision()
-        if c_check:
-            print(c_check)
+        if robot.check_collision():
+            print('Collision!')
+            break
 
 def inbounds_teleport_test(
         robot: robot_interface.FossBotInterface,
@@ -142,7 +149,43 @@ def ultimate_environment_test(
     environment.default_brightness(robot)
     environment.teleport_random(robot, in_bounds=False)
     current_path = pathlib.Path(__file__).parent.resolve()
-    environment.draw_path(robot, f'{current_path}/paths/Path1.jpg', scale_x=3)
+    path_dir_b = os.path.join(current_path, 'scenes')
+    path_dir = os.path.join(path_dir_b, 'paths')
+    file_path = os.path.join(path_dir, 'Path1.jpg')
+    environment.draw_path(robot, file_path, scale_x=3)
+
+def test_saves(robot: robot_interface.FossBotInterface, environment: Environment) -> None:
+    '''Tests all floor - image saves.'''
+    current_path = pathlib.Path(__file__).parent.resolve()
+    path_dir_b = os.path.join(current_path, 'scenes')
+    path_dir = os.path.join(path_dir_b, 'paths')
+    file_path = os.path.join(path_dir, 'Path1.jpg')
+    environment.draw_path_auto(robot, file_path)
+    print('Changing Floor Size...')
+    environment.change_floor_size(robot, 7, 8)
+    time.sleep(2)
+    print('Saving Current Floor Size...')
+    environment.save_curr_floor_size(robot)
+    time.sleep(2)
+    print('Saving Current Image...')
+    environment.save_curr_floor_img(robot)
+
+def move_until_obstacle(robot: robot_interface.FossBotInterface):
+    '''Moves robot until obstacle is detected.'''
+    robot.just_move()
+    while True:
+        if robot.check_for_obstacle():
+            #robot.stop()
+            break
+
+def detect_noise_test(robot: robot_interface.FossBotInterface, for_time: float = 0.5) -> None:
+    '''
+    Noise detection test for specific amount of time.
+    Param: for_time: the time for the test to last.
+    '''
+    tar_time = time.time() + for_time
+    while time.time() < tar_time:
+        print(robot.get_noise_detection())
 
 if __name__ == "__main__":
     # Load parameters from yml file
@@ -166,11 +209,24 @@ if __name__ == "__main__":
     SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
     # Create environment
     ENVIRONMENT = Environment()
+
+    #while True:
+        #SIM_ROBOT.just_move()
+
+    #move_until_obstacle(SIM_ROBOT)
+
+    #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
+
+    # Fossbot Testing:
     #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
+    #control.get_object_children(SIM_IDS.client_id, print_all=True)
+    #SIM_ROBOT.rgb_set_color('red')
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
+    #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
     ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
+    #test_saves(SIM_ROBOT, ENVIRONMENT)

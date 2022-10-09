@@ -36,20 +36,19 @@ class Environment(sim_gym_interface.EnvironmentInterface):
     """
     # change path functions:
     def draw_path(
-            self, robot: robot_interface.FossBotInterface, file_name: str,
+            self, robot: robot_interface.FossBotInterface, path_to_file: str,
             scale_x: float = 5.0, scale_y: float = 5.0) -> None:
         '''
         Changes the path of the scene.
         Param: robot: an instance of fossbot.
-               file_name: the name of the picture to change the path to
-               (save picture-path in paths folder).
+               path_to_file: the path to the image for the
+               path in simulation to be changed to.
                scale_x: scale x for image on the floor.
                scale_y: scale y for image on the floor.
         '''
         client_id = robot.parameters.simulation.client_id
         parameters = robot.parameters
-        path_dir_b = os.path.join(os.path.dirname(__file__), 'paths')
-        path_draw = os.path.join(path_dir_b, file_name)
+        path_draw = path_to_file
         if not os.path.exists(path_draw):
             print('Cannot find requested image.')
             raise FileNotFoundError
@@ -60,17 +59,16 @@ class Environment(sim_gym_interface.EnvironmentInterface):
             if res == sim.simx_return_ok:
                 break
 
-    def draw_path_auto(self, robot: robot_interface.FossBotInterface, file_name: str) -> None:
+    def draw_path_auto(self, robot: robot_interface.FossBotInterface, path_to_file: str) -> None:
         '''
         Changes the path of the scene and scales it automatically on the floor.
         Param: robot: an instance of fossbot.
-               file_name: the name of the picture to change the path to
-               (save picture-path in paths folder).
+               path_to_file: the path to the image for the
+               path in simulation to be changed to.
         '''
         client_id = robot.parameters.simulation.client_id
         parameters = robot.parameters
-        path_dir_b = os.path.join(os.path.dirname(__file__), 'paths')
-        path_draw = os.path.join(path_dir_b, file_name)
+        path_draw = path_to_file
         if not os.path.exists(path_draw):
             print('Cannot find requested image.')
             raise FileNotFoundError
@@ -113,7 +111,7 @@ class Environment(sim_gym_interface.EnvironmentInterface):
             brightness = brightness / 100
             while True:
                 res, _, _, _, _ = control.exec_vrep_script(
-                    client_id, parameters.simulation.def_camera_name,
+                    client_id, parameters.simulation.foss_gui,
                     'change_brightness', in_floats=[brightness, brightness, brightness])
                 if res == sim.simx_return_ok:
                     break
@@ -134,9 +132,9 @@ class Environment(sim_gym_interface.EnvironmentInterface):
         parameters = robot.parameters
         while True:
             res, _, sim_time, _, _ = control.exec_vrep_script(
-                client_id, parameters.simulation.def_camera_name,
+                client_id, parameters.simulation.foss_gui,
                 'get_sim_time')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(sim_time) >= 1:
                 return sim_time[0]
 
     # fossbot teleport
@@ -182,7 +180,7 @@ class Environment(sim_gym_interface.EnvironmentInterface):
                 res, _, limits, _, _ = control.exec_vrep_script(
                     client_id, fossbot_name, 'get_bounds',
                     in_strings=[floor_path])
-                if res == sim.simx_return_ok:
+                if res == sim.simx_return_ok and len(limits) >= 2:
                     pos_x = random.uniform(-limits[0], limits[0])
                     pos_y = random.uniform(-limits[1], limits[1])
                     break
@@ -214,3 +212,48 @@ class Environment(sim_gym_interface.EnvironmentInterface):
             if not robot.check_collision() and robot.check_in_bounds() and robot.check_orientation():
                 break
         print('Teleport success.')
+
+    def change_floor_size(
+            self, robot: robot_interface.FossBotInterface,
+            x_size: float = 5.0, y_size: float = 5.0) -> None:
+        '''
+        Changes floor size.
+        Param: robot: an instance of fossbot.
+               x_size: the x scale to change the floor size to.
+               y_size: the y scale to change the floor size to.
+        '''
+        if x_size < 0 or y_size < 0:
+            print('There is no negative scale!')
+            raise RuntimeError
+        client_id = robot.parameters.simulation.client_id
+        parameters = robot.parameters
+        while True:
+            res, _, _, _, _ = control.exec_vrep_script(
+                client_id, parameters.simulation.floor_name, 'change_floor_size',
+                in_floats=[x_size, y_size])
+            if res == sim.simx_return_ok:
+                break
+
+    def save_curr_floor_size(self, robot: robot_interface.FossBotInterface) -> None:
+        '''Saves current floor size.'''
+        client_id = robot.parameters.simulation.client_id
+        parameters = robot.parameters
+        while True:
+            res, _, _, _, _ = control.exec_vrep_script(
+                client_id, parameters.simulation.floor_name,
+                'save_current_size_run')
+            if res == sim.simx_return_ok:
+                break
+
+    def save_curr_floor_img(self, robot: robot_interface.FossBotInterface) -> None:
+        '''
+        Saves current floor's image.
+        Param: img_path: the path to the wanted image to be saved on the floor.
+        '''
+        client_id = robot.parameters.simulation.client_id
+        parameters = robot.parameters
+        while True:
+            res, _, _, _, _ = control.exec_vrep_script(
+                client_id, parameters.simulation.floor_name, 'save_curr_img_python')
+            if res == sim.simx_return_ok:
+                break

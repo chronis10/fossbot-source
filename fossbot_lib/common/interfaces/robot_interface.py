@@ -11,12 +11,12 @@ class FossBotInterface(ABC):
     @abstractmethod
     def just_move(self, direction: str = "forward") -> None:
         """
-        Move forward/backwards forever.
+        Move forward/backwards.
         Param: direction: the direction to be headed to.
         """
 
     @abstractmethod
-    def move_distance(self, dist: int, direction: str = "forward") -> None:
+    def move_distance(self, dist: float, direction: str = "forward") -> None:
         '''
         Moves to input direction (default == forward) a specified - input distance (cm).
         Param: dist: the distance to be moved (in cm).
@@ -42,7 +42,7 @@ class FossBotInterface(ABC):
 
     # moving forward
     @abstractmethod
-    def move_forward_distance(self, dist: int) -> None:
+    def move_forward_distance(self, dist: float) -> None:
         '''
         Moves robot forward input distance.
         Param: dist: the distance (cm) to be moved by robot.
@@ -57,12 +57,12 @@ class FossBotInterface(ABC):
     @abstractmethod
     def move_forward(self) -> None:
         '''
-        Moves robot forwards (forever).
+        Moves robot forwards.
         '''
 
     # moving reverse
     @abstractmethod
-    def move_reverse_distance(self, dist: int) -> None:
+    def move_reverse_distance(self, dist: float) -> None:
         '''
         Moves robot input distance in reverse.
         Param: dist: the distance (cm) to be moved by robot.
@@ -77,14 +77,14 @@ class FossBotInterface(ABC):
     @abstractmethod
     def move_reverse(self) -> None:
         '''
-        Moves robot in reverse (forever).
+        Moves robot in reverse.
         '''
 
     # rotation
     @abstractmethod
     def just_rotate(self, dir_id: int) -> None:
         '''
-        Rotates fossbot towards the specified dir_id (forever).
+        Rotates fossbot towards the specified dir_id.
         Param: dir_id: the direction id to rotate to:
                - clockwise: dir_id == 0
                - counterclockwise: dir_id == 1
@@ -102,13 +102,13 @@ class FossBotInterface(ABC):
     @abstractmethod
     def rotate_clockwise(self) -> None:
         '''
-        Rotates robot clockwise (forever).
+        Rotates robot clockwise.
         '''
 
     @abstractmethod
     def rotate_counterclockwise(self) -> None:
         '''
-        Rotates robot counterclockwise (forever).
+        Rotates robot counterclockwise.
         '''
 
     @abstractmethod

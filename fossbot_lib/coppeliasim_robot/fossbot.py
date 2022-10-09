@@ -27,7 +27,7 @@ class FossBot(robot_interface.FossBotInterface):
             print('Failed connecting to remote API server')
             raise ConnectionError
         print('Connected to remote API server')
-        self.parameters = parameters
+        self.parameters = self.__load_fossbot_paths(parameters)
         self.parameters.simulation.client_id = self.client_id
         self.motor_left = control.Motor(
             self.parameters, self.parameters.simulation.left_motor_name,
@@ -55,10 +55,33 @@ class FossBot(robot_interface.FossBotInterface):
         sim.simxFinish(-1) # just in case, close all opened connections
         return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
 
+    def __load_fossbot_paths(
+        self, parameters: configuration.SimRobotParameters) -> configuration.SimRobotParameters:
+        '''
+        Loads paramameters (paths) to match paths in scene.
+        Param: parameters: the simulation parameters.
+        Returns: the parameters match paths in scene.
+        '''
+        fossbot_name = parameters.simulation.fossbot_name
+        body_name = parameters.simulation.body_name
+        parameters.simulation.accelerometer_name = f'{fossbot_name}/{body_name}/{parameters.simulation.accelerometer_name}'
+        parameters.simulation.left_motor_name = f'{fossbot_name}/{parameters.simulation.left_motor_name}'
+        parameters.simulation.right_motor_name = f'{fossbot_name}/{parameters.simulation.right_motor_name}'
+        parameters.simulation.light_sensor_name = f'{fossbot_name}/{body_name}/{parameters.simulation.light_sensor_name}'
+        parameters.simulation.sensor_middle_name = f'{fossbot_name}/{parameters.simulation.sensor_middle_name}'
+        parameters.simulation.sensor_right_name = f'{fossbot_name}/{parameters.simulation.sensor_right_name}'
+        parameters.simulation.sensor_left_name = f'{fossbot_name}/{parameters.simulation.sensor_left_name}'
+        parameters.simulation.ultrasonic_name = f'{fossbot_name}/{parameters.simulation.ultrasonic_shape}/{parameters.simulation.ultrasonic_name}'
+        parameters.simulation.gyroscope_name = f'{fossbot_name}/{body_name}/{parameters.simulation.gyroscope_name}'
+        parameters.simulation.led_name = f'{fossbot_name}/{body_name}/{parameters.simulation.led_name}'
+        parameters.simulation.body_name = f'{fossbot_name}/{parameters.simulation.body_name}'
+        parameters.simulation.col_detector_name = f'{fossbot_name}/{body_name}/{parameters.simulation.col_detector_name}'
+        return parameters
+
     # movement
     def just_move(self, direction: str = "forward") -> None:
         """
-        Move forward/backwards forever.
+        Move forward/backwards.
         Param: direction: the direction to be headed to.
         """
         self.odometer_right.reset()
@@ -66,7 +89,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_right.move(direction=direction)
         self.motor_left.move(direction=direction)
 
-    def move_distance(self, dist: int, direction: str = "forward") -> None:
+    def move_distance(self, dist: float, direction: str = "forward") -> None:
         '''
         Moves to input direction (default == forward) a specified - input distance (cm).
         Param: dist: the distance to be moved (in cm).
@@ -93,7 +116,7 @@ class FossBot(robot_interface.FossBotInterface):
         """ Stop moving. """
         self.motor_left.stop()
         self.motor_right.stop()
-        print('stop')
+        #print('stop')
         self.odometer_right.reset()
         self.odometer_left.reset()
 
@@ -105,7 +128,7 @@ class FossBot(robot_interface.FossBotInterface):
         time.sleep(time_s)
 
     # moving forward
-    def move_forward_distance(self, dist: int) -> None:
+    def move_forward_distance(self, dist: float) -> None:
         '''
         Moves robot forward input distance.
         Param: dist: the distance (cm) to be moved by robot.
@@ -120,12 +143,12 @@ class FossBot(robot_interface.FossBotInterface):
 
     def move_forward(self) -> None:
         '''
-        Moves robot forwards (forever).
+        Moves robot forwards.
         '''
         self.just_move()
 
     # moving reverse
-    def move_reverse_distance(self, dist: int) -> None:
+    def move_reverse_distance(self, dist: float) -> None:
         '''
         Moves robot input distance in reverse.
         Param: dist: the distance (cm) to be moved by robot.
@@ -140,14 +163,14 @@ class FossBot(robot_interface.FossBotInterface):
 
     def move_reverse(self) -> None:
         '''
-        Moves robot in reverse (forever).
+        Moves robot in reverse.
         '''
         self.just_move(direction="reverse")
 
     # rotation
     def just_rotate(self, dir_id: int) -> None:
         '''
-        Rotates fossbot towards the specified dir_id (forever).
+        Rotates fossbot towards the specified dir_id.
         Param: dir_id: the direction id to rotate to:
                - clockwise: dir_id == 0
                - counterclockwise: dir_id == 1
@@ -181,13 +204,13 @@ class FossBot(robot_interface.FossBotInterface):
 
     def rotate_clockwise(self) -> None:
         '''
-        Rotates robot clockwise (forever).
+        Rotates robot clockwise.
         '''
         self.just_rotate(1)
 
     def rotate_counterclockwise(self) -> None:
         '''
-        Rotates robot counterclockwise (forever).
+        Rotates robot counterclockwise.
         '''
         self.just_rotate(0)
 
@@ -333,14 +356,14 @@ class FossBot(robot_interface.FossBotInterface):
 
     # exit
     def exit(self) -> None:
-        '''
-        Exits the program - closes connection to vrep.
-        '''
+        """ Exits. """
+        self.stop()
+        self.rgb_set_color('closed')
         sim.simxFinish(self.client_id)
         print('Program ended.')
 
     def __del__(self) -> None:
-        sim.simxFinish(self.client_id)
+        self.exit()
 
     # implemented only in simulation
     def check_collision(self) -> bool:
@@ -349,9 +372,9 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         while True:
             res, collision, _, _, _ = control.exec_vrep_script(
-                self.client_id, self.parameters.simulation.body_name,
+                self.client_id, self.parameters.simulation.col_detector_name,
                 'check_collision')
-            if res == sim.simx_return_ok and collision[0] != -1:
+            if res == sim.simx_return_ok and len(collision)>=1 and collision[0] != -1:
                 return bool(collision[0])
 
     def check_in_bounds(self) -> bool:
@@ -361,7 +384,7 @@ class FossBot(robot_interface.FossBotInterface):
             res, in_bounds, _, _, _ = control.exec_vrep_script(
                 self.client_id, self.parameters.simulation.fossbot_name,
                 'check_in_bounds', in_strings=[floor_path])
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(in_bounds)>=1:
                 return bool(in_bounds[0])
 
     def check_orientation(self) -> bool:
@@ -370,7 +393,7 @@ class FossBot(robot_interface.FossBotInterface):
             res, check_orient, _, _, _ = control.exec_vrep_script(
                 self.client_id, self.parameters.simulation.fossbot_name,
                 'check_orientation')
-            if res == sim.simx_return_ok:
+            if res == sim.simx_return_ok and len(check_orient)>=1:
                 return bool(check_orient[0])
 
     def reset_orientation(self) -> None:

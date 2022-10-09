@@ -24,24 +24,24 @@ class EnvironmentInterface(ABC):
     # change path functions:
     @abstractmethod
     def draw_path(
-            self, robot: robot_interface.FossBotInterface, file_name: str,
+            self, robot: robot_interface.FossBotInterface, path_to_file: str,
             scale_x: float = 5.0, scale_y: float = 5.0) -> None:
         '''
         Changes the path of the scene.
         Param: robot: an instance of fossbot.
-               file_name: the name of the picture to change the path to
-               (save picture-path in paths folder).
+               path_to_file: the path to the image for the
+               path in simulation to be changed to.
                scale_x: scale x for image on the floor.
                scale_y: scale y for image on the floor.
         '''
 
     @abstractmethod
-    def draw_path_auto(self, robot: robot_interface.FossBotInterface, file_name: str) -> None:
+    def draw_path_auto(self, robot: robot_interface.FossBotInterface, path_to_file: str) -> None:
         '''
         Changes the path of the scene and scales it automatically on the floor.
         Param: robot: an instance of fossbot.
-               file_name: the name of the picture to change the path to
-               (save picture-path in paths folder).
+               path_to_file: the path to the image for the
+               path in simulation to be changed to.
         '''
 
     @abstractmethod
@@ -109,4 +109,26 @@ class EnvironmentInterface(ABC):
         Teleports fossbot to location with no obstacles (on the floor).
         Param: robot: the instance of fossbot to be teleported.
                time_diff: the time to check successfull teleportation.
+        '''
+
+    @abstractmethod
+    def change_floor_size(
+            self, robot: robot_interface.FossBotInterface,
+            x_size: float = 5.0, y_size: float = 5.0) -> None:
+        '''
+        Changes floor size.
+        Param: robot: an instance of fossbot.
+               x_size: the x scale to change the floor size to.
+               y_size: the y scale to change the floor size to.
+        '''
+
+    @abstractmethod
+    def save_curr_floor_size(self, robot: robot_interface.FossBotInterface) -> None:
+        '''Saves current floor size.'''
+
+    @abstractmethod
+    def save_curr_floor_img(self, robot: robot_interface.FossBotInterface) -> None:
+        '''
+        Saves current floor's image.
+        Param: img_path: the path to the wanted image to be saved on the floor.
         '''
