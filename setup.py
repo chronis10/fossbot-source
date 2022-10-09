@@ -23,8 +23,7 @@ class Install(_install):
         return requirements
 
     def run(self):
-        global cur_packages
-        global requirements
+        global cur_packages,requirements,mydata
         if self.platform == "sim":
             cur_packages.append('fossbot_lib/coppeliasim_robot/')
             requirements = self.load_requirements('fossbot_lib/coppeliasim_robot/requirements.txt')
