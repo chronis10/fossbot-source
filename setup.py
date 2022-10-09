@@ -2,6 +2,7 @@ from setuptools import setup
 import sys
 from setuptools.command.install import install as _install
 
+
 cur_packages = ['fossbot_lib/common/data_structures',
                 'fossbot_lib/common/interfaces',
                 'fossbot_lib/parameters_parser']
@@ -47,7 +48,7 @@ setup(
 #    license='LICENSE.txt',
    description='An awesome package that does something',
 #    long_description=open('README.txt').read(),
-   data_files=['fossbot_lib/coppeliasim_robot/lib']
+   include_package_data=True,
    install_requires= requirements,
    cmdclass={'install': Install}
  )
