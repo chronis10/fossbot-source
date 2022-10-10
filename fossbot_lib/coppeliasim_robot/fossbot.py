@@ -363,7 +363,8 @@ class FossBot(robot_interface.FossBotInterface):
         print('Program ended.')
 
     def __del__(self) -> None:
-        self.exit()
+        #self.exit()
+        print('Program ended.')
 
     # implemented only in simulation
     def check_collision(self) -> bool:
