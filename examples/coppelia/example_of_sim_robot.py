@@ -213,8 +213,10 @@ if __name__ == "__main__":
     #while True:
         #SIM_ROBOT.just_move()
 
-    SIM_ROBOT.rgb_set_color('red')
-    move_until_obstacle(SIM_ROBOT)
+    #SIM_ROBOT.rgb_set_color('red')
+    #move_until_obstacle(SIM_ROBOT)
+
+    SIM_ROBOT.just_rotate(1)
 
     #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
 

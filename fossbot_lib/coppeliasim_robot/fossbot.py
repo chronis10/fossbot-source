@@ -172,16 +172,16 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         Rotates fossbot towards the specified dir_id.
         Param: dir_id: the direction id to rotate to:
-               - clockwise: dir_id == 0
-               - counterclockwise: dir_id == 1
+                - counterclockwise: dir_id == 0
+                - clockwise: dir_id == 1
         '''
         if dir_id not in [0, 1]:
             print('Uknown Direction!')
             raise RuntimeError
         self.odometer_right.reset()
         self.odometer_left.reset()
-        left_dir = "reverse" if dir_id == 1 else "forward"
-        right_dir = "reverse" if dir_id == 0 else "forward"
+        left_dir = "forward" if dir_id == 1 else "reverse"
+        right_dir = "forward" if dir_id == 0 else "reverse"
         self.motor_left.move(direction=left_dir)
         self.motor_right.move(direction=right_dir)
 
@@ -189,8 +189,8 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         Rotates fossbot 90 degrees towards the specified dir_id.
         Param: dir_id: the direction id to rotate 90 degrees:
-                - clockwise: dir_id == 0
-                - counterclockwise: dir_id == 1
+                - counterclockwise: dir_id == 0
+                - clockwise: dir_id == 1
         '''
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
