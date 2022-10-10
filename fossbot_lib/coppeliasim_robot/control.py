@@ -4,17 +4,12 @@ Implementation of simulated control.
 
 import math
 import time
-import threading
+import pyaudio
+import audioop
 import numpy as np
 from fossbot_lib.common.interfaces import control_interfaces
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.coppeliasim_robot import sim
-
-NO_SOUND = False
-try:
-    import sounddevice as sd
-except:
-    NO_SOUND = True
 
 # General Functions
 def init_component(client_id: int, component_name: str) -> int:
@@ -382,35 +377,38 @@ class Noise(control_interfaces.NoiseInterface):
     detect_noise() Returns True only if noise is detected.
     '''
     def __init__(self) -> None:
-        self.cur_vol = 0
-        if NO_SOUND is False:
-            self.step_thread = threading.Thread(target=self.__detect_noise_thread, daemon=True)
-            self.step_thread.start()
-        else:
-            print('Cannot detect noise. Microphone was not found.')
-
-    def __print_sound(self, indata, outdata, frames, time_p, status) -> None:
-        '''Function that calculates the volume.'''
-        volume_norm = np.linalg.norm(indata)*10
-        volume_norm = int(volume_norm)
-        #print(volume_norm)
-        if volume_norm > 0:
-            self.cur_vol = 1
-        else:
-            self.cur_vol = 0
-
-    def __detect_noise_thread(self) -> None:
-        '''Function executed in detect noise thread.'''
-        while True:
-            with sd.Stream(callback=self.__print_sound):
-                sd.sleep(1000)
+        self.CHUNCK = 1024
+        self.RATE = 44100
+        self.p =  pyaudio.PyAudio()
+        self.stream = self.p.open(format=pyaudio.paInt16,
+                                  frames_per_buffer=self.CHUNCK,
+                                  input=True,
+                                  rate=self.RATE,
+                                  channels=1)
+        self.volume = 10    #change it if less volume should be detected.
+        self.seconds = 2    # seconds checking for any sounds.
 
     def detect_noise(self) -> bool:
         '''
         Returns True only if noise was detected.
         '''
-        return bool(self.cur_vol)
-
+        count = 0
+        #Now we read data from device for around one second
+        for i in range(0, int(self.RATE/self.CHUNCK * self.seconds)):
+            #l,data = inp.read()
+            data=self.stream.read(self.CHUNCK)
+            #oreo_sound.append(data)
+            if True:
+                reading=audioop.max(data, 1)
+                if reading == 128 :
+                    count += 1
+                else:
+                    count = 0
+                if count > self.volume:
+                    count = 0
+                    return True
+            time.sleep(.0001)
+        return False
 
 # Hardware section
 class GenInput(control_interfaces.GenInputInterface):

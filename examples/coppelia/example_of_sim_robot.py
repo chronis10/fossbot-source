@@ -216,7 +216,7 @@ if __name__ == "__main__":
     #SIM_ROBOT.rgb_set_color('red')
     #move_until_obstacle(SIM_ROBOT)
 
-    SIM_ROBOT.just_rotate(1)
+    SIM_ROBOT.get_noise_detection()
 
     #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
 
