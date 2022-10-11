@@ -178,15 +178,6 @@ def move_until_obstacle(robot: robot_interface.FossBotInterface):
             #robot.stop()
             break
 
-def detect_noise_test(robot: robot_interface.FossBotInterface, for_time: float = 0.5) -> None:
-    '''
-    Noise detection test for specific amount of time.
-    Param: for_time: the time for the test to last.
-    '''
-    tar_time = time.time() + for_time
-    while time.time() < tar_time:
-        print(robot.get_noise_detection())
-
 if __name__ == "__main__":
     # Load parameters from yml file
     FILE_PARAM = load_parameters()
@@ -216,8 +207,6 @@ if __name__ == "__main__":
     #SIM_ROBOT.rgb_set_color('red')
     #move_until_obstacle(SIM_ROBOT)
 
-    #SIM_ROBOT.get_noise_detection()
-
     #SIM_ROBOT.rotate_clockwise_90()
 
     #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
@@ -230,7 +219,6 @@ if __name__ == "__main__":
     #SIM_ROBOT.rgb_set_color('red')
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
-    #detect_noise_test(SIM_ROBOT)
 
     # Environment Testing:
     #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)

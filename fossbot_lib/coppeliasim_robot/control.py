@@ -4,9 +4,6 @@ Implementation of simulated control.
 
 import math
 import time
-import pyaudio
-import audioop
-import numpy as np
 from fossbot_lib.common.interfaces import control_interfaces
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.coppeliasim_robot import sim
@@ -383,39 +380,11 @@ class Noise(control_interfaces.NoiseInterface):
     Functions:
     detect_noise() Returns True only if noise is detected.
     '''
-    def __init__(self) -> None:
-        self.CHUNCK = 1024
-        self.RATE = 44100
-        self.p =  pyaudio.PyAudio()
-        self.stream = self.p.open(format=pyaudio.paInt16,
-                                  frames_per_buffer=self.CHUNCK,
-                                  input=True,
-                                  rate=self.RATE,
-                                  channels=1)
-        self.volume = 10    #change it if less volume should be detected.
-        self.seconds = 2    # seconds checking for any sounds.
-
     def detect_noise(self) -> bool:
         '''
         Returns True only if noise was detected.
         '''
-        count = 0
-        #Now we read data from device for around one second
-        for i in range(0, int(self.RATE/self.CHUNCK * self.seconds)):
-            #l,data = inp.read()
-            data=self.stream.read(self.CHUNCK)
-            #oreo_sound.append(data)
-            if True:
-                reading=audioop.max(data, 1)
-                if reading == 128 :
-                    count += 1
-                else:
-                    count = 0
-                if count > self.volume:
-                    count = 0
-                    return True
-            time.sleep(.0001)
-        return False
+        raise NotImplementedError
 
 # Hardware section
 class GenInput(control_interfaces.GenInputInterface):
