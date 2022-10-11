@@ -89,7 +89,7 @@ class Motor(control_interfaces.MotorInterface):
     Functions:
     dir_control(direction) Change motor direction to input direction.
     move(direction) Start moving motor with default speed towards input direction.
-    set_speed(speed) Set speed immediately 0-100% range.
+    set_speed(speed) Set speed immediately 0-100 range.
     stop() Stops the motor.
     """
     def __init__(self, sim_param: configuration.SimRobotParameters, motor_joint_name: str, def_speed: int) -> None:
@@ -139,13 +139,13 @@ class Motor(control_interfaces.MotorInterface):
 
     def set_speed(self, speed: int) -> None:
         '''
-        Set speed immediately 0-100% range.
-        Param: speed: the range 0 - 100% that speed will be changed to.
+        Set speed immediately 0-100 range.
+        Param: speed: the range 0 - 100 that speed will be changed to.
         '''
         if speed < 0 or speed > 100:
             print("The motor speed is a percentage of total motor power. Accepted values 0-100.")
         else:
-            self.def_speed = self.def_speed * speed / 100
+            self.def_speed = speed / 100
             self.move(self.direction)
 
     def stop(self) -> None:

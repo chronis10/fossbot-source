@@ -19,8 +19,8 @@ def ultimate_test(robot: robot_interface.FossBotInterface) -> None:
     '''Tests important functions of robot'''
     robot.move_distance(10)
     robot.wait(1)
-    robot.motor_left.set_speed(50)
-    robot.motor_right.set_speed(50)
+    robot.motor_left.set_speed(90)
+    robot.motor_right.set_speed(90)
     robot.move_distance(11)
     robot.wait(1)
     robot.rotate_clockwise_90()
@@ -215,11 +215,11 @@ if __name__ == "__main__":
 
     # Fossbot Testing:
     #main(SIM_ROBOT)
-    #ultimate_test(SIM_ROBOT)
+    ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #SIM_ROBOT.rgb_set_color('red')
-    follow_line(SIM_ROBOT)
+    #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
 
     # Environment Testing:
