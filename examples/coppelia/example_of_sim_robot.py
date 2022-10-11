@@ -47,9 +47,9 @@ def follow_line(robot: robot_interface.FossBotInterface) -> None:
         if middle:
             robot.move_forward()
         elif right:
-            robot.rotate_counterclockwise()
-        elif left:
             robot.rotate_clockwise()
+        elif left:
+            robot.rotate_counterclockwise()
 
 def change_color(robot: robot_interface.FossBotInterface) -> None:
     ''' Changes the color of a led for some times '''
@@ -216,7 +216,9 @@ if __name__ == "__main__":
     #SIM_ROBOT.rgb_set_color('red')
     #move_until_obstacle(SIM_ROBOT)
 
-    SIM_ROBOT.get_noise_detection()
+    #SIM_ROBOT.get_noise_detection()
+
+    #SIM_ROBOT.rotate_clockwise_90()
 
     #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
 
@@ -226,7 +228,7 @@ if __name__ == "__main__":
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #SIM_ROBOT.rgb_set_color('red')
-    #follow_line(SIM_ROBOT)
+    follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
     #detect_noise_test(SIM_ROBOT)
 

@@ -25,17 +25,17 @@ light_sensor:
 
 line_sensor_center:
   name: Αισθητήρας γραμμής κεντρικός, τιμή εντοπισμού 
-  value: 50
+  value: 10
   default: 50
   
 line_sensor_left:
   name: Αισθητήρας γραμμής αριστερός, τιμή εντοπισμού 
-  value: 50
+  value: 10
   default: 50
 
 line_sensor_right:
   name: Αισθητήρας γραμμής δεξιός, τιμή εντοπισμού 
-  value: 50
+  value: 10
   default: 50
 
 rotate_90:
