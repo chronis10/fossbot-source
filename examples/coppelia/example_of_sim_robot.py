@@ -211,8 +211,10 @@ if __name__ == "__main__":
 
     #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
 
+    SIM_ROBOT.get_noise_detection()
+
     # Fossbot Testing:
-    main(SIM_ROBOT)
+    #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)

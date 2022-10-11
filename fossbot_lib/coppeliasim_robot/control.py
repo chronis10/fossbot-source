@@ -380,11 +380,18 @@ class Noise(control_interfaces.NoiseInterface):
     Functions:
     detect_noise() Returns True only if noise is detected.
     '''
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
+        self.client_id = sim_param.simulation.client_id
+        self.gui_name = sim_param.simulation.foss_gui
+
     def detect_noise(self) -> bool:
         '''
         Returns True only if noise was detected.
         '''
-        raise NotImplementedError
+        while True:
+            res, noise_made, _, _, _ = exec_vrep_script(self.client_id, self.gui_name, 'get_noise_gui')
+            if res == sim.simx_return_ok and len(noise_made) >= 1:
+                return bool(noise_made[0])
 
 # Hardware section
 class GenInput(control_interfaces.GenInputInterface):

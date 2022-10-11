@@ -43,8 +43,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.analogue_reader = control.AnalogueReadings(self.parameters)
         self.accelerometer = control.Accelerometer(self.parameters)
         self.rgb_led = control.LedRGB(self.parameters)
-        #!FIXME -- implement constructor of Noise and input its parameters here:
-        self.noise = control.Noise()
+        self.noise = control.Noise(self.parameters)
 
     def __connect_vrep(self) -> int:
         '''
