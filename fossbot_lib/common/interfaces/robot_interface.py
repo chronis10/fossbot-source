@@ -86,8 +86,8 @@ class FossBotInterface(ABC):
         '''
         Rotates fossbot towards the specified dir_id.
         Param: dir_id: the direction id to rotate to:
-               - clockwise: dir_id == 0
-               - counterclockwise: dir_id == 1
+                - counterclockwise: dir_id == 0
+                - clockwise: dir_id == 1
         '''
 
     @abstractmethod
@@ -95,8 +95,8 @@ class FossBotInterface(ABC):
         '''
         Rotates fossbot 90 degrees towards the specified dir_id.
         Param: dir_id: the direction id to rotate 90 degrees:
-               - clockwise: dir_id == 0
-               - counterclockwise: dir_id == 1
+                - counterclockwise: dir_id == 0
+                - clockwise: dir_id == 1
         '''
 
     @abstractmethod

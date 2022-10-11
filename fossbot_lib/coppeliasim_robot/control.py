@@ -4,17 +4,9 @@ Implementation of simulated control.
 
 import math
 import time
-import threading
-import numpy as np
 from fossbot_lib.common.interfaces import control_interfaces
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.coppeliasim_robot import sim
-
-NO_SOUND = False
-try:
-    import sounddevice as sd
-except:
-    NO_SOUND = True
 
 # General Functions
 def init_component(client_id: int, component_name: str) -> int:
@@ -345,14 +337,21 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             if res == sim.simx_return_ok and len(light_opacity)>=1:
                 return light_opacity[0]
 
-    def __convert_float(self, reading: float) -> float:
+    def __convert_float(self, pin: int, reading: float) -> float:
         '''
         Converts list of image data to float number.
         Param: reading: the list of image data to be transformed
         Returns: 23.0 if reading is black line, else 0.0
         '''
         # black <= 10%
-        if reading <= 0.1:
+        black_reading = 0.1
+        if pin == self.param.simulation.sensor_middle_id:
+            black_reading = self.param.line_sensor_center.value / 100
+        elif pin == self.param.simulation.sensor_right_id:
+            black_reading = self.param.line_sensor_right.value / 100
+        elif pin == self.param.simulation.sensor_left_id:
+            black_reading = self.param.line_sensor_left.value / 100
+        if reading <= black_reading:
             return 0.1
         return 0.0
 
@@ -366,13 +365,13 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             return self.__get_light_data()
         if pin == self.param.simulation.sensor_middle_id:
             mid_sensor_name = self.param.simulation.sensor_middle_name
-            return self.__convert_float(self.__get_line_data(mid_sensor_name))
+            return self.__convert_float(pin, self.__get_line_data(mid_sensor_name))
         if pin == self.param.simulation.sensor_right_id:
             right_sensor_name = self.param.simulation.sensor_right_name
-            return self.__convert_float(self.__get_line_data(right_sensor_name))
+            return self.__convert_float(pin, self.__get_line_data(right_sensor_name))
         if pin == self.param.simulation.sensor_left_id:
             left_sensor_name = self.param.simulation.sensor_left_name
-            return self.__convert_float(self.__get_line_data(left_sensor_name))
+            return self.__convert_float(pin, self.__get_line_data(left_sensor_name))
 
 
 class Noise(control_interfaces.NoiseInterface):
@@ -381,36 +380,18 @@ class Noise(control_interfaces.NoiseInterface):
     Functions:
     detect_noise() Returns True only if noise is detected.
     '''
-    def __init__(self) -> None:
-        self.cur_vol = 0
-        if NO_SOUND is False:
-            self.step_thread = threading.Thread(target=self.__detect_noise_thread, daemon=True)
-            self.step_thread.start()
-        else:
-            print('Cannot detect noise. Microphone was not found.')
-
-    def __print_sound(self, indata, outdata, frames, time_p, status) -> None:
-        '''Function that calculates the volume.'''
-        volume_norm = np.linalg.norm(indata)*10
-        volume_norm = int(volume_norm)
-        #print(volume_norm)
-        if volume_norm > 0:
-            self.cur_vol = 1
-        else:
-            self.cur_vol = 0
-
-    def __detect_noise_thread(self) -> None:
-        '''Function executed in detect noise thread.'''
-        while True:
-            with sd.Stream(callback=self.__print_sound):
-                sd.sleep(1000)
+    def __init__(self, sim_param: configuration.SimRobotParameters) -> None:
+        self.client_id = sim_param.simulation.client_id
+        self.gui_name = sim_param.simulation.foss_gui
 
     def detect_noise(self) -> bool:
         '''
         Returns True only if noise was detected.
         '''
-        return bool(self.cur_vol)
-
+        while True:
+            res, noise_made, _, _, _ = exec_vrep_script(self.client_id, self.gui_name, 'get_noise_gui')
+            if res == sim.simx_return_ok and len(noise_made) >= 1:
+                return bool(noise_made[0])
 
 # Hardware section
 class GenInput(control_interfaces.GenInputInterface):
