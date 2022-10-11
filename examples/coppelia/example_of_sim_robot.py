@@ -211,7 +211,7 @@ if __name__ == "__main__":
 
     #ENVIRONMENT.teleport_empty_space(SIM_ROBOT)
 
-    SIM_ROBOT.get_noise_detection()
+    #SIM_ROBOT.get_noise_detection()
 
     # Fossbot Testing:
     #main(SIM_ROBOT)
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #SIM_ROBOT.rgb_set_color('red')
-    #follow_line(SIM_ROBOT)
+    follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
 
     # Environment Testing:
