@@ -5,12 +5,12 @@ step:
 
 motor_left:
   name: Ταχύτητα αριστερού μοτέρ
-  value: 0.9
+  value: 0.5
   default: 22
 
 motor_right:
   name: Ταχύτητα δεξιού μοτέρ
-  value: 0.9
+  value: 0.5
   default: 23
 
 sensor_distance:
