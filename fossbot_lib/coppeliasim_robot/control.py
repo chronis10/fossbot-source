@@ -347,11 +347,11 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
         # black <= 10%
         black_reading = 0.1
         if pin == self.param.simulation.sensor_middle_id:
-            black_reading = self.param.line_sensor_center.value
+            black_reading = self.param.line_sensor_center.value / 100
         elif pin == self.param.simulation.sensor_right_id:
-            black_reading = self.param.line_sensor_right.value
+            black_reading = self.param.line_sensor_right.value / 100
         elif pin == self.param.simulation.sensor_left_id:
-            black_reading = self.param.line_sensor_left.value
+            black_reading = self.param.line_sensor_left.value / 100
         if reading <= black_reading:
             return 0.1
         return 0.0

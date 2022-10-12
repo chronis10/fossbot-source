@@ -75,9 +75,6 @@ class FossBot(robot_interface.FossBotInterface):
         parameters.simulation.led_name = f'{fossbot_name}/{body_name}/{parameters.simulation.led_name}'
         parameters.simulation.body_name = f'{fossbot_name}/{parameters.simulation.body_name}'
         parameters.simulation.col_detector_name = f'{fossbot_name}/{body_name}/{parameters.simulation.col_detector_name}'
-        parameters.line_sensor_center.value = parameters.line_sensor_center.value / 100
-        parameters.line_sensor_right.value = parameters.line_sensor_right.value / 100
-        parameters.line_sensor_left.value = parameters.line_sensor_left.value / 100
         return parameters
 
     # movement
