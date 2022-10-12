@@ -201,8 +201,9 @@ if __name__ == "__main__":
     # Create environment
     ENVIRONMENT = Environment()
 
-    #while True:
-        #SIM_ROBOT.just_move()
+    # while True:
+    #     SIM_ROBOT.just_move()
+    #     print(SIM_ROBOT.get_light_sensor())
 
     #SIM_ROBOT.rgb_set_color('red')
     #move_until_obstacle(SIM_ROBOT)
