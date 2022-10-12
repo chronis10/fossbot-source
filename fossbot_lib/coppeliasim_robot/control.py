@@ -339,18 +339,19 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
 
     def __convert_float(self, pin: int, reading: float) -> float:
         '''
-        Converts list of image data to float number.
-        Param: reading: the list of image data to be transformed
-        Returns: 23.0 if reading is black line, else 0.0
+        Returns 0.1 if reading is black line.
+        Param: pin: the line sensor's pin.
+               reading: a float number returned by line sensor.
+        Returns: 0.1 if reading is black line, else 0.0.
         '''
         # black <= 10%
         black_reading = 0.1
         if pin == self.param.simulation.sensor_middle_id:
-            black_reading = self.param.line_sensor_center.value / 100
+            black_reading = self.param.line_sensor_center.value
         elif pin == self.param.simulation.sensor_right_id:
-            black_reading = self.param.line_sensor_right.value / 100
+            black_reading = self.param.line_sensor_right.value
         elif pin == self.param.simulation.sensor_left_id:
-            black_reading = self.param.line_sensor_left.value / 100
+            black_reading = self.param.line_sensor_left.value
         if reading <= black_reading:
             return 0.1
         return 0.0
