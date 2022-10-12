@@ -31,10 +31,10 @@ class FossBot(robot_interface.FossBotInterface):
         self.parameters.simulation.client_id = self.client_id
         self.motor_left = control.Motor(
             self.parameters, self.parameters.simulation.left_motor_name,
-            self.parameters.motor_left_speed.value)
+            self.parameters.motor_left_speed.value / 100)
         self.motor_right = control.Motor(
             self.parameters, self.parameters.simulation.right_motor_name,
-            self.parameters.motor_right_speed.value)
+            self.parameters.motor_right_speed.value / 100)
         self.ultrasonic = control.UltrasonicSensor(self.parameters)
         self.odometer_right = control.Odometer(
             self.parameters, self.parameters.simulation.right_motor_name)
