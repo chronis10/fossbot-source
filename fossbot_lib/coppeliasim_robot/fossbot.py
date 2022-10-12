@@ -286,8 +286,17 @@ class FossBot(robot_interface.FossBotInterface):
         if sensor_id not in [mid_id, left_id, right_id]:
             print(f'Sensor id {sensor_id} is out of bounds.')
             return False
-        if self.analogue_reader.get_reading(sensor_id) == 0.1:
-            return True
+        read = self.analogue_reader.get_reading(sensor_id)
+        #print(read)
+        if sensor_id == mid_id:
+            if read <= self.parameters.line_sensor_center.value / 100:
+                return True
+        elif sensor_id == left_id:
+            if read <= self.parameters.line_sensor_left.value / 100:
+                return True
+        elif sensor_id == right_id:
+            if read <= self.parameters.line_sensor_right.value / 100:
+                return True
         return False
 
     # accelerometer

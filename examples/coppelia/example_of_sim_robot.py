@@ -215,11 +215,11 @@ if __name__ == "__main__":
 
     # Fossbot Testing:
     #main(SIM_ROBOT)
-    ultimate_test(SIM_ROBOT)
+    #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #SIM_ROBOT.rgb_set_color('red')
-    #follow_line(SIM_ROBOT)
+    follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
 
     # Environment Testing:

@@ -337,25 +337,6 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             if res == sim.simx_return_ok and len(light_opacity)>=1:
                 return light_opacity[0]
 
-    def __convert_float(self, pin: int, reading: float) -> float:
-        '''
-        Returns 0.1 if reading is black line.
-        Param: pin: the line sensor's pin.
-               reading: a float number returned by line sensor.
-        Returns: 0.1 if reading is black line, else 0.0.
-        '''
-        # black <= 10%
-        black_reading = 0.1
-        if pin == self.param.simulation.sensor_middle_id:
-            black_reading = self.param.line_sensor_center.value / 100
-        elif pin == self.param.simulation.sensor_right_id:
-            black_reading = self.param.line_sensor_right.value / 100
-        elif pin == self.param.simulation.sensor_left_id:
-            black_reading = self.param.line_sensor_left.value / 100
-        if reading <= black_reading:
-            return 0.1
-        return 0.0
-
     def get_reading(self, pin: int) -> float:
         '''
         Gets reading of a specific sensor specified by input pin.
@@ -366,13 +347,13 @@ class AnalogueReadings(control_interfaces.AnalogueReadingsInterface):
             return self.__get_light_data()
         if pin == self.param.simulation.sensor_middle_id:
             mid_sensor_name = self.param.simulation.sensor_middle_name
-            return self.__convert_float(pin, self.__get_line_data(mid_sensor_name))
+            return self.__get_line_data(mid_sensor_name)
         if pin == self.param.simulation.sensor_right_id:
             right_sensor_name = self.param.simulation.sensor_right_name
-            return self.__convert_float(pin, self.__get_line_data(right_sensor_name))
+            return self.__get_line_data(right_sensor_name)
         if pin == self.param.simulation.sensor_left_id:
             left_sensor_name = self.param.simulation.sensor_left_name
-            return self.__convert_float(pin, self.__get_line_data(left_sensor_name))
+            return self.__get_line_data(left_sensor_name)
 
 
 class Noise(control_interfaces.NoiseInterface):
