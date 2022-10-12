@@ -283,9 +283,6 @@ class FossBot(robot_interface.FossBotInterface):
         left_id = self.parameters.simulation.sensor_left_id
         right_id = self.parameters.simulation.sensor_right_id
 
-        if sensor_id not in [mid_id, left_id, right_id]:
-            print(f'Sensor id {sensor_id} is out of bounds.')
-            return False
         read = self.analogue_reader.get_reading(sensor_id)
         #print(read)
         if sensor_id == mid_id:
