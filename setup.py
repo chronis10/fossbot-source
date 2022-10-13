@@ -7,7 +7,6 @@ cur_packages = ['fossbot_lib/common/data_structures',
                 'fossbot_lib/parameters_parser']
 
 requirements = []
-mydata = {'':[]}
 class Install(_install):
     user_options = _install.user_options + [('platform=', None, None)]
     def initialize_options(self):
@@ -23,11 +22,10 @@ class Install(_install):
         return requirements
 
     def run(self):
-        global cur_packages,requirements,mydata
+        global cur_packages,requirements
         if self.platform == "sim":
             cur_packages.append('fossbot_lib/coppeliasim_robot/')
             requirements = self.load_requirements('fossbot_lib/coppeliasim_robot/requirements.txt')
-            mydata = {'fossbot_lib/coppeliasim_robot/':['lib/Linux/remoteApi.so','lib/Windows/remoteApi.dll','lib/MacOS/remoteApi.dylib']}
         elif self.platform == "real":
             cur_packages.append('fossbot_lib/real_robot/')
             requirements = self.load_requirements('fossbot_lib/real_robot/requirements.txt')
@@ -47,7 +45,7 @@ setup(
 #    license='LICENSE.txt',
    description='An awesome package that does something',
 #    long_description=open('README.txt').read(),
-   package_data ={'fossbot_lib/coppeliasim_robot/':['lib/Linux/remoteApi.so','lib/Windows/remoteApi.dll','lib/MacOS/remoteApi.dylib']},
+   #package_data ={'fossbot_lib/coppeliasim_robot/':['lib/Linux/remoteApi.so','lib/Windows/remoteApi.dll','lib/MacOS/remoteApi.dylib']},
    install_requires= requirements,
    cmdclass={'install': Install}
  )

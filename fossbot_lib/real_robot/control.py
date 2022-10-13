@@ -30,7 +30,7 @@ class Motor(control_interfaces.MotorInterface):
     Functions:
     dir_control(direction) Change motor direction to input direction.
     move(direction) Start moving motor with default speed towards input direction.
-    set_speed(speed) Set speed immediately 0-100% range.
+    set_speed(speed) Set speed immediately 0-100 range.
     stop() Stops the motor.
     """
 
@@ -48,8 +48,8 @@ class Motor(control_interfaces.MotorInterface):
 
     def set_speed(self, speed: int) -> None:
         '''
-        Set speed immediately 0-100% range.
-        Param: speed: the range 0 - 100% that speed will be changed to.
+        Set speed immediately 0-100 range.
+        Param: speed: the range 0 - 100 that speed will be changed to.
         '''
         if speed < 0 or speed > 100:
             print(

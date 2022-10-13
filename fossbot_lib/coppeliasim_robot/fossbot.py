@@ -31,10 +31,10 @@ class FossBot(robot_interface.FossBotInterface):
         self.parameters.simulation.client_id = self.client_id
         self.motor_left = control.Motor(
             self.parameters, self.parameters.simulation.left_motor_name,
-            self.parameters.motor_left_speed.value)
+            self.parameters.motor_left_speed.value / 100)
         self.motor_right = control.Motor(
             self.parameters, self.parameters.simulation.right_motor_name,
-            self.parameters.motor_right_speed.value)
+            self.parameters.motor_right_speed.value / 100)
         self.ultrasonic = control.UltrasonicSensor(self.parameters)
         self.odometer_right = control.Odometer(
             self.parameters, self.parameters.simulation.right_motor_name)
@@ -286,8 +286,18 @@ class FossBot(robot_interface.FossBotInterface):
         if sensor_id not in [mid_id, left_id, right_id]:
             print(f'Sensor id {sensor_id} is out of bounds.')
             return False
-        if self.analogue_reader.get_reading(sensor_id) == 0.1:
-            return True
+
+        read = self.analogue_reader.get_reading(sensor_id)
+        #print(read)
+        if sensor_id == mid_id:
+            if read <= self.parameters.line_sensor_center.value / 100:
+                return True
+        elif sensor_id == left_id:
+            if read <= self.parameters.line_sensor_left.value / 100:
+                return True
+        elif sensor_id == right_id:
+            if read <= self.parameters.line_sensor_right.value / 100:
+                return True
         return False
 
     # accelerometer
