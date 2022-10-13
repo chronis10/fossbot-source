@@ -133,9 +133,10 @@ class FossBot(robot_interface.FossBotInterface):
         return bool(random.randint(0, 1))
 
     # sound
-    def play_sound(self, audio_id: int) -> None:
+    def play_sound(self, audio_path: str) -> None:
         '''
-        Plays mp3 file specified by input audio_id.
+        Plays mp3 file specified by input audio_path.
+        Param: audio_path: the path to the wanted mp3 file.
         '''
         print('Playing sound.')
 

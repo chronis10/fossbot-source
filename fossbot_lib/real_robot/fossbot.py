@@ -2,8 +2,8 @@
 Real robot implementation
 """
 import time
-import subprocess
-
+import os
+import pygame
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.real_robot import control
@@ -25,6 +25,8 @@ class FossBot(robot_interface.FossBotInterface):
         self.analogue_reader = control.AnalogueReadings()
         self.accelerometer = control.Accelerometer()
         self.noise = control.Noise(pin=4)
+        pygame.init()
+        pygame.mixer.init()
         self.parameters = parameters
 
     # movement
@@ -169,25 +171,16 @@ class FossBot(robot_interface.FossBotInterface):
         return bool(self.ultrasonic.get_distance() <= self.parameters.sensor_distance.value)
 
     # sound
-    def play_sound(self, audio_id: int) -> None:
+    def play_sound(self, audio_path: str) -> None:
         '''
-        Plays mp3 file specified by input audio_id.
+        Plays mp3 file specified by input audio_path.
+        Param: audio_path: the path to the wanted mp3 file.
         '''
-        audio_id = int(audio_id)
-        if audio_id == 1:
-            subprocess.run(["mpg123", "../robot_lib/soundfx/geia.mp3"], check=True)
-        elif audio_id == 2:
-            subprocess.run(["mpg123", "../robot_lib/soundfx/mpravo.mp3"], check=True)
-        elif audio_id == 3:
-            subprocess.run(["mpg123", "../robot_lib/soundfx/empodio.mp3"], check=True)
-        elif audio_id == 4:
-            subprocess.run(["mpg123", "../robot_lib/soundfx/kalhmera.mp3"], check=True)
-        elif audio_id == 5:
-            subprocess.run(["mpg123", "../robot_lib/soundfx/euxaristw.mp3"], check=True)
-        elif audio_id == 6:
-            subprocess.run(["mpg123", "../robot_lib/soundfx/r2d2.mp3"], check=True)
-        elif audio_id == 7:
-            subprocess.run(["mpg123", "../robot_lib/soundfx/machine_gun.mp3"], check=True)
+        audio_path = os.path.normpath(audio_path)
+        pygame.mixer.music.load(audio_path)
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
 
     # floor sensors
     def get_floor_sensor(self, sensor_id: int) -> float:
