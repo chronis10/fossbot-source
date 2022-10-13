@@ -205,6 +205,8 @@ if __name__ == "__main__":
     #     SIM_ROBOT.just_move()
     #     print(SIM_ROBOT.get_light_sensor())
 
+    SIM_ROBOT.play_sound('C:\\Users\\Manousos\\Desktop\\Jazz_Dance.mp3')
+
     #SIM_ROBOT.rgb_set_color('red')
     #move_until_obstacle(SIM_ROBOT)
 
@@ -220,7 +222,7 @@ if __name__ == "__main__":
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
     #SIM_ROBOT.rgb_set_color('red')
-    follow_line(SIM_ROBOT)
+    #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
 
     # Environment Testing:

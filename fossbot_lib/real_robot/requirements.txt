@@ -5,3 +5,4 @@ PyYAML
 redis
 Adafruit-GPIO
 Adafruit-MCP3008
+pygame
