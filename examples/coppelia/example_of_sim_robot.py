@@ -166,9 +166,7 @@ def test_saves(robot: robot_interface.FossBotInterface, environment: Environment
     time.sleep(2)
     print('Saving Current Floor Size...')
     environment.save_curr_floor_size(robot)
-    time.sleep(2)
-    print('Saving Current Image...')
-    environment.save_curr_floor_img(robot)
+
 
 def move_until_obstacle(robot: robot_interface.FossBotInterface):
     '''Moves robot until obstacle is detected.'''
@@ -205,8 +203,6 @@ if __name__ == "__main__":
     #     SIM_ROBOT.just_move()
     #     print(SIM_ROBOT.get_light_sensor())
 
-    SIM_ROBOT.play_sound('C:\\Users\\Manousos\\Desktop\\Jazz_Dance.mp3')
-
     #SIM_ROBOT.rgb_set_color('red')
     #move_until_obstacle(SIM_ROBOT)
 
@@ -217,7 +213,7 @@ if __name__ == "__main__":
     #SIM_ROBOT.get_noise_detection()
 
     # Fossbot Testing:
-    #main(SIM_ROBOT)
+    main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)

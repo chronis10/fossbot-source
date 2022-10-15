@@ -125,10 +125,3 @@ class EnvironmentInterface(ABC):
     @abstractmethod
     def save_curr_floor_size(self, robot: robot_interface.FossBotInterface) -> None:
         '''Saves current floor size.'''
-
-    @abstractmethod
-    def save_curr_floor_img(self, robot: robot_interface.FossBotInterface) -> None:
-        '''
-        Saves current floor's image.
-        Param: img_path: the path to the wanted image to be saved on the floor.
-        '''

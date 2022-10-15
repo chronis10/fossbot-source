@@ -244,16 +244,3 @@ class Environment(sim_gym_interface.EnvironmentInterface):
                 'save_current_size_run')
             if res == sim.simx_return_ok:
                 break
-
-    def save_curr_floor_img(self, robot: robot_interface.FossBotInterface) -> None:
-        '''
-        Saves current floor's image.
-        Param: img_path: the path to the wanted image to be saved on the floor.
-        '''
-        client_id = robot.parameters.simulation.client_id
-        parameters = robot.parameters
-        while True:
-            res, _, _, _, _ = control.exec_vrep_script(
-                client_id, parameters.simulation.floor_name, 'save_curr_img_python')
-            if res == sim.simx_return_ok:
-                break
