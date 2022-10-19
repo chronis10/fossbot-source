@@ -213,7 +213,7 @@ if __name__ == "__main__":
     #SIM_ROBOT.get_noise_detection()
 
     # Fossbot Testing:
-    #main(SIM_ROBOT)
+    main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)
@@ -223,4 +223,4 @@ if __name__ == "__main__":
 
     # Environment Testing:
     #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
-    test_saves(SIM_ROBOT, ENVIRONMENT)
+    #test_saves(SIM_ROBOT, ENVIRONMENT)
