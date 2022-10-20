@@ -176,6 +176,21 @@ def move_until_obstacle(robot: robot_interface.FossBotInterface):
             #robot.stop()
             break
 
+def test_timer(robot: robot_interface.FossBotInterface, count_time: int) -> None:
+    '''
+    Tests timer functions.
+    Param: robot: a fossbot instance.
+           count_time: seconds for the test to be executed for.
+    '''
+    print('Starting timer...')
+    robot.start_timer()
+    print('Timer started.')
+    while robot.get_elapsed() < count_time:
+        time.sleep(0.1)
+    print('Stopping timer...')
+    robot.stop_timer()
+    print('Timer stopped.')
+
 if __name__ == "__main__":
     # Load parameters from yml file
     FILE_PARAM = load_parameters()
@@ -199,6 +214,8 @@ if __name__ == "__main__":
     # Create environment
     ENVIRONMENT = Environment()
 
+    test_timer(SIM_ROBOT, 6)
+
     # while True:
     #     SIM_ROBOT.just_move()
     #     print(SIM_ROBOT.get_light_sensor())
@@ -213,7 +230,7 @@ if __name__ == "__main__":
     #SIM_ROBOT.get_noise_detection()
 
     # Fossbot Testing:
-    main(SIM_ROBOT)
+    #main(SIM_ROBOT)
     #ultimate_test(SIM_ROBOT)
     #change_color(SIM_ROBOT)
     #control.get_object_children(SIM_IDS.client_id, print_all=True)

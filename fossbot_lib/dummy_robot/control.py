@@ -4,6 +4,33 @@ Implementation for control (dummy).
 import random
 from fossbot_lib.common.interfaces import control_interfaces
 
+
+class Timer(control_interfaces.TimerInterface):
+    '''
+    Class timer()
+    Functions:
+    stop_timer() Stops a timer.
+    start_timer() Starts a timer.
+    elapsed() Prints elapsed time from start.
+    get_elapsed() Returns the elapsed time between start time and that moment in sec.
+    '''
+
+    def stop_timer(self) -> None:
+        '''Stops timer.'''
+        print('Timer stopped.')
+
+    def start_timer(self) -> None:
+        '''Starts timer.'''
+        print('Timer started.')
+
+    def elapsed(self) -> None:
+        '''Prints elapsed time from start.'''
+        print('Printing elapsed time.')
+
+    def get_elapsed(self) -> int:
+        '''Returns the elapsed time in seconds.'''
+        return random.randint(0, 10000)
+
 class Motor(control_interfaces.MotorInterface):
     """
     Motor() -> Motor control.

@@ -45,6 +45,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.accelerometer = control.Accelerometer(self.parameters)
         self.rgb_led = control.LedRGB(self.parameters)
         self.noise = control.Noise(self.parameters)
+        self.timer = control.Timer()
         pygame.init()
         pygame.mixer.init()
 
@@ -408,3 +409,18 @@ class FossBot(robot_interface.FossBotInterface):
                 'reset_orientation')
             if res == sim.simx_return_ok:
                 break
+
+    # timer:
+    def stop_timer(self) -> None:
+        '''Stops the timer.'''
+        self.timer.stop_timer()
+
+    def start_timer(self) -> None:
+        '''Starts the timer.'''
+        self.timer.start_timer()
+
+    def get_elapsed(self) -> int:
+        '''Returns the time from start.'''
+        value = self.timer.get_elapsed()
+        print('elapsed time in sec:', value)
+        return value
