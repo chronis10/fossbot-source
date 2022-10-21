@@ -204,3 +204,16 @@ class FossBot(robot_interface.FossBotInterface):
     def exit(self) -> None:
         ''' Exits. '''
         print('Exit.')
+
+    # timer:
+    def stop_timer(self) -> None:
+        '''Stops the timer.'''
+        print('Timer stopped.')
+
+    def start_timer(self) -> None:
+        '''Starts the timer.'''
+        print('Timer started.')
+
+    def get_elapsed(self) -> int:
+        '''Returns the time from start.'''
+        return random.randint(0, 10000)

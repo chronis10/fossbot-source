@@ -4,6 +4,7 @@ Implementation of electronic parts control
 
 import math
 import time
+from datetime import datetime
 import RPi.GPIO as GPIO
 from mpu6050 import mpu6050
 import Adafruit_MCP3008
@@ -23,6 +24,47 @@ def clean() -> None:
     '''
     GPIO.cleanup()
 
+class Timer(control_interfaces.TimerInterface):
+    '''
+    Class timer()
+    Functions:
+    stop_timer() Stops a timer.
+    start_timer() Starts a timer.
+    elapsed() Prints elapsed time from start.
+    get_elapsed() Returns the elapsed time between start time and that moment in sec.
+    '''
+    def __init__(self):
+        self.start = 0
+
+    def stop_timer(self) -> None:
+        '''Stops timer.'''
+        self.start = 0
+
+    def start_timer(self) -> None:
+        '''Starts timer.'''
+        self.start = datetime.now()
+
+    def elapsed(self) -> None:
+        '''Prints elapsed time from start.'''
+        if self.start == 0:
+            print("Timer not started")
+        else:
+            dif = datetime.now() - self.start
+            print(f'The elapsed time in sec is {dif}')
+
+    def get_elapsed(self) -> int:
+        '''Returns the elapsed time in seconds.'''
+        if self.start == 0:
+            return 0
+        else:
+            format_data = "%d/%m/%y %H:%M:%S"
+            start_time = datetime.strptime(self.start.strftime(format_data), format_data)
+            now_time = datetime.now().strftime(format_data)
+            now_time = datetime.strptime(now_time, format_data)
+            elapsed = now_time - start_time
+            elapsed = elapsed.total_seconds()
+            elapsed = int(elapsed)
+            return elapsed
 
 class Motor(control_interfaces.MotorInterface):
     """

@@ -25,6 +25,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.analogue_reader = control.AnalogueReadings()
         self.accelerometer = control.Accelerometer()
         self.noise = control.Noise(pin=4)
+        self.timer = control.Timer()
         pygame.init()
         pygame.mixer.init()
         self.parameters = parameters
@@ -269,3 +270,18 @@ class FossBot(robot_interface.FossBotInterface):
 
     def __del__(self) -> None:
         control.clean()
+
+    # timer:
+    def stop_timer(self) -> None:
+        '''Stops the timer.'''
+        self.timer.stop_timer()
+
+    def start_timer(self) -> None:
+        '''Starts the timer.'''
+        self.timer.start_timer()
+
+    def get_elapsed(self) -> int:
+        '''Returns the time from start.'''
+        value = self.timer.get_elapsed()
+        print('elapsed time in sec:', value)
+        return value

@@ -4,6 +4,32 @@ Interfaces for control parts.
 
 from abc import ABC, abstractmethod
 
+class TimerInterface(ABC):
+    '''
+    Class timer()
+    Functions:
+    stop_timer() Stops a timer.
+    start_timer() Starts a timer.
+    elapsed() Prints elapsed time from start.
+    get_elapsed() Returns the elapsed time between start time and that moment in sec.
+    '''
+
+    @abstractmethod
+    def stop_timer(self) -> None:
+        '''Stops timer.'''
+
+    @abstractmethod
+    def start_timer(self) -> None:
+        '''Starts timer.'''
+
+    @abstractmethod
+    def elapsed(self) -> None:
+        '''Prints elapsed time from start.'''
+
+    @abstractmethod
+    def get_elapsed(self) -> int:
+        '''Returns the elapsed time in seconds.'''
+
 class MotorInterface(ABC):
     """
     Interface for Motor control.

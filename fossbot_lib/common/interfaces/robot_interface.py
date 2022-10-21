@@ -204,3 +204,16 @@ class FossBotInterface(ABC):
     @abstractmethod
     def exit(self) -> None:
         """ Exits. """
+
+    # timer:
+    @abstractmethod
+    def stop_timer(self) -> None:
+        '''Stops the timer.'''
+
+    @abstractmethod
+    def start_timer(self) -> None:
+        '''Starts the timer.'''
+
+    @abstractmethod
+    def get_elapsed(self) -> int:
+        '''Returns the time from start.'''

@@ -166,9 +166,7 @@ def test_saves(robot: robot_interface.FossBotInterface, environment: Environment
     time.sleep(2)
     print('Saving Current Floor Size...')
     environment.save_curr_floor_size(robot)
-    time.sleep(2)
-    print('Saving Current Image...')
-    environment.save_curr_floor_img(robot)
+
 
 def move_until_obstacle(robot: robot_interface.FossBotInterface):
     '''Moves robot until obstacle is detected.'''
@@ -177,6 +175,21 @@ def move_until_obstacle(robot: robot_interface.FossBotInterface):
         if robot.check_for_obstacle():
             #robot.stop()
             break
+
+def test_timer(robot: robot_interface.FossBotInterface, count_time: int) -> None:
+    '''
+    Tests timer functions.
+    Param: robot: a fossbot instance.
+           count_time: seconds for the test to be executed for.
+    '''
+    print('Starting timer...')
+    robot.start_timer()
+    print('Timer started.')
+    while robot.get_elapsed() < count_time:
+        time.sleep(0.1)
+    print('Stopping timer...')
+    robot.stop_timer()
+    print('Timer stopped.')
 
 if __name__ == "__main__":
     # Load parameters from yml file
@@ -201,11 +214,11 @@ if __name__ == "__main__":
     # Create environment
     ENVIRONMENT = Environment()
 
+    test_timer(SIM_ROBOT, 6)
+
     # while True:
     #     SIM_ROBOT.just_move()
     #     print(SIM_ROBOT.get_light_sensor())
-
-    SIM_ROBOT.play_sound('C:\\Users\\Manousos\\Desktop\\Jazz_Dance.mp3')
 
     #SIM_ROBOT.rgb_set_color('red')
     #move_until_obstacle(SIM_ROBOT)
