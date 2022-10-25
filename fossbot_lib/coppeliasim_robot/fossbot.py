@@ -206,8 +206,11 @@ class FossBot(robot_interface.FossBotInterface):
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
         d = self.__get_degrees()
-        while d < 90 / max(rotations, 1):
+        tar_rot = 90 / max(rotations, 1)
+        diff = abs(tar_rot - d)
+        while diff >= 1:
             d = self.__get_degrees()
+            diff = abs(tar_rot - d)
             #print(d)
             #time.sleep(0.01)
         self.stop()
