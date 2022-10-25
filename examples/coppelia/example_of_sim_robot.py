@@ -216,7 +216,7 @@ if __name__ == "__main__":
 
     #test_timer(SIM_ROBOT, 6)
 
-    SIM_ROBOT.rotate_90(1)
+    SIM_ROBOT.rotate_90(0)
 
     # while True:
     #     SIM_ROBOT.just_move()

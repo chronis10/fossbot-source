@@ -192,20 +192,9 @@ class FossBot(robot_interface.FossBotInterface):
     def __get_degrees(self) -> float:
         '''Returns degrees of fossbot.'''
         while True:
-            res, _, deg, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_degrees')
+            res, _, deg, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_rot_degrees')
             if res == sim.simx_return_ok and len(deg)>=1 and deg[0] != -1:
                 return deg[0]
-
-    def __angle_displ(self, init_degrees: float, curr_degrees: float) -> float:
-        y_init = 180 - abs(init_degrees)
-        y_curr = 180 - abs(curr_degrees)
-        #print(y_curr,curr_degrees)
-        if init_degrees < curr_degrees and init_degrees * curr_degrees <= 0:
-        #if init_degrees * curr_degrees <= 0:
-            d = y_init + y_curr
-        else:
-            d = abs(y_init - y_curr)
-        return d
 
     def rotate_90(self, dir_id: int) -> None:
         '''
@@ -216,30 +205,18 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
-        init_pos = self.__get_degrees()
-        d = 0
+        d = self.__get_degrees()
         while d < 90 / max(rotations, 1):
-            d = self.__angle_displ(init_pos, self.__get_degrees())
-            print(d)
+            d = self.__get_degrees()
+            #print(d)
             #time.sleep(0.01)
         self.stop()
-
-    # def rotate_90(self, dir_id: int) -> None:
-    #     '''
-    #     Rotates fossbot 90 degrees towards the specified dir_id.
-    #     Param: dir_id: the direction id to rotate 90 degrees:
-    #             - counterclockwise: dir_id == 0
-    #             - clockwise: dir_id == 1
-    #     '''
-    #     self.just_rotate(dir_id)
-    #     rotations = self.parameters.rotate_90.value
-    #     steps_r = self.odometer_right.get_steps()
-    #     steps_l = self.odometer_left.get_steps()
-    #     while steps_r <= rotations and steps_l <= rotations:
-    #         steps_r = self.odometer_right.get_steps()
-    #         steps_l = self.odometer_left.get_steps()
-    #         time.sleep(0.01)
-    #     self.stop()
+        self.stop() # second stop just to be sure...
+        while True:
+            # resets degrees counter:
+            res, _, _, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'reset_degrees')
+            if res == sim.simx_return_ok:
+                break
 
     def rotate_clockwise(self) -> None:
         '''
