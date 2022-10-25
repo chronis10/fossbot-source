@@ -214,7 +214,9 @@ if __name__ == "__main__":
     # Create environment
     ENVIRONMENT = Environment()
 
-    test_timer(SIM_ROBOT, 6)
+    #test_timer(SIM_ROBOT, 6)
+
+    SIM_ROBOT.rotate_90(1)
 
     # while True:
     #     SIM_ROBOT.just_move()
