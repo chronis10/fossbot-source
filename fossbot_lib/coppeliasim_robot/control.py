@@ -414,10 +414,11 @@ class Noise(control_interfaces.NoiseInterface):
         '''
         Returns True only if noise was detected.
         '''
-        while True:
+        for i in range(10):
             res, noise_made, _, _, _ = exec_vrep_script(self.client_id, self.gui_name, 'get_noise_gui')
             if res == sim.simx_return_ok and len(noise_made) >= 1:
                 return bool(noise_made[0])
+        return False
 
 # Hardware section
 class GenInput(control_interfaces.GenInputInterface):

@@ -82,6 +82,7 @@ class SimRobotIds:
     accelerometer_name: str
     gyroscope_name: str
     led_name: str
+    rot_name: str
     floor_name: str
     body_name: str
     col_detector_name: str

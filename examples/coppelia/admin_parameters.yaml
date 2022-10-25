@@ -40,7 +40,7 @@ line_sensor_right:
 
 rotate_90:
   name: Στροφή 90 μοίρες, κλίκ 
-  value: 13
+  value: 1
   default: 12
 
 simulator_ids:
@@ -59,6 +59,7 @@ simulator_ids:
   accelerometer_name: Accelerometer
   gyroscope_name: GyroSensor
   led_name: led_light
+  rot_name: rotator
   body_name: body
   col_detector_name: coll_detector
   floor_name: FossbotFloor
