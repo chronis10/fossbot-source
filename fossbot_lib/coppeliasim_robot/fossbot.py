@@ -189,10 +189,41 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_left.move(direction=left_dir)
         self.motor_right.move(direction=right_dir)
 
+    # def __get_degrees(self) -> float:
+    #     '''Returns degrees of fossbot.'''
+    #     while True:
+    #         res, _, deg, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_rot_degrees')
+    #         if res == sim.simx_return_ok and len(deg)>=1 and deg[0] != -1:
+    #             return deg[0]
+
+    # def rotate_90(self, dir_id: int) -> None:
+    #     '''
+    #     Rotates fossbot 90 degrees towards the specified dir_id.
+    #     Param: dir_id: the direction id to rotate 90 degrees:
+    #             - counterclockwise: dir_id == 0
+    #             - clockwise: dir_id == 1
+    #     '''
+    #     self.just_rotate(dir_id)
+    #     rotations = self.parameters.rotate_90.value
+    #     d = self.__get_degrees()
+    #     tar_rot = 90 / max(rotations, 1)
+    #     diff = abs(tar_rot - d)
+    #     while diff >= 1:
+    #         d = self.__get_degrees()
+    #         diff = abs(tar_rot - d)
+    #         #print(d)
+    #         #time.sleep(0.01)
+    #     self.stop()
+    #     while True:
+    #         # resets degrees counter:
+    #         res, _, _, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'reset_degrees')
+    #         if res == sim.simx_return_ok:
+    #             break
+
     def __get_degrees(self) -> float:
         '''Returns degrees of fossbot.'''
         while True:
-            res, _, deg, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_rot_degrees')
+            res, _, deg, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_raw_degrees')
             if res == sim.simx_return_ok and len(deg)>=1 and deg[0] != -1:
                 return deg[0]
 
@@ -205,21 +236,30 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
-        d = self.__get_degrees()
-        tar_rot = 90 / max(rotations, 1)
-        diff = abs(tar_rot - d)
+        init = self.__get_degrees()
+        d = 0
+        tar_pos = 90 / max(rotations, 1)
+        diff = abs(tar_pos - d)
         while diff >= 1:
-            d = self.__get_degrees()
-            diff = abs(tar_rot - d)
-            #print(d)
-            #time.sleep(0.01)
+            curr = self.__get_degrees()
+            if dir_id == 1:
+                if init > curr:
+                    d = init - curr
+                else:
+                    n_init = 180 + init
+                    n_cur = 180 - curr
+                    d = n_init + n_cur
+            elif dir_id == 0:
+                if curr > init:
+                    d = curr - init
+                else:
+                    n_init = 180 - init
+                    n_cur = 180 + curr
+                    d = n_init + n_cur
+            else:
+                raise RuntimeError
+            diff = abs(tar_pos - d)
         self.stop()
-        self.stop() # second stop just to be sure...
-        while True:
-            # resets degrees counter:
-            res, _, _, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'reset_degrees')
-            if res == sim.simx_return_ok:
-                break
 
     def rotate_clockwise(self) -> None:
         '''
