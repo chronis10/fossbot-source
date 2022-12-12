@@ -150,7 +150,7 @@ class Odometer(control_interfaces.OdometerInterface):
             callback=self.count_revolutions,
             bouncetime=1)
 
-    def count_revolutions(self) -> None:
+    def count_revolutions(self,channel) -> None:
         '''Increase total steps by one.'''
         self.steps += 1
 
