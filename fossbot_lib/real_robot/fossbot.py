@@ -15,9 +15,9 @@ class FossBot(robot_interface.FossBotInterface):
     def __init__(self, parameters: configuration.RobotParameters) -> None:
         control.start_lib()
         self.motor_right = control.Motor(speed_pin=23, terma_pin=27, termb_pin=22,
-                                         dc_value=parameters.motor_right_speed.value)
+                                         dc_value=parameters.motor_right.value)
         self.motor_left = control.Motor(speed_pin=25, terma_pin=17, termb_pin=24,
-                                        dc_value=parameters.motor_right_speed.value)
+                                        dc_value=parameters.motor_right.value)
         self.ultrasonic = control.UltrasonicSensor(echo_pin=5, trig_pin=6)
         self.odometer_right = control.Odometer(pin=21)
         self.odometer_left = control.Odometer(pin=20)
@@ -81,7 +81,7 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         Moves robot forward default distance.
         '''
-        self.move_distance(self.parameters.default_step.value)
+        self.move_distance(self.parameters.step.value)
 
     def move_forward(self) -> None:
         '''
@@ -101,7 +101,7 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         Moves robot default distance in reverse.
         '''
-        self.move_distance(self.parameters.default_step.value, direction="reverse")
+        self.move_distance(self.parameters.step.value, direction="reverse")
 
     def move_reverse(self) -> None:
         '''
