@@ -3,7 +3,7 @@ Real robot implementation
 """
 import time
 import os
-import pygame
+import subprocess
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.real_robot import control
@@ -26,8 +26,6 @@ class FossBot(robot_interface.FossBotInterface):
         self.accelerometer = control.Accelerometer()
         self.noise = control.Noise(pin=4)
         self.timer = control.Timer()
-        pygame.init()
-        pygame.mixer.init()
         self.parameters = parameters
 
     # movement
@@ -178,10 +176,7 @@ class FossBot(robot_interface.FossBotInterface):
         Param: audio_path: the path to the wanted mp3 file.
         '''
         audio_path = os.path.normpath(audio_path)
-        pygame.mixer.music.load(audio_path)
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
+        subprocess.run(["mpg123",audio_path])
 
     # floor sensors
     def get_floor_sensor(self, sensor_id: int) -> float:
