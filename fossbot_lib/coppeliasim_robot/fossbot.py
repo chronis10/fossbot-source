@@ -66,30 +66,41 @@ class FossBot(robot_interface.FossBotInterface):
         Attempts to go fossbot in straight line.
         Param: error: the error to go to straight line.
         '''
+        #print(self.__get_degrees())
+        #time.sleep(0.1)
+        right_vel_tar = self.parameters.motor_right_speed.value / 2
+        left_vel_tar = self.parameters.motor_left_speed.value / 2
         if self.straight_dir == 'forward':
             if error < -1:
                 # move right
                 print('go right')
-                self.motor_left.def_speed = (self.parameters.motor_right_speed.value + 10) / 100
+                self.motor_left.def_speed = (self.parameters.motor_left_speed.value + left_vel_tar) / 100
                 self.motor_left.move(self.straight_dir)
             elif error > 1:
                 # move left
                 print('go left')
                 #self.motor_left.def_speed = (self.parameters.motor_left_speed.value - 1) / 100
-                self.motor_right.def_speed = (self.parameters.motor_right_speed.value + 10) / 100
+                self.motor_right.def_speed = (self.parameters.motor_right_speed.value + right_vel_tar) / 100
                 self.motor_right.move(self.straight_dir)
         elif self.straight_dir == 'reverse':
             if error > 1:
                 # move right
                 print('go right')
-                self.motor_left.def_speed = (self.parameters.motor_right_speed.value + 10) / 100
+                self.motor_left.def_speed = (self.parameters.motor_left_speed.value + left_vel_tar) / 100
                 self.motor_left.move(self.straight_dir)
             elif error < -1:
                 # move left
                 print('go left')
                 #self.motor_left.def_speed = (self.parameters.motor_left_speed.value - 1) / 100
-                self.motor_right.def_speed = (self.parameters.motor_right_speed.value + 10) / 100
+                self.motor_right.def_speed = (self.parameters.motor_right_speed.value + right_vel_tar) / 100
                 self.motor_right.move(self.straight_dir)
+
+    def __restore_def_speed(self):
+        '''
+        Restores default motors speed.
+        '''
+        self.motor_right.def_speed = self.parameters.motor_right_speed.value / 100
+        self.motor_left.def_speed = self.parameters.motor_left_speed.value / 100
 
     def __connect_vrep(self) -> int:
         '''
@@ -163,6 +174,7 @@ class FossBot(robot_interface.FossBotInterface):
     def stop(self) -> None:
         """ Stop moving. """
         self.goStraight = False
+        #self.__restore_def_speed()
         self.straight_dir = 'forward'
         self.motor_left.stop()
         self.motor_right.stop()
