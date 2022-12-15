@@ -218,7 +218,7 @@ if __name__ == "__main__":
 
     #SIM_ROBOT.rotate_90(1)
 
-    SIM_ROBOT.get_noise_detection()
+    #SIM_ROBOT.get_noise_detection()
 
     # while True:
     #     SIM_ROBOT.just_move()
@@ -241,6 +241,20 @@ if __name__ == "__main__":
     #SIM_ROBOT.rgb_set_color('red')
     #follow_line(SIM_ROBOT)
     #check_collision_test(SIM_ROBOT)
+
+    # SIM_ROBOT.rotate_clockwise_90()
+    # SIM_ROBOT.rotate_clockwise_90()
+    # SIM_ROBOT.rotate_clockwise_90()
+    # SIM_ROBOT.rotate_clockwise_90()
+
+    SIM_ROBOT.move_forward_default()
+    #SIM_ROBOT.rotate_clockwise_90()
+    SIM_ROBOT.move_forward_default()
+    SIM_ROBOT.move_forward_default()
+
+    # SIM_ROBOT.move_reverse_default()
+    # SIM_ROBOT.move_reverse_default()
+    # SIM_ROBOT.move_reverse_default()
 
     # Environment Testing:
     #ultimate_environment_test(ENVIRONMENT, SIM_ROBOT)
