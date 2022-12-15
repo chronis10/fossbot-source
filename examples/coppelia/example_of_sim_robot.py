@@ -248,7 +248,7 @@ if __name__ == "__main__":
     # SIM_ROBOT.rotate_clockwise_90()
 
     SIM_ROBOT.move_forward_default()
-    #SIM_ROBOT.rotate_clockwise_90()
+    SIM_ROBOT.rotate_clockwise_90()
     SIM_ROBOT.move_forward_default()
     SIM_ROBOT.move_forward_default()
 

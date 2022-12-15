@@ -5,6 +5,7 @@ Simulated robot implementation.
 import time
 import os
 import pygame
+from threading import Thread
 from fossbot_lib.common.data_structures import configuration
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.coppeliasim_robot import control
@@ -46,8 +47,49 @@ class FossBot(robot_interface.FossBotInterface):
         self.rgb_led = control.LedRGB(self.parameters)
         self.noise = control.Noise(self.parameters)
         self.timer = control.Timer()
+        self.goStraight = False
+        self.straight_checker = Thread(target=self.__check_straight, daemon=True)
+        self.straight_checker.start()
+        self.straight_dir = 'forward'
         pygame.init()
         pygame.mixer.init()
+
+    def __check_straight(self):
+        while True:
+            if self.goStraight:
+                res, _, error, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_errorStraight')
+                if res == sim.simx_return_ok and len(error)>=1 and error[0] != -1:
+                    self.__move_straight(error[0])
+
+    def __move_straight(self, error: float = 0):
+        '''
+        Attempts to go fossbot in straight line.
+        Param: error: the error to go to straight line.
+        '''
+        if self.straight_dir == 'forward':
+            if error < -1:
+                # move right
+                print('go right')
+                self.motor_left.def_speed = (self.parameters.motor_right_speed.value + 10) / 100
+                self.motor_left.move(self.straight_dir)
+            elif error > 1:
+                # move left
+                print('go left')
+                #self.motor_left.def_speed = (self.parameters.motor_left_speed.value - 1) / 100
+                self.motor_right.def_speed = (self.parameters.motor_right_speed.value + 10) / 100
+                self.motor_right.move(self.straight_dir)
+        elif self.straight_dir == 'reverse':
+            if error > 1:
+                # move right
+                print('go right')
+                self.motor_left.def_speed = (self.parameters.motor_right_speed.value + 10) / 100
+                self.motor_left.move(self.straight_dir)
+            elif error < -1:
+                # move left
+                print('go left')
+                #self.motor_left.def_speed = (self.parameters.motor_left_speed.value - 1) / 100
+                self.motor_right.def_speed = (self.parameters.motor_right_speed.value + 10) / 100
+                self.motor_right.move(self.straight_dir)
 
     def __connect_vrep(self) -> int:
         '''
@@ -88,6 +130,8 @@ class FossBot(robot_interface.FossBotInterface):
         Move forward/backwards.
         Param: direction: the direction to be headed to.
         """
+        self.goStraight = True
+        self.straight_dir = direction
         self.odometer_right.reset()
         self.odometer_left.reset()
         self.motor_right.move(direction=direction)
@@ -118,6 +162,8 @@ class FossBot(robot_interface.FossBotInterface):
 
     def stop(self) -> None:
         """ Stop moving. """
+        self.goStraight = False
+        self.straight_dir = 'forward'
         self.motor_left.stop()
         self.motor_right.stop()
         #print('stop')
