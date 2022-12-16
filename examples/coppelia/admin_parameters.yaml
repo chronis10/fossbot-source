@@ -10,7 +10,7 @@ motor_left:
 
 motor_right:
   name: Ταχύτητα δεξιού μοτέρ
-  value: 46
+  value: 44
   default: 23
 
 sensor_distance:

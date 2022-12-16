@@ -75,23 +75,31 @@ class FossBot(robot_interface.FossBotInterface):
                 # move right
                 #print('go right')
                 self.motor_left.def_speed = (self.parameters.motor_left_speed.value + left_vel_tar) / 100
+                self.motor_right.def_speed = self.motor_right.def_speed - (1/100)
+                self.motor_right.move(self.straight_dir)
                 self.motor_left.move(self.straight_dir)
-            elif error > 1:
+            if error > 1:
                 # move left
                 #print('go left')
                 self.motor_right.def_speed = (self.parameters.motor_right_speed.value + right_vel_tar) / 100
+                self.motor_left.def_speed = self.motor_left.def_speed - (1/100)
                 self.motor_right.move(self.straight_dir)
+                self.motor_left.move(self.straight_dir)
         elif self.straight_dir == 'reverse':
             if error > 1:
                 # move right
                 #print('go right')
                 self.motor_left.def_speed = (self.parameters.motor_left_speed.value + left_vel_tar) / 100
+                self.motor_right.def_speed = self.motor_right.def_speed - (1/100)
+                self.motor_right.move(self.straight_dir)
                 self.motor_left.move(self.straight_dir)
-            elif error < -1:
+            if error < -1:
                 # move left
                 #print('go left')
                 self.motor_right.def_speed = (self.parameters.motor_right_speed.value + right_vel_tar) / 100
+                self.motor_left.def_speed = self.motor_left.def_speed - (1/100)
                 self.motor_right.move(self.straight_dir)
+                self.motor_left.move(self.straight_dir)
 
     def __restore_def_speed(self):
         '''
