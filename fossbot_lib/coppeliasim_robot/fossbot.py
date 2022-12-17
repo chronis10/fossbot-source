@@ -260,20 +260,22 @@ class FossBot(robot_interface.FossBotInterface):
             if res == sim.simx_return_ok and len(deg)>=1 and deg[0] != -1:
                 return deg[0]
 
-    def rotate_90(self, dir_id: int) -> None:
-        '''
-        Rotates fossbot 90 degrees towards the specified dir_id.
-        Param: dir_id: the direction id to rotate 90 degrees:
-                - counterclockwise: dir_id == 0
-                - clockwise: dir_id == 1
-        '''
+    def __get_cur_rot(self) -> float:
+        '''Returns degrees of fossbot.'''
+        while True:
+            res, _, deg, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_current_calc_rot')
+            if res == sim.simx_return_ok and len(deg)>=1:
+                return deg[0]
+
+
+    def __rot_90_python(self, dir_id) -> None:
         self.just_rotate(dir_id)
         rotations = self.parameters.rotate_90.value
         init = self.__get_degrees()
         d = 0
         tar_pos = 90 / max(rotations, 1)
         diff = abs(tar_pos - d)
-        while diff >= 1.5:
+        while diff >= 1:
             curr = self.__get_degrees()
             if dir_id == 1:
                 if init > curr:
@@ -293,6 +295,83 @@ class FossBot(robot_interface.FossBotInterface):
                 raise RuntimeError
             diff = abs(tar_pos - d)
         self.stop()
+
+    def rotate_90(self, dir_id: int) -> None:
+        '''
+        Rotates fossbot 90 degrees towards the specified dir_id.
+        Param: dir_id: the direction id to rotate 90 degrees:
+                - counterclockwise: dir_id == 0
+                - clockwise: dir_id == 1
+        '''
+        rotations = self.parameters.rotate_90.value
+        tar_pos = 90 / max(rotations, 1)
+        while True:
+            res, rot_dir, _, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'start_rotate', in_ints=[dir_id], in_floats=[tar_pos])
+            if res == sim.simx_return_ok and len(rot_dir)>=1:
+                break
+        self.just_rotate(dir_id)
+
+        # second impl:
+        while True:
+            res, stop, _, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_stop_motors')
+            #print(stop)
+            if res == sim.simx_return_ok and len(stop)>=1 and stop[0] <= 359 and stop[0] > 0:
+                # rotates 1 degree if it reaches 359:
+                break
+            elif res == sim.simx_return_ok and len(stop)>=1 and stop[0] >= 550:
+                ##self.just_rotate(dir_id)
+                ##self.stop()
+                #stop[0] = self.__get_cur_rot()
+                #print(stop)
+                #if stop[0] < 359 and stop[0] > 0:
+                #    break
+                self.stop()
+                self.__rot_90_python(dir_id)
+                break
+            elif res == sim.simx_return_ok and len(stop)>=1 and stop[0] > 359 and stop[0] < 550:
+                break
+            time.sleep(0.1)
+        time.sleep(0.1)
+
+        # waits for fossbot to rotate 90 deg:
+        # while True:
+        #     res, stop, _, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'get_stop_motors')
+        #     if res == sim.simx_return_ok and len(stop)>=1 and stop[0] < 359 and stop[0] > 0:
+        #         # rotates 1 degree if it reaches 359:
+        #         print(stop)
+        #         # if stop[0] == 2:
+        #         #     self.just_rotate(dir_id)
+        #         #     self.stop()
+        #         break
+        #     time.sleep(0.1)
+
+        # third impl:
+        #res, signalValue=sim.simxGetIntegerSignal(self.parameters.simulation.client_id, "stopMotorsNow", sim.simx_opmode_blocking)
+        #print(signalValue)
+        # while True:
+        #     res, signalValue = sim.simxGetIntegerSignal(self.parameters.simulation.client_id, "stopMotorsNow", sim.simx_opmode_blocking)
+        #     if res == sim.simx_return_ok and signalValue < 359 and signalValue > 0:
+        #         break
+        #     time.sleep(0.01)
+            #print(signalValue)
+
+        # rotates 1 degree if it reaches 359:
+        # if signalValue == 2:
+        #     self.just_rotate(dir_id)
+        #     self.stop()
+
+        # deg = 359
+        # while signalValue == 2:
+        #     while True:
+        #         res, _, deg, _, _ = control.exec_vrep_script(self.client_id, self.parameters.simulation.rot_name, 'start_rotate', in_ints=[dir_id], in_floats=[tar_pos, left_vel, right_vel])
+        #         if res == sim.simx_return_ok and len(deg)>=1:
+        #             deg = deg[0]
+        #             break
+        #     if deg == 359:
+        #         self.just_rotate(dir_id)
+        #         self.stop()
+        #     else:
+        #         break
 
     def rotate_clockwise(self) -> None:
         '''

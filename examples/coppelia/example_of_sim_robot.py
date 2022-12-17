@@ -265,8 +265,24 @@ if __name__ == "__main__":
     # SIM_ROBOT.move_forward_default()
     # SIM_ROBOT.rotate_counterclockwise_90()
 
-    SIM_ROBOT.move_forward_distance(130)
+    SIM_ROBOT.move_forward_distance(365)
+    SIM_ROBOT.rotate_clockwise_90()
+    SIM_ROBOT.move_forward_distance(365)
+    SIM_ROBOT.rotate_clockwise_90()
+    SIM_ROBOT.move_forward_distance(365)
+    SIM_ROBOT.rotate_clockwise_90()
+    SIM_ROBOT.move_forward_distance(365)
+    SIM_ROBOT.rotate_clockwise_90()
     #SIM_ROBOT.move_reverse_distance(130)
+
+
+
+
+
+    # while True:
+    #     SIM_ROBOT.rotate_clockwise()
+
+    #SIM_ROBOT.rotate_clockwise_90()
 
     # while True:
     #     SIM_ROBOT.move_forward()
