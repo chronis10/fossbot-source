@@ -274,7 +274,7 @@ if __name__ == "__main__":
     SIM_ROBOT.move_forward_distance(365)
     SIM_ROBOT.rotate_clockwise_90()
     #SIM_ROBOT.move_reverse_distance(130)
-
+    #SIM_ROBOT.move_forward_distance(130)
 
 
 
