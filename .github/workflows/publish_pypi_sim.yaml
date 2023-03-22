@@ -1,0 +1,38 @@
+name: 💻 Publish latest library to PyPI fossbot-lib
+on: [workflow_dispatch]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest release of NodeJS
+        uses: rez0n/actions-github-release@main
+        id: fosslib
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: "chronis10/fossbot_source"
+          type: "stable"
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Rename setup file
+        run: mv setup_simulated setup.py
+      - name: Set env var
+        run: echo "PYPI_VERSION=${{ steps.fosslib.outputs.release }}" >> $GITHUB_ENV
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+           python-version: 3.9
+      - name: Install dependencies
+        run: |
+              python -m pip install --upgrade pip
+              pip install setuptools wheel twine
+      - name: Build distribution
+        run: |
+              python setup.py sdist bdist_wheel
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.5.0
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN_SIM }}
+          repository_url: https://upload.pypi.org/legacy/
+          package_dir: ./dist
