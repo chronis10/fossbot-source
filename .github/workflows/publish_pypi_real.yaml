@@ -7,13 +7,11 @@ jobs:
     steps:
       - name: Get latest release of NodeJS
         uses: rez0n/actions-github-release@main
-        id: fossapp
+        id: fosslib
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: "chronis10/fossbot-app"
+          repository: "chronis10/fossbot_source"
           type: "stable"
-      - name: "Realease to env"
-        run: export PYPI_VERSION=${{steps.fossapp.outputs.release }}
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Rename setup file
@@ -29,6 +27,7 @@ jobs:
       - name: Build distribution
         run: |
               python setup.py sdist bdist_wheel
+              export PYPI_VERSION=${{steps.fosslib.outputs.release }}
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
