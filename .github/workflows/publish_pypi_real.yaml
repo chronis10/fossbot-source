@@ -32,7 +32,7 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
-          user: ${{ env.PYPI_USER }}
+          user: __token__
           password: ${{ secrets.PYPI_TOKEN_REAL }}
           repository_url: https://upload.pypi.org/legacy/
           package_dir: ./dist
