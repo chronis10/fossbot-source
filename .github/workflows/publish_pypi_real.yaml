@@ -27,8 +27,9 @@ jobs:
       - name: Build distribution
         run: |
               python setup.py sdist bdist_wheel
-              export PYPI_VERSION=${{steps.fosslib.outputs.release }}
       - name: Publish to PyPI
+        env:
+          PYPI_VERSION: ${{steps.fosslib.outputs.release }} 
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
           user: env.PYPI_USER
