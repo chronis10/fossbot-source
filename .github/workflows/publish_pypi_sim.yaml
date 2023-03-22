@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Rename setup file
-        run: mv setup_simulated setup.py
+        run: mv setup_simulated.py setup.py
       - name: Set env var
         run: echo "PYPI_VERSION=${{ steps.fosslib.outputs.release }}" >> $GITHUB_ENV
       - name: Set up Python
