@@ -10,7 +10,7 @@ jobs:
         id: fosslib
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: "chronis10/fossbot_source"
+          repository: "chronis10/fossbot-source"
           type: "stable"
       - name: Checkout code
         uses: actions/checkout@v2
