@@ -39,22 +39,22 @@ class FossBot(robot_interface.FossBotInterface):
 
         self.godotHandler = GodotHandler(self.sio)
 
-        server_address = self.__check_kwargs(kwargs, "server_address", 'http://localhost:8000')
+        server_address = kwargs.get("server_address", 'http://localhost:8000')
 
         self.sio.connect(server_address)
         print(f"Connected to socketio server on {server_address}")
 
-        self.vel_left = self.__check_kwargs(kwargs, "vel_left", 100)
-        self.vel_right = self.__check_kwargs(kwargs, "vel_right", 100)
-        self.default_dist = self.__check_kwargs(kwargs, "default_dist", 15)
-        self.degree = self.__check_kwargs(kwargs, "degree", 90)
-        self.light_value = self.__check_kwargs(kwargs, "light_value", 700)
-        self.middle_sensor_val = self.__check_kwargs(kwargs, "middle_sensor_val", 50)
-        self.right_sensor_val = self.__check_kwargs(kwargs, "right_sensor_val", 50)
-        self.left_sensor_val = self.__check_kwargs(kwargs, "left_sensor_val", 50)
-        self.sensor_distance = self.__check_kwargs(kwargs, "sensor_distance", 15)
-        self.motor_left_name = self.__check_kwargs(kwargs, "motor_left_name", "motor_left")
-        self.motor_right_name = self.__check_kwargs(kwargs, "motor_right_name", "motor_right")
+        self.vel_left = kwargs.get("vel_left", 100)
+        self.vel_right = kwargs.get("vel_right", 100)
+        self.default_dist = kwargs.get("default_dist", 15)
+        self.degree = kwargs.get("degree", 90)
+        self.light_value = kwargs.get("light_value", 700)
+        self.middle_sensor_val = kwargs.get("middle_sensor_val", 50)
+        self.right_sensor_val = kwargs.get("right_sensor_val", 50)
+        self.left_sensor_val = kwargs.get("left_sensor_val", 50)
+        self.sensor_distance = kwargs.get("sensor_distance", 15)
+        self.motor_left_name = kwargs.get("motor_left_name", "motor_left")
+        self.motor_right_name = kwargs.get("motor_right_name", "motor_right")
 
         self.godotHandler.post_godot(param={"func":"set_motor_names", "right_motor_name": self.motor_right_name, "left_motor_name": self.motor_left_name})
 
@@ -69,11 +69,6 @@ class FossBot(robot_interface.FossBotInterface):
         self.odometer_right = control.Odometer(self.godotHandler, self.motor_right_name)
         self.odometer_left = control.Odometer(self.godotHandler, self.motor_left_name)
 
-
-    def __check_kwargs(self, kwargs, arg_name: str, def_value):
-        if arg_name not in kwargs:
-            return def_value
-        return kwargs[arg_name]
 
     # movement
     def just_move(self, direction: str = "forward") -> None:
