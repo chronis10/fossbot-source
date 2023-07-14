@@ -4,8 +4,8 @@ Implementation for godot robot.
 import time
 import socketio
 from fossbot_lib.common.interfaces import robot_interface
-import control
-from godot_handler import GodotHandler
+from fossbot_lib.godot_robot import control
+from fossbot_lib.godot_robot.godot_handler import GodotHandler
 
 class FossBot(robot_interface.FossBotInterface):
     """ Godot robot """
@@ -391,38 +391,3 @@ class FossBot(robot_interface.FossBotInterface):
         value = self.timer.get_elapsed()
         print('elapsed time in sec:', value)
         return value
-
-
-if __name__ == "__main__":
-    # Create a godot robot
-    robot = FossBot(session_id="32879274-944c-471e-b338-7b4ebb15751c")
-    robot.move_distance(15, "reverse")
-    while True:
-        robot.just_move()
-        if robot.get_distance() < 3:
-            robot.stop()
-            break
-    for i in range(0, 5):
-        robot.just_rotate(0)
-    robot.just_rotate(1)
-    for i in range(0, 5):
-        robot.just_move("reverse")
-    robot.rotate_90(0)
-    print("rotated.")
-    print(robot.check_for_dark())
-    robot.play_sound("res://soundfx/startup.mp3")
-    robot.move_distance(3, "reverse")
-    print("distance travelled")
-    robot.rotate_90(1)
-    print("rotated.")
-    print(robot.get_distance())
-    print(robot.check_for_obstacle())
-    print(robot.get_acceleration('x'))
-    print(robot.get_gyroscope('z'))
-    robot.rgb_set_color("red")
-    robot.move_distance(4)
-    robot.wait(1)
-    robot.rotate_clockwise_90()
-    robot.rotate_counterclockwise_90()
-    robot.wait(1)
-    robot.exit()
