@@ -29,7 +29,6 @@ class FossBot(robot_interface.FossBotInterface):
              - motor_left_name (str): The name of the left motor. Defaults to "motor_left".
              - motor_right_name (str): The name of the right motor. Defaults to "motor_right".
         """
-        self.response = None    # leave it as None
 
         self.session_id = session_id
         self.sio = socketio.Client()
