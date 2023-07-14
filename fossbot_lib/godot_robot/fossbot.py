@@ -17,17 +17,18 @@ class FossBot(robot_interface.FossBotInterface):
             session_id (str): The session ID of the Godot simulator in the browser.
             kwargs (optional):
              - server_address (str): The address of the server. Defaults to 'http://localhost:8000'.
-             - vel_left (float): The velocity of the left motor. Defaults to 100.
-             - vel_right (float): The velocity of the right motor. Defaults to 100.
-             - default_dist (float): The default distance. Defaults to 15.
-             - degree (float): The degree value. Defaults to 90.
-             - light_value (float): The light value. Defaults to 700.
-             - middle_sensor_val (float): The value of the middle sensor for black line detection. Defaults to 50.
-             - right_sensor_val (float): The value of the right sensor for black line detection. Defaults to 50.
-             - left_sensor_val (float): The value of the left sensor for black line detection. Defaults to 50.
+             - fossbot_name (str): The name of the fossbot.
+             - motor_left_speed (float): The velocity of the left motor. Defaults to 100.
+             - motor_right_speed (float): The velocity of the right motor. Defaults to 100.
+             - default_step (float): The default step distance. Defaults to 15.
+             - rotate_90 (float): The degree value. Defaults to 90.
+             - light_sensor (float): The light value. Defaults to 700.
+             - line_sensor_center (float): The value of the center sensor for black line detection. Defaults to 50.
+             - line_sensor_right (float): The value of the right sensor for black line detection. Defaults to 50.
+             - line_sensor_left (float): The value of the left sensor for black line detection. Defaults to 50.
              - sensor_distance (float): The max distance for detecting objects. Defaults to 15.
-             - motor_left_name (str): The name of the left motor. Defaults to "motor_left".
-             - motor_right_name (str): The name of the right motor. Defaults to "motor_right".
+             - left_motor_name (str): The name of the left motor. Defaults to "motor_left".
+             - right_motor_name (str): The name of the right motor. Defaults to "motor_right".
         """
 
         self.session_id = session_id
@@ -44,17 +45,18 @@ class FossBot(robot_interface.FossBotInterface):
         self.sio.connect(server_address)
         print(f"Connected to socketio server on {server_address}")
 
-        self.vel_left = kwargs.get("vel_left", 100)
-        self.vel_right = kwargs.get("vel_right", 100)
-        self.default_dist = kwargs.get("default_dist", 15)
-        self.degree = kwargs.get("degree", 90)
-        self.light_value = kwargs.get("light_value", 700)
-        self.middle_sensor_val = kwargs.get("middle_sensor_val", 50)
-        self.right_sensor_val = kwargs.get("right_sensor_val", 50)
-        self.left_sensor_val = kwargs.get("left_sensor_val", 50)
+        self.fossbot_name = kwargs.get("fossbot_name", "fossbot")
+        self.vel_left = kwargs.get("motor_left_speed", 100)
+        self.vel_right = kwargs.get("motor_right_speed", 100)
+        self.default_dist = kwargs.get("default_step", 15)
+        self.degree = kwargs.get("rotate_90", 90)
+        self.light_value = kwargs.get("light_sensor", 700)
+        self.middle_sensor_val = kwargs.get("line_sensor_center", 50)
+        self.right_sensor_val = kwargs.get("line_sensor_right", 50)
+        self.left_sensor_val = kwargs.get("line_sensor_left", 50)
         self.sensor_distance = kwargs.get("sensor_distance", 15)
-        self.motor_left_name = kwargs.get("motor_left_name", "motor_left")
-        self.motor_right_name = kwargs.get("motor_right_name", "motor_right")
+        self.motor_left_name = kwargs.get("left_motor_name", "motor_left")
+        self.motor_right_name = kwargs.get("right_motor_name", "motor_right")
 
         self.godotHandler.post_godot(param={"func":"set_motor_names", "right_motor_name": self.motor_right_name, "left_motor_name": self.motor_left_name})
 
