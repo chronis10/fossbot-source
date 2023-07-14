@@ -22,13 +22,43 @@ except FileNotFoundError:
 
 class FossBot(robot_interface.FossBotInterface):
     """ Sim robot """
-    def __init__(self, parameters: configuration.SimRobotParameters) -> None:
+    def __init__(self, **kwargs) -> None:
+        """
+        Creation of a sim robot for coppelia.
+        Param: kwargs:
+         - sensor_distance (int, default: 15): The distance between sensors on the robot.
+         - motor_left_speed (int, default: 45): The speed of the left motor.
+         - motor_right_speed (int, default: 45): The speed of the right motor.
+         - default_step (int, default: 15): The default step value.
+         - light_sensor (int, default: 700): The light sensor value.
+         - line_sensor_left (int, default: 10): The value of the left line sensor.
+         - line_sensor_center (int, default: 10): The value of the center line sensor.
+         - line_sensor_right (int, default: 10): The value of the right line sensor.
+         - rotate_90 (int, default: 1): The rotation value for a 90-degree turn.
+         - fossbot_name (str, default: "/fossbot"): The name of the fossbot entity.
+            It starts with '/' because fossbot is in the root of the scene
+         - body_name (str, default: "body"): The name of the body entity.
+         - foss_gui (str, default: "FossbotGUI"): The name of the FossbotGUI.
+         - floor_name (str, default: "FossbotFloor"): The name of the stage's floor.
+         - accelerometer_name (str, default: "Accelerometer"): The name of the fossbot's accelerometer.
+         - left_motor_name (str, default: "left_motor"): The name of the left motor.
+         - right_motor_name (str, default: "right_motor"): The name of the right motor.
+         - light_sensor_name (str, default: "light_sensor"): The name of the light sensor.
+         - sensor_middle_name (str, default: "MiddleSensor"): The name of the middle sensor.
+         - sensor_right_name (str, default: "RightSensor"): The name of the right sensor.
+         - sensor_left_name (str, default: "LeftSensor"): The name of the left sensor.
+         - ultrasonic_name (str, default: "ultrasonic_sensor"): The name of the ultrasonic sensor.
+         - gyroscope_name (str, default: "GyroSensor"): The name of the gyroscope.
+         - led_name (str, default: "led_light"): The name of the LED.
+         - rot_name (str, default: "rotator"): The name of the rotator.
+         - col_detector_name (str, default: "coll_detector"): The name of the collision detector.
+        """
         self.client_id = self.__connect_vrep()
         if self.client_id == -1:
             print('Failed connecting to remote API server')
             raise ConnectionError
         print('Connected to remote API server')
-        self.parameters = self.__load_fossbot_paths(parameters)
+        self.parameters = self.__load_fossbot_param(kwargs)
         self.parameters.simulation.client_id = self.client_id
         self.motor_left = control.Motor(
             self.parameters, self.parameters.simulation.left_motor_name,
@@ -58,29 +88,60 @@ class FossBot(robot_interface.FossBotInterface):
         sim.simxFinish(-1) # just in case, close all opened connections
         return sim.simxStart('127.0.0.1', 19999, True, True, 5000, 5) # Connect to CoppeliaSim
 
-    def __load_fossbot_paths(
-        self, parameters: configuration.SimRobotParameters) -> configuration.SimRobotParameters:
+    def __load_fossbot_param(self, kwargs) -> configuration.SimRobotParameters:
         '''
         Loads paramameters (paths) to match paths in scene.
-        Param: parameters: the simulation parameters.
+        Param: kwargs: the simulation arguments.
         Returns: the parameters match paths in scene.
         '''
-        fossbot_name = parameters.simulation.fossbot_name
-        body_name = parameters.simulation.body_name
-        parameters.simulation.accelerometer_name = f'{fossbot_name}/{body_name}/{parameters.simulation.accelerometer_name}'
-        parameters.simulation.left_motor_name = f'{fossbot_name}/{parameters.simulation.left_motor_name}'
-        parameters.simulation.right_motor_name = f'{fossbot_name}/{parameters.simulation.right_motor_name}'
-        parameters.simulation.light_sensor_name = f'{fossbot_name}/{body_name}/{parameters.simulation.light_sensor_name}'
-        parameters.simulation.sensor_middle_name = f'{fossbot_name}/{parameters.simulation.sensor_middle_name}'
-        parameters.simulation.sensor_right_name = f'{fossbot_name}/{parameters.simulation.sensor_right_name}'
-        parameters.simulation.sensor_left_name = f'{fossbot_name}/{parameters.simulation.sensor_left_name}'
-        parameters.simulation.ultrasonic_name = f'{fossbot_name}/{parameters.simulation.ultrasonic_shape}/{parameters.simulation.ultrasonic_name}'
-        parameters.simulation.gyroscope_name = f'{fossbot_name}/{body_name}/{parameters.simulation.gyroscope_name}'
-        parameters.simulation.led_name = f'{fossbot_name}/{body_name}/{parameters.simulation.led_name}'
-        parameters.simulation.rot_name = f'{fossbot_name}/{body_name}/{parameters.simulation.rot_name}'
-        parameters.simulation.body_name = f'{fossbot_name}/{parameters.simulation.body_name}'
-        parameters.simulation.col_detector_name = f'{fossbot_name}/{body_name}/{parameters.simulation.col_detector_name}'
-        return parameters
+        simulation = configuration.SimRobotIds(
+            client_id=None,
+            accelerometer_name=kwargs.get("accelerometer_name", "Accelerometer"),
+            left_motor_name=kwargs.get("left_motor_name", "left_motor"),
+            right_motor_name=kwargs.get("right_motor_name", "right_motor"),
+            light_sensor_name=kwargs.get("light_sensor_name", "light_sensor"),
+            sensor_middle_name=kwargs.get("sensor_middle_name", "MiddleSensor"),
+            sensor_right_name=kwargs.get("sensor_right_name", "RightSensor"),
+            sensor_left_name=kwargs.get("sensor_left_name", "LeftSensor"),
+            ultrasonic_shape=kwargs.get("ultrasonic_shape", "ultrasonic"),
+            ultrasonic_name=kwargs.get("ultrasonic_name", "ultrasonic_sensor"),
+            gyroscope_name=kwargs.get("gyroscope_name", "GyroSensor"),
+            led_name=kwargs.get("led_name", "led_light"),
+            rot_name=kwargs.get("rot_name", "rotator"),
+            body_name=kwargs.get("body_name", "body"),
+            col_detector_name=kwargs.get("col_detector_name", "coll_detector"),
+            fossbot_name=kwargs.get("fossbot_name", "/fossbot"),
+            foss_gui=kwargs.get("foss_gui", "FossbotGUI"),
+            floor_name=kwargs.get("floor_name", "FossbotFloor")
+        )
+
+        fossbot_name = simulation.fossbot_name
+        body_name = simulation.body_name
+        simulation.accelerometer_name = f'{fossbot_name}/{body_name}/{simulation.accelerometer_name}'
+        simulation.left_motor_name = f'{fossbot_name}/{simulation.left_motor_name}'
+        simulation.right_motor_name = f'{fossbot_name}/{simulation.right_motor_name}'
+        simulation.light_sensor_name = f'{fossbot_name}/{body_name}/{simulation.light_sensor_name}'
+        simulation.sensor_middle_name = f'{fossbot_name}/{simulation.sensor_middle_name}'
+        simulation.sensor_right_name = f'{fossbot_name}/{simulation.sensor_right_name}'
+        simulation.sensor_left_name = f'{fossbot_name}/{simulation.sensor_left_name}'
+        simulation.ultrasonic_name = f'{fossbot_name}/{simulation.ultrasonic_shape}/{simulation.ultrasonic_name}'
+        simulation.gyroscope_name = f'{fossbot_name}/{body_name}/{simulation.gyroscope_name}'
+        simulation.led_name = f'{fossbot_name}/{body_name}/{simulation.led_name}'
+        simulation.rot_name = f'{fossbot_name}/{body_name}/{simulation.rot_name}'
+        simulation.body_name = f'{fossbot_name}/{simulation.body_name}'
+        simulation.col_detector_name = f'{fossbot_name}/{body_name}/{simulation.col_detector_name}'
+
+        return configuration.SimRobotParameters(
+            sensor_distance=configuration.SensorDistance("", kwargs.get("sensor_distance", 15), 15),
+            motor_left_speed=configuration.MotorLeftSpeed("", kwargs.get("motor_left", 45), 22), 
+            motor_right_speed=configuration.MotorRightSpeed("", kwargs.get("motor_right", 45), 23),
+            default_step=configuration.DefaultStep("", kwargs.get("step", 15), 15),
+            light_sensor=configuration.LightSensor("", kwargs.get("light_sensor", 700), 700),
+            line_sensor_left=configuration.LineSensorLeft("", kwargs.get("line_sensor_left", 10), 50),
+            line_sensor_center=configuration.LineSensorCenter("", kwargs.get("line_sensor_center", 10), 50),
+            line_sensor_right=configuration.LineSensorRight("", kwargs.get("line_sensor_right", 10), 50),
+            rotate_90=configuration.Rotate90("", kwargs.get("rotate_90", 1), 12),
+            simulation=simulation)
 
     # movement
     def just_move(self, direction: str = "forward") -> None:
