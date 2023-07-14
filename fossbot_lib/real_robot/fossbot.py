@@ -12,7 +12,21 @@ from fossbot_lib.real_robot import control
 class FossBot(robot_interface.FossBotInterface):
     """ Real robot """
 
-    def __init__(self, parameters: configuration.RobotParameters) -> None:
+    def __init__(self, **kwargs) -> None:
+        """
+        Initialization of real robot.
+        Param: kwargs:
+         - sensor_distance (int, default: 15): The distance between sensors on the robot.
+         - motor_left_speed (int, default: 0.9): The speed of the left motor.
+         - motor_right_speed (int, default: 0.9): The speed of the right motor.
+         - default_step (int, default: 15): The default step value.
+         - light_sensor (int, default: 700): The light sensor value.
+         - line_sensor_left (int, default: 50): The value of the left line sensor.
+         - line_sensor_center (int, default: 50): The value of the center line sensor.
+         - line_sensor_right (int, default: 50): The value of the right line sensor.
+         - rotate_90 (int, default: 13): The rotation value for a 90-degree turn.
+        """
+        parameters = self.__load_fossbot_param(kwargs)
         control.start_lib()
         self.motor_right = control.Motor(speed_pin=23, terma_pin=27, termb_pin=22,
                                          dc_value=parameters.motor_right_speed.value)
@@ -27,6 +41,18 @@ class FossBot(robot_interface.FossBotInterface):
         self.noise = control.Noise(pin=4)
         self.timer = control.Timer()
         self.parameters = parameters
+
+    def __load_fossbot_param(self, kwargs) -> configuration.RobotParameters:
+        return configuration.RobotParameters(
+            sensor_distance=configuration.SensorDistance("", kwargs.get("sensor_distance", 15), 15),
+            motor_left_speed=configuration.MotorLeftSpeed("", kwargs.get("motor_left", 0.9), 22), 
+            motor_right_speed=configuration.MotorRightSpeed("", kwargs.get("motor_right", 0.9), 23),
+            default_step=configuration.DefaultStep("", kwargs.get("step", 15), 15),
+            light_sensor=configuration.LightSensor("", kwargs.get("light_sensor", 700), 700),
+            line_sensor_left=configuration.LineSensorLeft("", kwargs.get("line_sensor_left", 50), 50),
+            line_sensor_center=configuration.LineSensorCenter("", kwargs.get("line_sensor_center", 50), 50),
+            line_sensor_right=configuration.LineSensorRight("", kwargs.get("line_sensor_right", 50), 50),
+            rotate_90=configuration.Rotate90("", kwargs.get("rotate_90", 13), 12))
 
     # movement
     def just_move(self, direction: str = "forward") -> None:
