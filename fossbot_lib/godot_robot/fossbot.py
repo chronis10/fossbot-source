@@ -58,7 +58,7 @@ class FossBot(robot_interface.FossBotInterface):
         self.motor_left_name = kwargs.get("left_motor_name", "motor_left")
         self.motor_right_name = kwargs.get("right_motor_name", "motor_right")
 
-        self.godotHandler.post_godot(param={"func":"set_motor_names", "right_motor_name": self.motor_right_name, "left_motor_name": self.motor_left_name})
+        self.godotHandler.post_godot(param={"func":"set_motor_fossbot_names", "fossbot_name": self.fossbot_name, "right_motor_name": self.motor_right_name, "left_motor_name": self.motor_left_name})
 
         self.accelerometer = control.Accelerometer(self.godotHandler)
         self.rgb_led = control.LedRGB(self.godotHandler)
