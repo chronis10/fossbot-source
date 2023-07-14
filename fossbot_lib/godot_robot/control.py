@@ -1,5 +1,5 @@
 """
-Implementation for control (dummy).
+Implementation for control (godot).
 """
 from fossbot_lib.godot_robot.godot_handler import GodotHandler
 from fossbot_lib.common.interfaces import control_interfaces
