@@ -16,8 +16,8 @@ class FossBot(robot_interface.FossBotInterface):
         Param:
             session_id (str): The session ID of the Godot simulator in the browser.
             kwargs (optional):
+             - fossbot_name (str): The name of the fossbot you want to control in the scene.
              - server_address (str): The address of the server. Defaults to 'http://localhost:8000'.
-             - fossbot_name (str): The name of the fossbot.
              - motor_left_speed (float): The velocity of the left motor. Defaults to 100.
              - motor_right_speed (float): The velocity of the right motor. Defaults to 100.
              - default_step (float): The default step distance. Defaults to 15.
@@ -57,8 +57,6 @@ class FossBot(robot_interface.FossBotInterface):
         self.sensor_distance = kwargs.get("sensor_distance", 15)
         self.motor_left_name = kwargs.get("left_motor_name", "motor_left")
         self.motor_right_name = kwargs.get("right_motor_name", "motor_right")
-
-        self.godotHandler.post_godot(param={"func":"set_motor_fossbot_names", "fossbot_name": self.fossbot_name, "right_motor_name": self.motor_right_name, "left_motor_name": self.motor_left_name})
 
         self.accelerometer = control.Accelerometer(self.godotHandler)
         self.rgb_led = control.LedRGB(self.godotHandler)
