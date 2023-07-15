@@ -32,20 +32,20 @@ class FossBot(robot_interface.FossBotInterface):
         """
 
         self.session_id = session_id
+        self.fossbot_name = kwargs.get("fossbot_name", "fossbot")
         self.sio = socketio.Client()
 
         @self.sio.event
         def connect():
             self.sio.emit('pythonConnect', self.session_id)
 
-        self.godotHandler = GodotHandler(self.sio)
+        self.godotHandler = GodotHandler(self.sio, self.fossbot_name)
 
         server_address = kwargs.get("server_address", 'http://localhost:8000')
 
         self.sio.connect(server_address)
         print(f"Connected to socketio server on {server_address}")
 
-        self.fossbot_name = kwargs.get("fossbot_name", "fossbot")
         self.vel_left = kwargs.get("motor_left_speed", 100)
         self.vel_right = kwargs.get("motor_right_speed", 100)
         self.default_dist = kwargs.get("default_step", 15)
