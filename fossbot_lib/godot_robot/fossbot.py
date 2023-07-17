@@ -374,6 +374,10 @@ class FossBot(robot_interface.FossBotInterface):
         self.rgb_set_color('closed')
         self.sio.disconnect()
 
+    def __del__(self) -> None:
+        self.exit()
+        print('Program ended.')
+
     # timer:
     def stop_timer(self) -> None:
         '''Stops the timer.'''
