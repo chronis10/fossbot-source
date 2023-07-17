@@ -16,7 +16,8 @@ class FossBot(robot_interface.FossBotInterface):
         Param:
             session_id (str): The session ID of the Godot simulator in the browser.
             kwargs (optional):
-             - fossbot_name (str): The name of the fossbot you want to control in the scene.
+             - fossbot_name (str): The name of the fossbot you want to control in the scene
+                (to change this name, you should also change the name of the fossbot in the scene).
              - server_address (str): The address of the server. Defaults to 'http://localhost:8000'.
              - motor_left_speed (float): The velocity of the left motor. Defaults to 100.
              - motor_right_speed (float): The velocity of the right motor. Defaults to 100.
@@ -27,8 +28,10 @@ class FossBot(robot_interface.FossBotInterface):
              - line_sensor_right (float): The value of the right sensor for black line detection. Defaults to 50.
              - line_sensor_left (float): The value of the left sensor for black line detection. Defaults to 50.
              - sensor_distance (float): The max distance for detecting objects. Defaults to 15.
-             - left_motor_name (str): The name of the left motor. Defaults to "motor_left".
-             - right_motor_name (str): The name of the right motor. Defaults to "motor_right".
+             - left_motor_name (str): The name of the left motor in the scene.
+                Defaults to "left_motor" (to change it, you should also change it in the scene).
+             - right_motor_name (str): The name of the right motor in the scene.
+                Defaults to "left_motor" (to change it, you should also change it in the scene).
         """
 
         self.session_id = session_id
@@ -55,8 +58,8 @@ class FossBot(robot_interface.FossBotInterface):
         self.right_sensor_val = kwargs.get("line_sensor_right", 50)
         self.left_sensor_val = kwargs.get("line_sensor_left", 50)
         self.sensor_distance = kwargs.get("sensor_distance", 15)
-        self.motor_left_name = kwargs.get("left_motor_name", "motor_left")
-        self.motor_right_name = kwargs.get("right_motor_name", "motor_right")
+        self.motor_left_name = kwargs.get("left_motor_name", "left_motor")
+        self.motor_right_name = kwargs.get("right_motor_name", "right_motor")
 
         self.accelerometer = control.Accelerometer(self.godotHandler)
         self.rgb_led = control.LedRGB(self.godotHandler)

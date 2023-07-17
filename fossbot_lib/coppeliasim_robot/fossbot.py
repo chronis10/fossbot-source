@@ -35,8 +35,9 @@ class FossBot(robot_interface.FossBotInterface):
          - line_sensor_center (int, default: 10): The value of the center line sensor.
          - line_sensor_right (int, default: 10): The value of the right line sensor.
          - rotate_90 (int, default: 1): The rotation value for a 90-degree turn.
-         - fossbot_name (str, default: "/fossbot"): The name of the fossbot entity.
-            It starts with '/' because fossbot is in the root of the scene
+         - fossbot_name (str, default: "fossbot"): The name of the fossbot entity in the scene
+            (to change it, you should also change the name of the fossbot in the scene). Fossbot should
+            always be on the root ('/') of the coppelia scene.
          - body_name (str, default: "body"): The name of the body entity.
          - foss_gui (str, default: "FossbotGUI"): The name of the FossbotGUI.
          - floor_name (str, default: "FossbotFloor"): The name of the stage's floor.
@@ -110,12 +111,12 @@ class FossBot(robot_interface.FossBotInterface):
             rot_name=kwargs.get("rot_name", "rotator"),
             body_name=kwargs.get("body_name", "body"),
             col_detector_name=kwargs.get("col_detector_name", "coll_detector"),
-            fossbot_name=kwargs.get("fossbot_name", "/fossbot"),
+            fossbot_name=kwargs.get("fossbot_name", "fossbot"),
             foss_gui=kwargs.get("foss_gui", "FossbotGUI"),
             floor_name=kwargs.get("floor_name", "FossbotFloor")
         )
 
-        fossbot_name = simulation.fossbot_name
+        fossbot_name = "/" + simulation.fossbot_name    # added '/' because fossbot is in the root of the scene
         body_name = simulation.body_name
         simulation.accelerometer_name = f'{fossbot_name}/{body_name}/{simulation.accelerometer_name}'
         simulation.left_motor_name = f'{fossbot_name}/{simulation.left_motor_name}'
