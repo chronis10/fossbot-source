@@ -370,9 +370,10 @@ class FossBot(robot_interface.FossBotInterface):
     # exit
     def exit(self) -> None:
         ''' Exits. '''
-        self.stop()
-        self.rgb_set_color('closed')
-        self.sio.disconnect()
+        if self.sio.connected:
+            self.stop()
+            self.rgb_set_color('closed')
+            self.sio.disconnect()
 
     def __del__(self) -> None:
         self.exit()
