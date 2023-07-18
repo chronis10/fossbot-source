@@ -15,7 +15,7 @@ class GodotHandler():
 
         @self.socket.on("godotMessage")
         def godotMessage(response):
-            if response["message"]["fossbot_name"] == self.fossbot_name:
+            if response["fossbot_name"] == self.fossbot_name:
                 self.response = response
                 self.event.set()  # signal that the event has occurred
 
@@ -39,4 +39,4 @@ class GodotHandler():
         self.event.wait()  # wait for the event to be set
         self.event.clear()  # clear the event for the next use
         time.sleep(0.1)
-        return self.response["message"]["data"]
+        return self.response["data"]
