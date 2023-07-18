@@ -41,13 +41,13 @@ class FossBot(robot_interface.FossBotInterface):
         @self.sio.event
         def connect():
             self.sio.emit('pythonConnect', self.session_id)
+            print(f"Connected to socketio server on {server_address}")
 
         self.godotHandler = GodotHandler(self.sio, self.fossbot_name)
 
         server_address = kwargs.get("server_address", 'http://localhost:8000')
 
         self.sio.connect(server_address)
-        print(f"Connected to socketio server on {server_address}")
 
         self.vel_left = kwargs.get("motor_left_speed", 100)
         self.vel_right = kwargs.get("motor_right_speed", 100)
@@ -371,8 +371,7 @@ class FossBot(robot_interface.FossBotInterface):
     def exit(self) -> None:
         ''' Exits. '''
         if self.sio.connected:
-            self.stop()
-            self.rgb_set_color('closed')
+            self.godotHandler.post_godot({"func":"exit"})
             self.sio.disconnect()
 
     def __del__(self) -> None:
