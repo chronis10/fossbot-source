@@ -3,6 +3,7 @@ Implementation for godot robot.
 """
 import time
 import socketio
+import uuid
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.godot_robot import control
 from fossbot_lib.godot_robot.godot_handler import GodotHandler
@@ -38,12 +39,14 @@ class FossBot(robot_interface.FossBotInterface):
         self.fossbot_name = kwargs.get("fossbot_name", "fossbot")
         self.sio = socketio.Client()
 
+        user_id = str(uuid.uuid4())
+
         @self.sio.event
         def connect():
-            self.sio.emit('pythonConnect', self.session_id)
+            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :user_id})
             print(f"Connected to socketio server on {server_address}")
 
-        self.godotHandler = GodotHandler(self.sio, self.fossbot_name)
+        self.godotHandler = GodotHandler(self.sio, self.fossbot_name, user_id)
 
         server_address = kwargs.get("server_address", 'http://localhost:8000')
 

@@ -4,14 +4,13 @@ Class for handling godot connections (get and post requests to socketio server).
 import socketio
 import threading
 import time
-import uuid
 
 class GodotHandler():
     """ Godot Handler """
-    def __init__(self, socket: socketio.Client, fossbot_name: str):
+    def __init__(self, socket: socketio.Client, fossbot_name: str, user_id: str):
         self.response = None
         self.fossbot_name = fossbot_name
-        self.user_id = str(uuid.uuid4())
+        self.user_id = user_id
         self.event = threading.Event()
         self.socket = socket
 
