@@ -18,6 +18,7 @@ class GodotHandler():
         def godotMessage(response):
             if response["fossbot_name"] == self.fossbot_name and response["user_id"] == self.user_id:
                 if "error" in response:
+                    self.event.set()
                     self.socket.disconnect()
                     raise ConnectionError(response["error"])
                 self.response = response
