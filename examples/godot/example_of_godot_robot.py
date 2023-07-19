@@ -38,5 +38,5 @@ def main(robot: robot_interface.FossBotInterface) -> None:
 
 if __name__ == "__main__":
     # Create a real robot
-    godot = GodotBot(session_id="8f61695b-0d64-4e67-9887-3ec1a69905b1")
+    godot = GodotBot(session_id="8f61695b-0d64-4e67-9887-3ec1a69905b1", fossbot_name="fossbot")
     main(godot)
