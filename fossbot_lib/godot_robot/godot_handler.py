@@ -16,13 +16,14 @@ class GodotHandler():
 
         @self.socket.on("godotMessage", namespace=self.socketio_namespace)
         def godotMessage(response):
-            if "error" in response:
-                self.event.set()
-                self.socket.disconnect()
-                raise ConnectionError(response["error"])
             self.response = response
             self.event.set()  # signal that the event has occurred
 
+        @self.socket.on("godotError", namespace=self.socketio_namespace)
+        def godotError(response):
+            self.event.set()
+            self.socket.disconnect()
+            raise ConnectionError(response["data"])
 
     def post_godot(self, param: dict):
         '''
