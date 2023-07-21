@@ -19,6 +19,7 @@ class FossBot(robot_interface.FossBotInterface):
              - fossbot_name (str): The name of the fossbot you want to control in the scene
                 (to change this name, you should also change the name of the fossbot in the scene).
              - server_address (str): The address of the server. Defaults to 'http://localhost:8000'.
+             - namespace (str): The namespace of the socketio for fossbot sim (default is "/godot").
              - motor_left_speed (float): The velocity of the left motor. Defaults to 100.
              - motor_right_speed (float): The velocity of the right motor. Defaults to 100.
              - default_step (float): The default step distance. Defaults to 15.
@@ -38,16 +39,18 @@ class FossBot(robot_interface.FossBotInterface):
         self.fossbot_name = kwargs.get("fossbot_name", "fossbot")
         self.sio = socketio.Client()
 
-        @self.sio.event
+        namespace = kwargs.get("namespace", "/godot")
+
+        @self.sio.event(namespace=namespace)
         def connect():
-            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid()})
-            self.godotHandler = GodotHandler(self.sio, self.fossbot_name)
+            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace)}, namespace=namespace)
+            self.godotHandler = GodotHandler(self.sio, self.fossbot_name, namespace)
             print(f"Connected to socketio server on {server_address}")
 
 
         server_address = kwargs.get("server_address", 'http://localhost:8000')
 
-        self.sio.connect(server_address)
+        self.sio.connect(server_address + namespace, namespaces=[namespace])
 
         self.vel_left = kwargs.get("motor_left_speed", 100)
         self.vel_right = kwargs.get("motor_right_speed", 100)

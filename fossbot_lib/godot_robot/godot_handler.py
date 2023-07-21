@@ -7,13 +7,14 @@ import time
 
 class GodotHandler():
     """ Godot Handler """
-    def __init__(self, socket: socketio.Client, fossbot_name: str):
+    def __init__(self, socket: socketio.Client, fossbot_name: str, socketio_namespace: str = "/godot"):
         self.response = None
         self.fossbot_name = fossbot_name
+        self.socketio_namespace = socketio_namespace
         self.event = threading.Event()
         self.socket = socket
 
-        @self.socket.on("godotMessage")
+        @self.socket.on("godotMessage", namespace=self.socketio_namespace)
         def godotMessage(response):
             if "error" in response:
                 self.event.set()
@@ -29,7 +30,7 @@ class GodotHandler():
         Param: param: the dictionary to be sent to godot.
         '''
         param["fossbot_name"] = self.fossbot_name
-        self.socket.emit("clientMessage", param)
+        self.socket.emit("clientMessage", param, namespace=self.socketio_namespace)
         time.sleep(0.1)
 
     def get_godot(self, param: dict):
