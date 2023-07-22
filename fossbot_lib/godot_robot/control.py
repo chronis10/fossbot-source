@@ -127,7 +127,7 @@ class Odometer(control_interfaces.OdometerInterface):
 
     def count_revolutions(self) -> None:
         '''Increase total steps by one.'''
-        return self.godotHandler.post_godot({"func": "count_revolutions", "motor_name": self.motor_name})
+        self.godotHandler.post_godot({"func": "count_revolutions", "motor_name": self.motor_name})
 
     def get_steps(self) -> int:
         ''' Returns total number of steps. '''
