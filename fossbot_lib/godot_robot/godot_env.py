@@ -21,7 +21,7 @@ class GodotEnvironment():
 
         @self.sio.event(namespace=namespace)
         def connect():
-            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace), "env_user":True}, namespace=namespace)
+            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace)}, namespace=namespace)
             self.godotHandler = GodotHandler(self.sio, "", namespace)
             print(f"Connected to socketio server on {server_address}")
 
@@ -68,20 +68,44 @@ class GodotEnvironment():
         self.godotHandler.post_godot_env(param)
 
 
+    def __send_chunk_image(self, req_func: str, image_path: str, chunk_size: int = 20000):
+        """
+        Sends the image as chunks.
+        Param:
+         - req_func: the requested function for image load in godot.
+         - image_path: the path to the image.
+         - chunk_size: the size of each chunk sent to the server. Change it if necessary to match your needs.
+        Returns: the number of chunks (so it can be used later).
+        """
+        with open(image_path, "rb") as f:
+            image_data = f.read()
+        base64_image_str = base64.b64encode(image_data).decode()
+        chunks = [base64_image_str[i:i + chunk_size] for i in range(0, len(base64_image_str), chunk_size)]
+
+        for chunk in chunks:
+            param = {
+                "func": req_func,
+                "image": chunk,
+                "image_size": len(chunks)
+            }
+            self.godotHandler.post_godot_env(param)
+        return len(chunks)
+
+
     def draw_image_floor(self, image_path: str, **kwargs) -> None:
         '''
         Changes the path of the scene according to the image.
         '''
-        with open(image_path, "rb") as f:
-            image_data = f.read()
-        base64_image_str = base64.b64encode(image_data).decode()
+
+        chunk_size = self.__send_chunk_image("change_floor_skin", image_path)
+
         draw_type = "manual"
         if bool(kwargs.get("tripl", False)):
             draw_type = "tripl"
         param = {
             "func": "change_floor_skin",
             "floor_index": str(kwargs.get("floor_index", 0)),
-            "image": base64_image_str,
+            "image_size": chunk_size,
             "color": kwargs.get("color", "white"),
             "type": draw_type,
             "scale_x":kwargs.get("scale_x", 1),
@@ -94,13 +118,13 @@ class GodotEnvironment():
         '''
         Changes the path (and scales it automatically) of the scene according to the image.
         '''
-        with open(image_path, "rb") as f:
-            image_data = f.read()
-        base64_image_str = base64.b64encode(image_data).decode()
+
+        chunk_size = self.__send_chunk_image("change_floor_skin", image_path)
+
         param = {
             "func": "change_floor_skin",
             "floor_index": str(kwargs.get("floor_index", 0)),
-            "image": base64_image_str,
+            "image_size": chunk_size,
             "color": kwargs.get("color", "white"),
             "type": "full"
         }
@@ -122,6 +146,7 @@ class GodotEnvironment():
     def exit(self) -> None:
         ''' Exits. '''
         if self.sio.connected:
+            self.godotHandler.post_godot_env({"func":"exit", "env_user":True})
             self.sio.disconnect()
 
     def __del__(self) -> None:
