@@ -34,6 +34,14 @@ class GodotHandler():
         self.socket.emit("clientMessage", param, namespace=self.socketio_namespace)
         time.sleep(0.1)
 
+    def post_godot_env(self, param: dict):
+        '''
+        Used to post a response from godot (POST).
+        Param: param: the dictionary to be sent to godot.
+        '''
+        self.socket.emit("clientMessage", param, namespace=self.socketio_namespace)
+        time.sleep(0.1)
+
     def get_godot(self, param: dict):
         '''
         Used to get a response from godot (GET).
