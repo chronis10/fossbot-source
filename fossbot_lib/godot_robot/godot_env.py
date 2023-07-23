@@ -21,7 +21,7 @@ class GodotEnvironment():
 
         @self.sio.event(namespace=namespace)
         def connect():
-            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace)}, namespace=namespace)
+            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace), "env_user": True}, namespace=namespace)
             self.godotHandler = GodotHandler(self.sio, "", namespace)
             print(f"Connected to socketio server on {server_address}")
 
@@ -82,11 +82,12 @@ class GodotEnvironment():
         base64_image_str = base64.b64encode(image_data).decode()
         chunks = [base64_image_str[i:i + chunk_size] for i in range(0, len(base64_image_str), chunk_size)]
 
-        for chunk in chunks:
+        for i, chunk in enumerate(chunks):
             param = {
                 "func": req_func,
                 "image": chunk,
-                "image_size": len(chunks)
+                "image_size": len(chunks),
+                "img_num": i
             }
             self.godotHandler.post_godot_env(param)
         return len(chunks)
@@ -146,7 +147,7 @@ class GodotEnvironment():
     def exit(self) -> None:
         ''' Exits. '''
         if self.sio.connected:
-            self.godotHandler.post_godot_env({"func":"exit", "env_user":True})
+            # self.godotHandler.post_godot_env({"func":"exit_env"})
             self.sio.disconnect()
 
     def __del__(self) -> None:
