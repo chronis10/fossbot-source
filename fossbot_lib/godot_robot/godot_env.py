@@ -37,7 +37,9 @@ class GodotEnvironment():
             "pos_x":kwargs.get("pos_x", 1),
             "pos_y":kwargs.get("pos_y", 1),
             "pos_z":kwargs.get("pos_z", 0),
-            "color":kwargs.get("color", "blue")
+            "color":kwargs.get("color", "blue"),
+            "rotation":kwargs.get("rotation", 0),
+            "counterclockwise":kwargs.get("counterclockwise", False)
         }
         self.godotHandler.post_godot_env(param)
 
@@ -52,6 +54,8 @@ class GodotEnvironment():
             "type":kwargs.get("type", "cube"),
             "pos_z":kwargs.get("pos_z", 0),
             "color":kwargs.get("color", "white"),
+            "rotation":kwargs.get("rotation", 0),
+            "counterclockwise":kwargs.get("counterclockwise", False)
         }
         self.godotHandler.post_godot_env(param)
 
