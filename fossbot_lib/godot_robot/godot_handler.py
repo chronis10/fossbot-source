@@ -36,11 +36,23 @@ class GodotHandler():
 
     def post_godot_env(self, param: dict):
         '''
-        Used to post a response from godot (POST).
+        Used to post a response from godot (POST) for environment user.
         Param: param: the dictionary to be sent to godot.
         '''
         self.socket.emit("clientMessage", param, namespace=self.socketio_namespace)
         time.sleep(0.1)
+
+    def get_godot_env(self, param: dict):
+        '''
+        Used to get a response from godot (GET) for environment user.
+        Param: param: the dictionary to be sent to godot (to get the data).
+        Returns: the response of the godot sim.
+        '''
+        self.post_godot_env(param)
+        self.event.wait()  # wait for the event to be set
+        self.event.clear()  # clear the event for the next use
+        time.sleep(0.1)
+        return self.response["data"]
 
     def get_godot(self, param: dict):
         '''

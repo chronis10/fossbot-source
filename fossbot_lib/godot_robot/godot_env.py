@@ -112,7 +112,7 @@ class GodotEnvironment():
             "scale_x":kwargs.get("scale_x", 1),
             "scale_y":kwargs.get("scale_y", 1)
         }
-        self.godotHandler.post_godot_env(param)
+        self.godotHandler.get_godot_env(param)
 
 
     def draw_image_floor_auto(self, image_path: str, **kwargs) -> None:
@@ -129,19 +129,23 @@ class GodotEnvironment():
             "color": kwargs.get("color", "white"),
             "type": "full"
         }
-        self.godotHandler.post_godot_env(param)
+        self.godotHandler.get_godot_env(param)
 
 
-    def load_sim_image_floor(self, **kwargs) -> None:
-        """
-        Load a floor skin preset from the simulator.
-        """
+    def change_floor_terrain(self, image_path: str, **kwargs) -> None:
+        '''
+        BETA VESION: Changes the ground terrain according to specified height map.
+        '''
+        chunk_size = self.__send_chunk_image("change_floor_terrain", image_path)
+
         param = {
-            "func": "load_sim_image_floor",
+            "func": "change_floor_terrain",
             "floor_index": str(kwargs.get("floor_index", 0)),
-            # "color": kwargs.get("color", "white")
+            "image_size": chunk_size,
+            "intensity": int(kwargs.get("intensity", 3)),
         }
-        self.godotHandler.post_godot_env(param)
+        self.godotHandler.get_godot_env(param)
+
 
     # exit
     def exit(self) -> None:
