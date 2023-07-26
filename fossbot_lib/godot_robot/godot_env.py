@@ -150,6 +150,32 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
         self.godotHandler.post_godot_env(param)
 
 
+    def change_fossbot(self, fossbot_name: str = "fossbot", **kwargs) -> None:
+        """
+        Changes an existing Fossbot's characteristics (like position, rotation or color) in the Godot simulator.
+        Parameters:
+            fossbot_name (str): The name of the fossbot you want to change in the scene. Defaults to "fossbot".
+            kwargs (optional):
+             - pos_x (float): The X coordinate of the position to move the fossbot. Defaults to 1.
+             - pos_y (float): The Y coordinate of the position to move the fossbot. Defaults to 1.
+             - pos_z (float): The Z coordinate of the position to move the fossbot. Defaults to 0.
+             - color (str): The color of the Fossbot. Defaults to "blue".
+             - rotation (float): The rotation of the Fossbot (in degrees). Defaults to 0.
+             - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
+        """
+        param = {
+            "func": "change_fossbot",
+            "fossbot_name":fossbot_name,
+            "pos_x":kwargs.get("pos_x", 1),
+            "pos_y":kwargs.get("pos_y", 1),
+            "pos_z":kwargs.get("pos_z", 0),
+            "color":kwargs.get("color", "blue"),
+            "rotation":kwargs.get("rotation", 0),
+            "counterclockwise":kwargs.get("counterclockwise", False)
+        }
+        self.godotHandler.post_godot_env(param)
+
+
     def __send_chunk_image(self, req_func: str, image_path: str, chunk_size: int = 20000) -> int:
         """
         Sends the image as chunks.
