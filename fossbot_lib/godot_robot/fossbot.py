@@ -43,7 +43,7 @@ class FossBot(robot_interface.FossBotInterface):
 
         @self.sio.event(namespace=namespace)
         def connect():
-            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace)}, namespace=namespace)
+            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace), "fossbot_name": self.fossbot_name, "func":"connect"}, namespace=namespace)
             self.godotHandler = GodotHandler(self.sio, self.fossbot_name, namespace)
             print(f"Connected to socketio server on {server_address}")
 
