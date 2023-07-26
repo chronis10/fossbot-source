@@ -176,6 +176,29 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
         self.godotHandler.post_godot_env(param)
 
 
+    def change_floor_size(self, **kwargs) -> None:
+        """
+        Changes the size of the floor in the Godot simulator. Make sure to change fossbot position afterwards,
+        or spawn objects (so they dont fall of the scene).
+
+        Optional Parameters:
+         - floor_index (int): The index of the floor to apply the image to. Defaults to 0.
+         - scale_x (float): The scale in x axis of the floor. If not specified, keeps the current floor x scale.
+         - scale_y (float): The scale in y axis of the floor. If not specified, keeps the current floor y scale.
+        """
+        param = {
+            "func": "change_floor",
+            "floor_index": str(kwargs.get("floor_index", 0)),
+        }
+
+        if "scale_x" in kwargs:
+            param["scale_x"] = float(kwargs["scale_x"])
+        if "scake_y" in kwargs:
+            param["scale_y"] = float(kwargs["scale_y"])
+
+        self.godotHandler.post_godot_env(param)
+
+
     def __send_chunk_image(self, req_func: str, image_path: str, chunk_size: int = 20000) -> int:
         """
         Sends the image as chunks.

@@ -73,6 +73,33 @@ class GodotEnvInterface(ABC):
         """
 
     @abstractmethod
+    def change_fossbot(self, fossbot_name: str = "fossbot", **kwargs) -> None:
+        """
+        Changes an existing Fossbot's characteristics (like position, rotation or color) in the Godot simulator.
+        Parameters:
+            fossbot_name (str): The name of the fossbot you want to change in the scene. Defaults to "fossbot".
+            kwargs (optional):
+             - pos_x (float): The X coordinate of the position to move the fossbot. Defaults to 1.
+             - pos_y (float): The Y coordinate of the position to move the fossbot. Defaults to 1.
+             - pos_z (float): The Z coordinate of the position to move the fossbot. Defaults to 0.
+             - color (str): The color of the Fossbot. Defaults to "blue".
+             - rotation (float): The rotation of the Fossbot (in degrees). Defaults to 0.
+             - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
+        """
+
+    @abstractmethod
+    def change_floor_size(self, **kwargs) -> None:
+        """
+        Changes the size of the floor in the Godot simulator. Make sure to change fossbot position afterwards,
+        or spawn objects (so they dont fall of the scene).
+
+        Optional Parameters:
+         - floor_index (int): The index of the floor to apply the image to. Defaults to 0.
+         - scale_x (float): The scale in x axis of the floor. If not specified, keeps the current floor x scale.
+         - scale_y (float): The scale in y axis of the floor. If not specified, keeps the current floor y scale.
+        """
+
+    @abstractmethod
     def draw_image_floor(self, image_path: str, **kwargs) -> None:
         """
         Changes the appearance of the floor in the Godot simulator by drawing an image (manually).
