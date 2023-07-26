@@ -141,11 +141,6 @@ class FossBot(robot_interface.FossBotInterface):
         Waits (sleeps) for an amount of time.
         Param: time_s: the time (seconds) of sleep.
         '''
-        param = {
-            "func": "wait",
-            "wait_time": time_s
-        }
-        self.godotHandler.post_godot(param)
         time.sleep(time_s)
 
     # moving forward
