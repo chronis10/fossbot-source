@@ -193,7 +193,7 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
 
         if "scale_x" in kwargs:
             param["scale_x"] = float(kwargs["scale_x"])
-        if "scake_y" in kwargs:
+        if "scale_y" in kwargs:
             param["scale_y"] = float(kwargs["scale_y"])
 
         self.godotHandler.post_godot_env(param)
