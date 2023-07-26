@@ -13,12 +13,12 @@ class GodotEnvInterface(ABC):
         Spawns a Fossbot in the Godot simulator with the specified parameters.
         Parameters:
             kwargs (optional):
-                - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
-                - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
-                - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
-                - color (str): The color of the Fossbot. Defaults to "blue".
-                - rotation (float): The initial rotation of the Fossbot (in degrees). Defaults to 0.
-                - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
+             - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
+             - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
+             - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
+             - color (str): The color of the Fossbot. Defaults to "blue".
+             - rotation (float): The initial rotation of the Fossbot (in degrees). Defaults to 0.
+             - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
         """
 
     @abstractmethod
@@ -28,15 +28,15 @@ class GodotEnvInterface(ABC):
 
         Parameters:
             kwargs (optional):
-                - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
-                - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
-                - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
-                - scale_x (float): The scale of the cube along the X-axis. Defaults to 1.
-                - scale_y (float): The scale of the cube along the Y-axis. Defaults to 1.
-                - scale_z (float): The scale of the cube along the Z-axis. Defaults to 1.
-                - color (str): The color of the cube. Defaults to "white".
-                - rotation (float): The initial rotation of the cube (in degrees). Defaults to 0.
-                - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
+             - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
+             - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
+             - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
+             - scale_x (float): The scale of the cube along the X-axis. Defaults to 1.
+             - scale_y (float): The scale of the cube along the Y-axis. Defaults to 1.
+             - scale_z (float): The scale of the cube along the Z-axis. Defaults to 1.
+             - color (str): The color of the cube. Defaults to "white".
+             - rotation (float): The initial rotation of the cube (in degrees). Defaults to 0.
+             - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
         """
 
     @abstractmethod
@@ -46,11 +46,30 @@ class GodotEnvInterface(ABC):
 
         Parameters:
             kwargs (optional):
-                - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
-                - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
-                - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
-                - color (str): The color of the sphere. Defaults to "white".
-                - radius (float): The radius of the sphere. Defaults to 1.
+             - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
+             - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
+             - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
+             - color (str): The color of the sphere. Defaults to "white".
+             - radius (float): The radius of the sphere. Defaults to 1.
+        """
+
+    @abstractmethod
+    def spawn_cone(self, **kwargs) -> None:
+
+        """
+        Spawns a cone in the Godot simulator with the specified parameters.
+
+        Parameters:
+            kwargs (optional):
+             - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
+             - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
+             - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
+             - scale_x (float): The scale of the cone along the X-axis. Defaults to 1.
+             - scale_y (float): The scale of the cone along the Y-axis. Defaults to 1.
+             - scale_z (float): The scale of the cone along the Z-axis. Defaults to 1.
+             - color (str): The color of the cone. Defaults to "white".
+             - rotation (float): The initial rotation of the cone (in degrees). Defaults to 0.
+             - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
         """
 
     @abstractmethod
@@ -62,11 +81,11 @@ class GodotEnvInterface(ABC):
             image_path (str): The path to the image file in your pc.
 
         Optional Parameters:
-            - floor_index (int): The index of the floor to apply the image to. Defaults to 0.
-            - color (str): The color of the image. Defaults to "white".
-            - tripl (bool): If True, the image is drawn using "triplanar" method, otherwise "manual" method is used. Defaults to False.
-            - scale_x (float): The scale factor along the X-axis for the image. Defaults to 1.
-            - scale_y (float): The scale factor along the Y-axis for the image. Defaults to 1.
+         - floor_index (int): The index of the floor to apply the image to. Defaults to 0.
+         - color (str): The color of the image. Defaults to "white".
+         - tripl (bool): If True, the image is drawn using "triplanar" method, otherwise "manual" method is used. Defaults to False.
+         - scale_x (float): The scale factor along the X-axis for the image. Defaults to 1.
+         - scale_y (float): The scale factor along the Y-axis for the image. Defaults to 1.
         """
 
     @abstractmethod
@@ -78,8 +97,8 @@ class GodotEnvInterface(ABC):
             image_path (str): The path to the image file in your pc.
 
         Optional Parameters:
-            - floor_index (int): The index of the floor to apply the image to. Defaults to 0.
-            - color (str): The color of the image. Defaults to "white".
+         - floor_index (int): The index of the floor to apply the image to. Defaults to 0.
+         - color (str): The color of the image. Defaults to "white".
         """
 
     @abstractmethod
@@ -91,8 +110,8 @@ class GodotEnvInterface(ABC):
             image_path (str): The path to the height map image file in your pc.
 
         Optional Parameters:
-            - floor_index (int): The index of the floor to apply the terrain to. Defaults to 0.
-            - intensity (int): The intensity of the terrain deformation. Defaults to 3.
+         - floor_index (int): The index of the floor to apply the terrain to. Defaults to 0.
+         - intensity (int): The intensity of the terrain deformation. Defaults to 3.
         """
 
     # exit
