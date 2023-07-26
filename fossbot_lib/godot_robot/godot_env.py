@@ -1,8 +1,13 @@
+"""
+Implementation for godot environment.
+"""
 import base64
 import socketio
-from godot_handler import GodotHandler
+from fossbot_lib.common.interfaces import godot_env_interface
+from fossbot_lib.godot_robot.godot_handler import GodotHandler
 
-class GodotEnvironment():
+
+class GodotEnvironment(godot_env_interface.GodotEnvInterface):
     """ Godot robot """
 
     def __init__(self, session_id: str, **kwargs) -> None:
@@ -32,6 +37,17 @@ class GodotEnvironment():
 
 
     def spawn_fossbot(self, **kwargs) -> None:
+        """
+        Spawns a Fossbot in the Godot simulator with the specified parameters.
+        Parameters:
+            kwargs (optional):
+                - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
+                - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
+                - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
+                - color (str): The color of the Fossbot. Defaults to "blue".
+                - rotation (float): The initial rotation of the Fossbot (in degrees). Defaults to 0.
+                - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
+        """
         param = {
             "func": "foss_spawn",
             "pos_x":kwargs.get("pos_x", 1),
@@ -43,7 +59,24 @@ class GodotEnvironment():
         }
         self.godotHandler.post_godot_env(param)
 
-    def spawn_cube(self, **kwargs):
+
+    def spawn_cube(self, **kwargs) -> None:
+
+        """
+        Spawns a cube in the Godot simulator with the specified parameters.
+
+        Parameters:
+            kwargs (optional):
+                - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
+                - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
+                - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
+                - scale_x (float): The scale of the cube along the X-axis. Defaults to 1.
+                - scale_y (float): The scale of the cube along the Y-axis. Defaults to 1.
+                - scale_z (float): The scale of the cube along the Z-axis. Defaults to 1.
+                - color (str): The color of the cube. Defaults to "white".
+                - rotation (float): The initial rotation of the cube (in degrees). Defaults to 0.
+                - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
+        """
         param = {
             "func": "obs_spawn",
             "pos_x":kwargs.get("pos_x", 1),
@@ -51,7 +84,7 @@ class GodotEnvironment():
             "scale_x":kwargs.get("scale_x", 1),
             "scale_y":kwargs.get("scale_y", 1),
             "scale_z":kwargs.get("scale_z", 1),
-            "type":kwargs.get("type", "cube"),
+            "type":"cube",
             "pos_z":kwargs.get("pos_z", 0),
             "color":kwargs.get("color", "white"),
             "rotation":kwargs.get("rotation", 0),
@@ -59,12 +92,24 @@ class GodotEnvironment():
         }
         self.godotHandler.post_godot_env(param)
 
-    def spawn_sphere(self, **kwargs):
+
+    def spawn_sphere(self, **kwargs) -> None:
+        """
+        Spawns a sphere in the Godot simulator with the specified parameters.
+
+        Parameters:
+            kwargs (optional):
+                - pos_x (float): The X coordinate of the spawn position. Defaults to 1.
+                - pos_y (float): The Y coordinate of the spawn position. Defaults to 1.
+                - pos_z (float): The Z coordinate of the spawn position. Defaults to 0.
+                - color (str): The color of the sphere. Defaults to "white".
+                - radius (float): The radius of the sphere. Defaults to 1.
+        """
         param = {
             "func": "obs_spawn",
             "pos_x":kwargs.get("pos_x", 1),
             "pos_y":kwargs.get("pos_y", 1),
-            "type":kwargs.get("type", "sphere"),
+            "type":"sphere",
             "pos_z":kwargs.get("pos_z", 0),
             "color":kwargs.get("color", "white"),
             "radius":kwargs.get("radius", 1)
@@ -72,12 +117,12 @@ class GodotEnvironment():
         self.godotHandler.post_godot_env(param)
 
 
-    def __send_chunk_image(self, req_func: str, image_path: str, chunk_size: int = 20000):
+    def __send_chunk_image(self, req_func: str, image_path: str, chunk_size: int = 20000) -> int:
         """
         Sends the image as chunks.
         Param:
          - req_func: the requested function for image load in godot.
-         - image_path: the path to the image.
+         - image_path: the path to the image in your pc.
          - chunk_size: the size of each chunk sent to the server. Change it if necessary to match your needs.
         Returns: the number of chunks (so it can be used later).
         """
@@ -98,9 +143,19 @@ class GodotEnvironment():
 
 
     def draw_image_floor(self, image_path: str, **kwargs) -> None:
-        '''
-        Changes the path of the scene according to the image.
-        '''
+        """
+        Changes the appearance of the floor in the Godot simulator by drawing an image (manually).
+
+        Parameters:
+            image_path (str): The path to the image file in your pc.
+
+        Optional Parameters:
+            - floor_index (int): The index of the floor to apply the image to. Defaults to 0.
+            - color (str): The color of the image. Defaults to "white".
+            - tripl (bool): If True, the image is drawn using "triplanar" method, otherwise "manual" method is used. Defaults to False.
+            - scale_x (float): The scale factor along the X-axis for the image. Defaults to 1.
+            - scale_y (float): The scale factor along the Y-axis for the image. Defaults to 1.
+        """
 
         chunk_size = self.__send_chunk_image("change_floor_skin", image_path)
 
@@ -120,9 +175,16 @@ class GodotEnvironment():
 
 
     def draw_image_floor_auto(self, image_path: str, **kwargs) -> None:
-        '''
-        Changes the path (and scales it automatically) of the scene according to the image.
-        '''
+        """
+        Changes the appearance of the floor in the Godot simulator by drawing an image and automatically scaling it.
+
+        Parameters:
+            image_path (str): The path to the image file in your pc.
+
+        Optional Parameters:
+            - floor_index (int): The index of the floor to apply the image to. Defaults to 0.
+            - color (str): The color of the image. Defaults to "white".
+        """
 
         chunk_size = self.__send_chunk_image("change_floor_skin", image_path)
 
@@ -137,9 +199,17 @@ class GodotEnvironment():
 
 
     def change_floor_terrain(self, image_path: str, **kwargs) -> None:
-        '''
-        BETA VESION: Changes the ground terrain according to specified height map.
-        '''
+        """
+        BETA VERSION: Changes the ground terrain in the Godot simulator based on the specified height map.
+
+        Parameters:
+            image_path (str): The path to the height map image file in your pc.
+
+        Optional Parameters:
+            - floor_index (int): The index of the floor to apply the terrain to. Defaults to 0.
+            - intensity (int): The intensity of the terrain deformation. Defaults to 3.
+        """
+
         chunk_size = self.__send_chunk_image("change_floor_terrain", image_path)
 
         param = {
@@ -153,10 +223,11 @@ class GodotEnvironment():
 
     # exit
     def exit(self) -> None:
-        ''' Exits. '''
+        ''' Exit for the environment user. '''
         if self.sio.connected:
             # self.godotHandler.post_godot_env({"func":"exit_env"})
             self.sio.disconnect()
+
 
     def __del__(self) -> None:
         self.exit()

@@ -1,9 +1,9 @@
 """
 Class for handling godot connections (get and post requests to socketio server).
 """
-import socketio
 import threading
 import time
+import socketio
 
 class GodotHandler():
     """ Godot Handler """
