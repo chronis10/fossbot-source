@@ -1,7 +1,9 @@
 """ Example of a godot robot"""
 
+import os
+import pathlib
 from fossbot_lib.common.interfaces import robot_interface
-from fossbot_lib.godot_robot.fossbot import FossBot as GodotBot
+from fossbot_lib.godot_robot.fossbot import FossBot
 from fossbot_lib.godot_robot.godot_env import GodotEnvironment
 
 def main(robot: robot_interface.FossBotInterface) -> None:
@@ -55,8 +57,49 @@ def level_1(session_id: str) -> None:
     ge.spawn_cube(pos_y=-17, pos_x=38, scale_y=20, scale_x=0.8)
     ge.spawn_cube(pos_y=25, pos_x=38, scale_y=20, scale_x=0.8)
     ge.exit()
+    # example solution:
+    r = FossBot(session_id, fossbot_name="fossbot")
+    while True:
+        d = r.get_distance()
+        print(d)
+        if d > 5:
+            r.just_move()
+        else:
+            r.rotate_clockwise_90()
+
+
+def level_2(session_id):
+    """ Generates a circle (stored as a jpg) on the floor. """
+    ge = GodotEnvironment(session_id)
+    current_path = pathlib.Path(__file__).parent.resolve()
+    path_dir = os.path.join(current_path, 'images')
+    file_path = os.path.join(path_dir, 'circle.jpg')
+    ge.draw_image_floor_auto(file_path)
+    ge.change_fossbot(fossbot_name="fossbot", pos_x=44.5, pos_y=1, rotation=90, counterclockwise=True)
+    ge.exit()
+    robot = FossBot(session_id, fossbot_name="fossbot")
+    # Follows black line. (example solution)
+    while True:
+        middle = robot.check_on_line(1)
+        right = robot.check_on_line(2)
+        left = robot.check_on_line(3)
+        print(left, middle, right)
+        if middle and right and left:
+            robot.move_forward()
+        elif middle and left and not right:
+            robot.rotate_counterclockwise()
+        elif middle and right and not left:
+            robot.rotate_clockwise()
+        elif left:
+            robot.rotate_counterclockwise()
+        elif right:
+            robot.rotate_clockwise()
+        else:
+            print("Exited circle.")
+            break
+    robot.exit()
 
 if __name__ == "__main__":
     # Create a real robot
-    godot = GodotBot(session_id="8f61695b-0d64-4e67-9887-3ec1a69905b1", fossbot_name="fossbot")
+    godot = FossBot(session_id="8f61695b-0d64-4e67-9887-3ec1a69905b1", fossbot_name="fossbot")
     main(godot)
