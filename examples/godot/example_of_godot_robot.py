@@ -2,9 +2,10 @@
 
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.godot_robot.fossbot import FossBot as GodotBot
+from fossbot_lib.godot_robot.godot_env import GodotEnvironment
 
 def main(robot: robot_interface.FossBotInterface) -> None:
-    """ A simple robot routine """
+    """ A complex robot routine """
     robot.move_distance(15, "reverse")
     while True:
         robot.just_move()
@@ -35,6 +36,25 @@ def main(robot: robot_interface.FossBotInterface) -> None:
     robot.rotate_counterclockwise_90()
     robot.wait(1)
     robot.exit()
+
+def level_1(session_id: str) -> None:
+    """ Creates the stage for level 1. """
+    ge = GodotEnvironment(session_id)
+    ge.change_fossbot(fossbot_name="fossbot", pos_x=11, pos_y=2, rotation=90, counterclockwise=True)
+    ge.spawn_cube(pos_x=20.6, pos_y=-2.36, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=-24, pos_x=1.62, rotation=90, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=12, pos_x=0, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=-2, pos_x=-17, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=34, pos_x=3, rotation=90, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=47, pos_x=21, rotation=90, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=47, pos_x=-21, rotation=90, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=27, pos_x=-43, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=-15, pos_x=-43, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=-40, pos_x=-24, rotation=90, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=-40, pos_x=18, rotation=90, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=-17, pos_x=38, scale_y=20, scale_x=0.8)
+    ge.spawn_cube(pos_y=25, pos_x=38, scale_y=20, scale_x=0.8)
+    ge.exit()
 
 if __name__ == "__main__":
     # Create a real robot

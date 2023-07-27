@@ -26,7 +26,7 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
 
         @self.sio.event(namespace=namespace)
         def connect():
-            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace), "env_user": True}, namespace=namespace)
+            self.sio.emit('pythonConnect', {"session_id": self.session_id, "user_id" :self.sio.get_sid(namespace=namespace), "env_user": True, "func":"connect_env"}, namespace=namespace)
             self.godotHandler = GodotHandler(self.sio, "", namespace)
             print(f"Connected to socketio server on {server_address}")
 
