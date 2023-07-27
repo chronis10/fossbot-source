@@ -138,7 +138,7 @@ class GodotEnvInterface(ABC):
 
         Optional Parameters:
          - floor_index (int): The index of the floor to apply the terrain to. Defaults to 0.
-         - intensity (int): The intensity of the terrain deformation. Defaults to 3.
+         - intensity (float): The intensity of the terrain deformation. Defaults to 3.
         """
 
     # exit

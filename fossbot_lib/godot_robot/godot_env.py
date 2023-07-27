@@ -50,15 +50,30 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
         """
         param = {
             "func": "foss_spawn",
-            "pos_x":kwargs.get("pos_x", 1),
-            "pos_y":kwargs.get("pos_y", 1),
-            "pos_z":kwargs.get("pos_z", 0),
+            "pos_x":float(kwargs.get("pos_x", 1)),
+            "pos_y":float(kwargs.get("pos_y", 1)),
+            "pos_z":float(kwargs.get("pos_z", 0)),
             "color":kwargs.get("color", "blue"),
-            "rotation":kwargs.get("rotation", 0),
-            "counterclockwise":kwargs.get("counterclockwise", False)
+            "rotation":float(kwargs.get("rotation", 0)),
+            "counterclockwise":bool(kwargs.get("counterclockwise", False))
         }
         self.godotHandler.post_godot_env(param)
 
+    def __check_scale(self, kwargs, incl_scale_z: bool = True):
+        scale_x = float(kwargs.get("scale_x", 1))
+        if scale_x <= 0:
+            print("Invalid scale x.")
+            scale_x = 1
+        scale_y = float(kwargs.get("scale_y", 1))
+        if scale_y <= 0:
+            print("Invalid scale y.")
+            scale_y = 1
+        scale_z = float(kwargs.get("scale_z", 1))
+        if scale_z <= 0:
+            if not incl_scale_z:
+                print("Invalid scale z.")
+            scale_z = 1
+        return scale_x, scale_y, scale_z
 
     def spawn_cube(self, **kwargs) -> None:
 
@@ -77,18 +92,19 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
              - rotation (float): The initial rotation of the cube (in degrees). Defaults to 0.
              - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
         """
+        scale_x, scale_y, scale_z = self.__check_scale(kwargs)
         param = {
             "func": "obs_spawn",
-            "pos_x":kwargs.get("pos_x", 1),
-            "pos_y":kwargs.get("pos_y", 1),
-            "scale_x":kwargs.get("scale_x", 1),
-            "scale_y":kwargs.get("scale_y", 1),
-            "scale_z":kwargs.get("scale_z", 1),
+            "pos_x":float(kwargs.get("pos_x", 1)),
+            "pos_y":float(kwargs.get("pos_y", 1)),
+            "scale_x":scale_x,
+            "scale_y":scale_y,
+            "scale_z":scale_z,
             "type":"cube",
-            "pos_z":kwargs.get("pos_z", 0),
+            "pos_z":float(kwargs.get("pos_z", 0)),
             "color":kwargs.get("color", "white"),
-            "rotation":kwargs.get("rotation", 0),
-            "counterclockwise":kwargs.get("counterclockwise", False)
+            "rotation":float(kwargs.get("rotation", 0)),
+            "counterclockwise":bool(kwargs.get("counterclockwise", False))
         }
         self.godotHandler.post_godot_env(param)
 
@@ -105,14 +121,18 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
              - color (str): The color of the sphere. Defaults to "white".
              - radius (float): The radius of the sphere. Defaults to 1.
         """
+        radius = float(kwargs.get("radius", 1))
+        if radius <= 0:
+            print("Invalid radius.")
+            radius = 1
         param = {
             "func": "obs_spawn",
-            "pos_x":kwargs.get("pos_x", 1),
-            "pos_y":kwargs.get("pos_y", 1),
+            "pos_x":float(kwargs.get("pos_x", 1)),
+            "pos_y":float(kwargs.get("pos_y", 1)),
             "type":"sphere",
-            "pos_z":kwargs.get("pos_z", 0),
+            "pos_z":float(kwargs.get("pos_z", 0)),
             "color":kwargs.get("color", "white"),
-            "radius":kwargs.get("radius", 1)
+            "radius":radius
         }
         self.godotHandler.post_godot_env(param)
 
@@ -134,18 +154,19 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
              - rotation (float): The initial rotation of the cone (in degrees). Defaults to 0.
              - counterclockwise (bool): Whether the rotation parameter will be counterclockwise. Defaults to False.
         """
+        scale_x, scale_y, scale_z = self.__check_scale(kwargs)
         param = {
             "func": "obs_spawn",
-            "pos_x":kwargs.get("pos_x", 1),
-            "pos_y":kwargs.get("pos_y", 1),
-            "scale_x":kwargs.get("scale_x", 1),
-            "scale_y":kwargs.get("scale_y", 1),
-            "scale_z":kwargs.get("scale_z", 1),
+            "pos_x":float(kwargs.get("pos_x", 1)),
+            "pos_y":float(kwargs.get("pos_y", 1)),
+            "scale_x":scale_x,
+            "scale_y":scale_y,
+            "scale_z":scale_z,
             "type":"cone",
-            "pos_z":kwargs.get("pos_z", 0),
+            "pos_z":float(kwargs.get("pos_z", 0)),
             "color":kwargs.get("color", "white"),
-            "rotation":kwargs.get("rotation", 0),
-            "counterclockwise":kwargs.get("counterclockwise", False)
+            "rotation":float(kwargs.get("rotation", 0)),
+            "counterclockwise":bool(kwargs.get("counterclockwise", False))
         }
         self.godotHandler.post_godot_env(param)
 
@@ -166,12 +187,12 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
         param = {
             "func": "change_fossbot",
             "fossbot_name":fossbot_name,
-            "pos_x":kwargs.get("pos_x", 1),
-            "pos_y":kwargs.get("pos_y", 1),
-            "pos_z":kwargs.get("pos_z", 0),
+            "pos_x":float(kwargs.get("pos_x", 1)),
+            "pos_y":float(kwargs.get("pos_y", 1)),
+            "pos_z":float(kwargs.get("pos_z", 0)),
             "color":kwargs.get("color", "blue"),
-            "rotation":kwargs.get("rotation", 0),
-            "counterclockwise":kwargs.get("counterclockwise", False)
+            "rotation":float(kwargs.get("rotation", 0)),
+            "counterclockwise":bool(kwargs.get("counterclockwise", False))
         }
         self.godotHandler.post_godot_env(param)
 
@@ -188,13 +209,12 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
         """
         param = {
             "func": "change_floor",
-            "floor_index": str(kwargs.get("floor_index", 0)),
+            "floor_index": str(int(kwargs.get("floor_index", 0))),
         }
 
-        if "scale_x" in kwargs:
-            param["scale_x"] = float(kwargs["scale_x"])
-        if "scale_y" in kwargs:
-            param["scale_y"] = float(kwargs["scale_y"])
+        scale_x, scale_y, _ = self.__check_scale(kwargs, False)
+        param["scale_x"] = scale_x
+        param["scale_y"] = scale_y
 
         self.godotHandler.post_godot_env(param)
 
@@ -240,18 +260,18 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
         """
 
         chunk_size = self.__send_chunk_image("change_floor_skin", image_path)
-
+        scale_x, scale_y, _ = self.__check_scale(kwargs, False)
         draw_type = "manual"
         if bool(kwargs.get("tripl", False)):
             draw_type = "tripl"
         param = {
             "func": "change_floor_skin",
-            "floor_index": str(kwargs.get("floor_index", 0)),
+            "floor_index": str(int(kwargs.get("floor_index", 0))),
             "image_size": chunk_size,
             "color": kwargs.get("color", "white"),
             "type": draw_type,
-            "scale_x":kwargs.get("scale_x", 1),
-            "scale_y":kwargs.get("scale_y", 1)
+            "scale_x":scale_x,
+            "scale_y":scale_y
         }
         self.godotHandler.get_godot_env(param)
 
@@ -272,7 +292,7 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
 
         param = {
             "func": "change_floor_skin",
-            "floor_index": str(kwargs.get("floor_index", 0)),
+            "floor_index": str(int(kwargs.get("floor_index", 0))),
             "image_size": chunk_size,
             "color": kwargs.get("color", "white"),
             "type": "full"
@@ -289,16 +309,16 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
 
         Optional Parameters:
          - floor_index (int): The index of the floor to apply the terrain to. Defaults to 0.
-         - intensity (int): The intensity of the terrain deformation. Defaults to 3.
+         - intensity (float): The intensity of the terrain deformation. Defaults to 3.
         """
 
         chunk_size = self.__send_chunk_image("change_floor_terrain", image_path)
 
         param = {
             "func": "change_floor_terrain",
-            "floor_index": str(kwargs.get("floor_index", 0)),
+            "floor_index": str(int(kwargs.get("floor_index", 0))),
             "image_size": chunk_size,
-            "intensity": int(kwargs.get("intensity", 3)),
+            "intensity": float(kwargs.get("intensity", 3)),
         }
         self.godotHandler.get_godot_env(param)
 
