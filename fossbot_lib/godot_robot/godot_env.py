@@ -218,6 +218,20 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
 
         self.godotHandler.post_godot_env(param)
 
+    def change_brightness(self, brightness: int = 50):
+        """
+        Changes the brightness of the scene.
+        Param: brightness (int): the value of the brightness. Defaults to 50. It should not be more than 100 or less than 0.
+        """
+        if brightness < 0 or brightness > 100:
+            print("Invalid Brightness.")
+            return
+        param = {
+            "func": "change_brightness",
+            "value": int(brightness),
+        }
+
+        self.godotHandler.post_godot_env(param)
 
     def __send_chunk_image(self, req_func: str, image_path: str, chunk_size: int = 20000) -> int:
         """

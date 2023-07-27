@@ -100,6 +100,13 @@ class GodotEnvInterface(ABC):
         """
 
     @abstractmethod
+    def change_brightness(self, brightness: int = 50):
+        """
+        Changes the brightness of the scene.
+        Param: brightness (int): the value of the brightness. Defaults to 50. It should not be more than 100 or less than 0.
+        """
+
+    @abstractmethod
     def draw_image_floor(self, image_path: str, **kwargs) -> None:
         """
         Changes the appearance of the floor in the Godot simulator by drawing an image (manually).
