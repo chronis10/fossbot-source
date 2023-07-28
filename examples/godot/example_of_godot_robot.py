@@ -99,6 +99,49 @@ def level_2(session_id):
             break
     robot.exit()
 
+def level_4(session_id):
+    """ Generates and navigates terrain (BETA VERSION). """
+    ge = GodotEnvironment(session_id)
+    current_path = pathlib.Path(__file__).parent.resolve()
+    path_dir = os.path.join(current_path, 'images')
+    heightmap_img = os.path.join(path_dir, 'heightmap.jpg')
+    grass_img = os.path.join(path_dir, 'grass.png')
+    ge.change_floor_terrain(heightmap_img, intensity=20)
+    ge.draw_image_floor_auto(grass_img)
+    ge.spawn_fossbot(pos_x=-30, pos_y=30, rotation=110, counterclockwise=True)
+    ge.exit()
+
+    # Example solution (navigation):
+    f = FossBot(session_id, rotate_90=40)
+    right_dist = 0
+    left_dist = 0
+    doOnce = True
+    count_times = 0
+    while count_times <= 4:
+        d = f.get_distance()
+        if d < 5:
+            if doOnce:
+                count_times += 1
+                f.rotate_clockwise_90()
+                right_dist = f.get_distance()
+                if right_dist > d:
+                    doOnce = False
+                    continue
+                f.rotate_counterclockwise_90()
+                f.rotate_counterclockwise_90()
+                left_dist = f.get_distance()
+                # f.rotate_clockwise_90()
+                doOnce = False
+            if right_dist < left_dist:
+                f.rotate_counterclockwise()
+            else:
+                f.rotate_clockwise()
+        else:
+            doOnce = True
+            f.just_move()
+    f.exit()
+
+
 if __name__ == "__main__":
     # Create a real robot
     godot = FossBot(session_id="8f61695b-0d64-4e67-9887-3ec1a69905b1", fossbot_name="fossbot")
