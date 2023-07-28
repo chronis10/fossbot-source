@@ -69,13 +69,16 @@ def level_1(session_id: str) -> None:
     ge.exit()
     # example solution:
     r = FossBot(session_id, fossbot_name="fossbot")
-    while True:
+    count_times = 0
+    while count_times < 5:
         d = r.get_distance()
         print(d)
         if d > 5:
             r.just_move()
         else:
             r.rotate_clockwise_90()
+            count_times += 1
+    r.exit()
 
 def level_2(session_id):
     """ Generates a circle (stored as a jpg) on the floor. """
@@ -176,6 +179,13 @@ def level_4(session_id):
     f.exit()
 
 if __name__ == "__main__":
-    # Create a real robot
-    godot = FossBot(session_id="8f61695b-0d64-4e67-9887-3ec1a69905b1", fossbot_name="fossbot")
-    main(godot)
+    # Plays some of the levels implemented above:
+
+    session_id= "YOUR_SESSION_ID_HERE"  # copy the session_id from the browser.
+
+    # examples (comment some if you dont want them to play):
+    level_0(session_id)
+    level_1(session_id)
+    # level_2(session_id)
+    level_3(session_id)
+    level_4(session_id)
