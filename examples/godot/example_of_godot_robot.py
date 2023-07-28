@@ -1,7 +1,9 @@
 """ Example of a godot robot"""
 
 import os
+import time
 import pathlib
+from threading import Thread
 from fossbot_lib.common.interfaces import robot_interface
 from fossbot_lib.godot_robot.fossbot import FossBot
 from fossbot_lib.godot_robot.godot_env import GodotEnvironment
@@ -11,7 +13,7 @@ def main(robot: robot_interface.FossBotInterface) -> None:
     robot.move_distance(15, "reverse")
     while True:
         robot.just_move()
-        if robot.get_distance() < 3:
+        if robot.get_distance() < 5:
             robot.stop()
             break
     for i in range(0, 5):
@@ -106,6 +108,30 @@ def level_2(session_id):
             print("Exited circle.")
             break
     robot.exit()
+
+def level_3(session_id):
+    """ Showcases multiple fossbot control. """
+    ge = GodotEnvironment(session_id)
+    ge.remove_all_objects()
+    ge.spawn_sphere(pos_x=0, pos_y=0, radius=2, color="green")
+    ge.spawn_fossbot(pos_y=0, pos_x=20)
+    ge.spawn_fossbot(pos_y=-30, pos_x=0, rotation=90, color="red")
+    ge.spawn_fossbot(pos_y=0, pos_x=-10, rotation=180, color="yellow")
+    ge.spawn_fossbot(pos_y=15, pos_x=0, rotation=90, counterclockwise=True, color="cyan")
+    ge.exit()
+    def __foss_main(session_id, fossbot_name):
+        r = FossBot(session_id, fossbot_name=fossbot_name)
+        main(r)
+    thread = Thread(target = __foss_main, args = (session_id, "fossbot2"))
+    thread.start()
+    time.sleep(0.1)
+    thread = Thread(target = __foss_main, args = (session_id, "fossbot3"))
+    thread.start()
+    time.sleep(0.1)
+    thread = Thread(target = __foss_main, args = (session_id, "fossbot4"))
+    thread.start()
+    time.sleep(0.1)
+    __foss_main(session_id, "fossbot")
 
 def level_4(session_id):
     """ Generates and navigates terrain (BETA VERSION). """
