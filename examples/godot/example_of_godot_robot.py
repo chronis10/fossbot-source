@@ -15,9 +15,6 @@ def main(robot: robot_interface.FossBotInterface) -> None:
             robot.stop()
             break
     for i in range(0, 5):
-        robot.just_rotate(0)
-    robot.just_rotate(1)
-    for i in range(0, 5):
         robot.just_move("reverse")
     robot.rotate_90(0)
     print("rotated.")
@@ -39,10 +36,21 @@ def main(robot: robot_interface.FossBotInterface) -> None:
     robot.wait(1)
     robot.exit()
 
+def level_0(session_id) -> None:
+    """ A simple level to showcase fossbot's functions. """
+    ge = GodotEnvironment(session_id)
+    ge.remove_all_objects()
+    ge.spawn_fossbot(pos_x=0, pos_y=0)
+    ge.spawn_cube(pos_x=-10, pos_y=0)
+    ge.exit()
+    f = FossBot(session_id)
+    main(f)
+
 def level_1(session_id: str) -> None:
     """ Creates the stage for level 1. """
     ge = GodotEnvironment(session_id)
-    ge.change_fossbot(fossbot_name="fossbot", pos_x=11, pos_y=2, rotation=90, counterclockwise=True)
+    ge.remove_all_objects()
+    ge.spawn_fossbot(pos_x=11, pos_y=2, rotation=90, counterclockwise=True)
     ge.spawn_cube(pos_x=20.6, pos_y=-2.36, scale_y=20, scale_x=0.8)
     ge.spawn_cube(pos_y=-24, pos_x=1.62, rotation=90, scale_y=20, scale_x=0.8)
     ge.spawn_cube(pos_y=12, pos_x=0, scale_y=20, scale_x=0.8)
@@ -67,15 +75,15 @@ def level_1(session_id: str) -> None:
         else:
             r.rotate_clockwise_90()
 
-
 def level_2(session_id):
     """ Generates a circle (stored as a jpg) on the floor. """
     ge = GodotEnvironment(session_id)
+    ge.remove_all_objects()
     current_path = pathlib.Path(__file__).parent.resolve()
     path_dir = os.path.join(current_path, 'images')
     file_path = os.path.join(path_dir, 'circle.jpg')
     ge.draw_image_floor_auto(file_path)
-    ge.change_fossbot(fossbot_name="fossbot", pos_x=44.5, pos_y=1, rotation=90, counterclockwise=True)
+    ge.spawn_fossbot(pos_x=44.5, pos_y=1, rotation=90, counterclockwise=True)
     ge.exit()
     robot = FossBot(session_id, fossbot_name="fossbot")
     # Follows black line. (example solution)
@@ -140,7 +148,6 @@ def level_4(session_id):
             doOnce = True
             f.just_move()
     f.exit()
-
 
 if __name__ == "__main__":
     # Create a real robot

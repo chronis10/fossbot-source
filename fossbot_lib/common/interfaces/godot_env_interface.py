@@ -148,6 +148,13 @@ class GodotEnvInterface(ABC):
          - intensity (float): The intensity of the terrain deformation. Defaults to 3.
         """
 
+    @abstractmethod
+    def remove_all_objects(self) -> None:
+        """
+        Removes all objects from the scene (except from the floor and foss handler).
+        Recommended to use it for changing scenes.
+        """
+
     # exit
     @abstractmethod
     def exit(self) -> None:

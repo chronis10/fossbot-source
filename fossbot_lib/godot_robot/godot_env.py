@@ -337,6 +337,13 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
         self.godotHandler.get_godot_env(param)
 
 
+    def remove_all_objects(self) -> None:
+        """
+        Removes all objects from the scene (except from the floor and foss handler).
+        Recommended to use it for changing scenes.
+        """
+        self.godotHandler.post_godot_env({"func":"remove_all_objects"})
+
     # exit
     def exit(self) -> None:
         ''' Exit for the environment user. '''
