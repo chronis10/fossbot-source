@@ -42,6 +42,7 @@ def level_0(session_id) -> None:
     """ A simple level to showcase fossbot's functions. """
     ge = GodotEnvironment(session_id)
     ge.remove_all_objects()
+    ge.reset_floor_terrain()
     ge.spawn_fossbot(pos_x=0, pos_y=0)
     ge.spawn_cube(pos_x=-10, pos_y=0)
     ge.exit()
@@ -52,6 +53,7 @@ def level_1(session_id: str) -> None:
     """ Creates the stage for level 1. """
     ge = GodotEnvironment(session_id)
     ge.remove_all_objects()
+    ge.reset_floor_terrain()
     ge.spawn_fossbot(pos_x=11, pos_y=2, rotation=90, counterclockwise=True)
     ge.spawn_cube(pos_x=20.6, pos_y=-2.36, scale_y=20, scale_x=0.8)
     ge.spawn_cube(pos_y=-24, pos_x=1.62, rotation=90, scale_y=20, scale_x=0.8)
@@ -84,6 +86,7 @@ def level_2(session_id):
     """ Generates a circle (stored as a jpg) on the floor. """
     ge = GodotEnvironment(session_id)
     ge.remove_all_objects()
+    ge.reset_floor_terrain()
     current_path = pathlib.Path(__file__).parent.resolve()
     path_dir = os.path.join(current_path, 'images')
     file_path = os.path.join(path_dir, 'circle.jpg')
@@ -107,7 +110,7 @@ def level_2(session_id):
             robot.rotate_counterclockwise()
         elif right:
             robot.rotate_clockwise()
-        else:   # stops also when middle sensor does not detect black.
+        else:   # middle sensor
             print("Exited circle.")
             break
     robot.exit()
@@ -116,6 +119,7 @@ def level_3(session_id):
     """ Showcases multiple fossbot control. """
     ge = GodotEnvironment(session_id)
     ge.remove_all_objects()
+    ge.reset_floor_terrain()
     ge.spawn_sphere(pos_x=0, pos_y=0, radius=2, color="green")
     ge.spawn_fossbot(pos_y=0, pos_x=20)
     ge.spawn_fossbot(pos_y=-30, pos_x=0, rotation=90, color="red")

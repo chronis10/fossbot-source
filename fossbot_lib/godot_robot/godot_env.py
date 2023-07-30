@@ -337,6 +337,18 @@ class GodotEnvironment(godot_env_interface.GodotEnvInterface):
         self.godotHandler.get_godot_env(param)
 
 
+    def reset_floor_terrain(self, floor_index: int = 0) -> None:
+        """
+        Resets the terrain to the initial scene terrain of this floor index.
+        Param: floor_index: the floor index to be reset. If only one floor exists in scene, use index 0 (it is also the default value).
+        """
+        param = {
+            "func": "reset_terrain",
+            "floor_index": str(int(floor_index)),
+        }
+        self.godotHandler.get_godot_env(param)
+
+
     def remove_all_objects(self) -> None:
         """
         Removes all objects from the scene (except from the floor and foss handler).

@@ -149,6 +149,13 @@ class GodotEnvInterface(ABC):
         """
 
     @abstractmethod
+    def reset_floor_terrain(self, floor_index: int = 0) -> None:
+        """
+        Resets the terrain to the initial scene terrain of this floor index.
+        Param: floor_index: the floor index to be reset. If only one floor exists in scene, use index 0 (it is also the default value).
+        """
+
+    @abstractmethod
     def remove_all_objects(self) -> None:
         """
         Removes all objects from the scene (except from the floor and foss handler).
