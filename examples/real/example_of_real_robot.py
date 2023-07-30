@@ -52,21 +52,6 @@ def follow_line(robot: robot_interface.FossBotInterface) -> None:
             robot.rotate_clockwise()
 
 if __name__ == "__main__":
-    # Load parameters from yml file
-    FILE_PARAM = load_parameters()
-
-    # Real robot test ================================================
-    REAL_PARAM = configuration.RobotParameters(
-        sensor_distance=configuration.SensorDistance(**FILE_PARAM["sensor_distance"]),
-        motor_left_speed=configuration.MotorLeftSpeed(**FILE_PARAM["motor_left"]),
-        motor_right_speed=configuration.MotorRightSpeed(**FILE_PARAM["motor_right"]),
-        default_step=configuration.DefaultStep(**FILE_PARAM["step"]),
-        light_sensor=configuration.LightSensor(**FILE_PARAM["light_sensor"]),
-        line_sensor_left=configuration.LineSensorLeft(**FILE_PARAM["line_sensor_left"]),
-        line_sensor_center=configuration.LineSensorCenter(**FILE_PARAM["line_sensor_center"]),
-        line_sensor_right=configuration.LineSensorRight(**FILE_PARAM["line_sensor_right"]),
-        rotate_90=configuration.Rotate90(**FILE_PARAM["rotate_90"]))
-
     # Create a real robot
-    REAL_ROBOT = RealFossBot(parameters=REAL_PARAM)
+    REAL_ROBOT = RealFossBot()
     main(REAL_ROBOT)

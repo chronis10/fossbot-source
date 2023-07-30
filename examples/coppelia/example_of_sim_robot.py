@@ -192,25 +192,9 @@ def test_timer(robot: robot_interface.FossBotInterface, count_time: int) -> None
     print('Timer stopped.')
 
 if __name__ == "__main__":
-    # Load parameters from yml file
-    FILE_PARAM = load_parameters()
-
-    # Simulation robot test ===========================================
-    SIM_IDS = configuration.SimRobotIds(**FILE_PARAM["simulator_ids"])
-    SIM_PARAM = configuration.SimRobotParameters(
-        sensor_distance=configuration.SensorDistance(**FILE_PARAM["sensor_distance"]),
-        motor_left_speed=configuration.MotorLeftSpeed(**FILE_PARAM["motor_left"]),
-        motor_right_speed=configuration.MotorRightSpeed(**FILE_PARAM["motor_right"]),
-        default_step=configuration.DefaultStep(**FILE_PARAM["step"]),
-        light_sensor=configuration.LightSensor(**FILE_PARAM["light_sensor"]),
-        line_sensor_left=configuration.LineSensorLeft(**FILE_PARAM["line_sensor_left"]),
-        line_sensor_center=configuration.LineSensorCenter(**FILE_PARAM["line_sensor_center"]),
-        line_sensor_right=configuration.LineSensorRight(**FILE_PARAM["line_sensor_right"]),
-        rotate_90=configuration.Rotate90(**FILE_PARAM["rotate_90"]),
-        simulation=SIM_IDS)
 
     # Create a simu robot
-    SIM_ROBOT = SimuFossBot(parameters=SIM_PARAM)
+    SIM_ROBOT = SimuFossBot()
     # Create environment
     ENVIRONMENT = Environment()
 
