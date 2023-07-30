@@ -107,7 +107,7 @@ def level_2(session_id):
             robot.rotate_counterclockwise()
         elif right:
             robot.rotate_clockwise()
-        else:
+        else:   # stops also when middle sensor does not detect black.
             print("Exited circle.")
             break
     robot.exit()
@@ -186,6 +186,6 @@ if __name__ == "__main__":
     # examples (comment some if you dont want them to play):
     level_0(session_id)
     level_1(session_id)
-    # level_2(session_id)
+    level_2(session_id)
     level_3(session_id)
     level_4(session_id)
