@@ -32,7 +32,7 @@ class GodotHandler():
         '''
         param["fossbot_name"] = self.fossbot_name
         self.socket.emit("clientMessage", param, namespace=self.socketio_namespace)
-        time.sleep(0.1)
+        # time.sleep(0.1)
 
     def post_godot_env(self, param: dict):
         '''
@@ -40,7 +40,7 @@ class GodotHandler():
         Param: param: the dictionary to be sent to godot.
         '''
         self.socket.emit("clientMessage", param, namespace=self.socketio_namespace)
-        time.sleep(0.1)
+        # time.sleep(0.1)
 
     def get_godot_env(self, param: dict):
         '''
@@ -51,7 +51,7 @@ class GodotHandler():
         self.post_godot_env(param)
         self.event.wait()  # wait for the event to be set
         self.event.clear()  # clear the event for the next use
-        time.sleep(0.1)
+        # time.sleep(0.1)
         return self.response["data"]
 
     def get_godot(self, param: dict):
@@ -63,5 +63,5 @@ class GodotHandler():
         self.post_godot(param)
         self.event.wait()  # wait for the event to be set
         self.event.clear()  # clear the event for the next use
-        time.sleep(0.1)
+        # time.sleep(0.1)
         return self.response["data"]
