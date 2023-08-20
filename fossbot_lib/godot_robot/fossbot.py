@@ -224,11 +224,7 @@ class FossBot(robot_interface.FossBotInterface):
             "vel_right": self.vel_right,
             "vel_left": self.vel_left
         }
-        self.godotHandler.post_godot(param)
-        d = self.__get_degrees()
-        while d < self.degree:
-            d = self.__get_degrees()
-        self.stop()
+        self.godotHandler.get_godot(param)
 
     def rotate_clockwise(self) -> None:
         '''
