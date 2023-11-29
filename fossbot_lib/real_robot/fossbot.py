@@ -118,8 +118,8 @@ class FossBot(robot_interface.FossBotInterface):
                 - clockwise: dir_id == 1
         '''
         self.odometer_right.reset()
-        left_dir = "reverse" if dir_id == 1 else "forward"
-        right_dir = "reverse" if dir_id == 0 else "forward"
+        left_dir = "reverse" if dir_id == 0 else "forward"
+        right_dir = "reverse" if dir_id == 1 else "forward"
         self.motor_left.move(direction=left_dir)
         self.motor_right.move(direction=right_dir)
 
