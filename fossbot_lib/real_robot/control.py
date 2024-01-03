@@ -334,10 +334,15 @@ class LedRGB(control_interfaces.LedRGBInterface):
     set_on(color): sets led to input color.
     '''
 
-    def __init__(self, pin_r: int = 16, pin_b: int = 19, pin_g: int = 12) -> None:
+    def __init__(self, pin_r: int = 16, pin_b: int = 19, pin_g: int = 12,anode:bool = False) -> None:
         self.p_r = GenOutput(pin_r)
         self.p_b = GenOutput(pin_b)
         self.p_g = GenOutput(pin_g)
+        if anode:
+            self.p_r.set_on()
+            self.p_b.set_on()
+            self.p_g.set_on()
+        self.anode = anode
 
     def set_on(self, color: str) -> None:
         '''
@@ -346,34 +351,75 @@ class LedRGB(control_interfaces.LedRGBInterface):
         For closing the led, use color == 'closed'
         '''
         if color == 'red':
-            self.p_r.set_on()
-            self.p_b.set_off()
-            self.p_g.set_off()
+            if self.anode:
+                self.p_r.set_off()
+                self.p_b.set_on()
+                self.p_g.set_on()
+            else: 
+                self.p_r.set_on()
+                self.p_b.set_off()
+                self.p_g.set_off()
         elif color == 'green':
-            self.p_r.set_off()
-            self.p_b.set_off()
-            self.p_g.set_on()
+            if self.anode:
+                self.p_r.set_on()
+                self.p_b.set_on()
+                self.p_g.set_off()
+            else:
+                self.p_r.set_off()
+                self.p_b.set_off()
+                self.p_g.set_on()
         elif color == 'blue':
-            self.p_r.set_off()
-            self.p_b.set_on()
-            self.p_g.set_off()
+            if self.anode:
+                self.p_r.set_on()
+                self.p_b.set_off()
+                self.p_g.set_on()
+            else:
+                self.p_r.set_off()
+                self.p_b.set_on()
+                self.p_g.set_off()
         elif color == 'white':
-            self.p_r.set_on()
-            self.p_b.set_on()
-            self.p_g.set_on()
+            if self.anode:
+                self.p_r.set_off()
+                self.p_b.set_off()
+                self.p_g.set_off()
+            else:
+                self.p_r.set_on()
+                self.p_b.set_on()
+                self.p_g.set_on()
         elif color == 'violet':
-            self.p_r.set_on()
-            self.p_b.set_on()
-            self.p_g.set_off()
+            if self.anode:
+                self.p_r.set_off()
+                self.p_b.set_off()
+                self.p_g.set_on()
+            else:
+                self.p_r.set_on()
+                self.p_b.set_on()
+                self.p_g.set_off()
         elif color == 'cyan':
-            self.p_r.set_off()
-            self.p_b.set_on()
-            self.p_g.set_on()
+            if self.anode:
+                self.p_r.set_on()
+                self.p_b.set_off()
+                self.p_g.set_off()
+            else:
+                self.p_r.set_off()
+                self.p_b.set_on()
+                self.p_g.set_on()
         elif color == 'yellow':
-            self.p_r.set_on()
-            self.p_b.set_off()
-            self.p_g.set_on()
+            if self.anode:
+                self.p_r.set_off()
+                self.p_b.set_on()
+                self.p_g.set_off()
+            else:
+                self.p_r.set_on()
+                self.p_b.set_off()
+                self.p_g.set_on()
+
         elif color == 'closed':
-            self.p_r.set_off()
-            self.p_b.set_off()
-            self.p_g.set_off()
+            if self.anode:
+                self.p_r.set_on()
+                self.p_b.set_on()
+                self.p_g.set_on()
+            else:
+                self.p_r.set_off()
+                self.p_b.set_off()
+                self.p_g.set_off()
