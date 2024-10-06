@@ -351,7 +351,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
         For turning off the LED, use color == 'closed'.
         '''
         if color == 'red':
-            if self.anode:
+            if not self.anode:
                 self.p_r.set_on()
                 self.p_b.set_off()
                 self.p_g.set_off()
@@ -360,7 +360,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
                 self.p_b.set_on()
                 self.p_g.set_on()
         elif color == 'green':
-            if self.anode:
+            if not self.anode:
                 self.p_r.set_off()
                 self.p_b.set_off()
                 self.p_g.set_on()
@@ -369,7 +369,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
                 self.p_b.set_on()
                 self.p_g.set_off()
         elif color == 'blue':
-            if self.anode:
+            if not self.anode:
                 self.p_r.set_off()
                 self.p_b.set_on()
                 self.p_g.set_off()
@@ -378,7 +378,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
                 self.p_b.set_off()
                 self.p_g.set_on()
         elif color == 'white':
-            if self.anode:
+            if not self.anode:
                 self.p_r.set_on()
                 self.p_b.set_on()
                 self.p_g.set_on()
@@ -387,7 +387,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
                 self.p_b.set_off()
                 self.p_g.set_off()
         elif color == 'violet':
-            if self.anode:
+            if not self.anode:
                 self.p_r.set_on()
                 self.p_b.set_on()
                 self.p_g.set_off()
@@ -396,7 +396,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
                 self.p_b.set_off()
                 self.p_g.set_on()
         elif color == 'cyan':
-            if self.anode:
+            if not self.anode:
                 self.p_r.set_off()
                 self.p_b.set_on()
                 self.p_g.set_on()
@@ -405,7 +405,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
                 self.p_b.set_off()
                 self.p_g.set_off()
         elif color == 'yellow':
-            if self.anode:
+            if not self.anode:
                 self.p_r.set_on()
                 self.p_b.set_off()
                 self.p_g.set_on()
@@ -414,7 +414,7 @@ class LedRGB(control_interfaces.LedRGBInterface):
                 self.p_b.set_on()
                 self.p_g.set_off()
         elif color == 'closed':
-            if self.anode:
+            if not self.anode:
                 self.p_r.set_off()
                 self.p_b.set_off()
                 self.p_g.set_off()
