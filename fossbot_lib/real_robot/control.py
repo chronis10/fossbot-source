@@ -330,11 +330,11 @@ class GenOutput(control_interfaces.GenOutputInterface):
 
 class LedRGB(control_interfaces.LedRGBInterface):
     '''
-    Class LedRGB(pin_r,pin_b,pin_g) -> Led control
+    Class LedRGB(pin_r, pin_b, pin_g) -> Led control
     set_on(color): sets led to input color.
     '''
 
-    def __init__(self, pin_r: int = 16, pin_b: int = 19, pin_g: int = 12,anode:bool = False) -> None:
+    def __init__(self, pin_r: int = 16, pin_b: int = 19, pin_g: int = 12, anode: bool = False) -> None:
         self.p_r = GenOutput(pin_r)
         self.p_b = GenOutput(pin_b)
         self.p_g = GenOutput(pin_g)
@@ -346,80 +346,81 @@ class LedRGB(control_interfaces.LedRGBInterface):
 
     def set_on(self, color: str) -> None:
         '''
-        Changes the color of a led
-        Param: color: the wanted color
-        For closing the led, use color == 'closed'
+        Changes the color of a LED.
+        Param: color: the desired color.
+        For turning off the LED, use color == 'closed'.
         '''
         if color == 'red':
             if self.anode:
-                self.p_r.set_off()
-                self.p_b.set_on()
-                self.p_g.set_on()
-            else: 
                 self.p_r.set_on()
                 self.p_b.set_off()
                 self.p_g.set_off()
+            else:
+                self.p_r.set_off()
+                self.p_b.set_on()
+                self.p_g.set_on()
         elif color == 'green':
             if self.anode:
-                self.p_r.set_on()
-                self.p_b.set_on()
-                self.p_g.set_off()
-            else:
                 self.p_r.set_off()
                 self.p_b.set_off()
                 self.p_g.set_on()
+            else:
+                self.p_r.set_on()
+                self.p_b.set_on()
+                self.p_g.set_off()
         elif color == 'blue':
             if self.anode:
-                self.p_r.set_on()
-                self.p_b.set_off()
-                self.p_g.set_on()
-            else:
                 self.p_r.set_off()
                 self.p_b.set_on()
                 self.p_g.set_off()
+            else:
+                self.p_r.set_on()
+                self.p_b.set_off()
+                self.p_g.set_on()
         elif color == 'white':
             if self.anode:
-                self.p_r.set_off()
-                self.p_b.set_off()
-                self.p_g.set_off()
-            else:
                 self.p_r.set_on()
                 self.p_b.set_on()
                 self.p_g.set_on()
+            else:
+                self.p_r.set_off()
+                self.p_b.set_off()
+                self.p_g.set_off()
         elif color == 'violet':
             if self.anode:
-                self.p_r.set_off()
-                self.p_b.set_off()
-                self.p_g.set_on()
-            else:
                 self.p_r.set_on()
                 self.p_b.set_on()
                 self.p_g.set_off()
+            else:
+                self.p_r.set_off()
+                self.p_b.set_off()
+                self.p_g.set_on()
         elif color == 'cyan':
             if self.anode:
-                self.p_r.set_on()
-                self.p_b.set_off()
-                self.p_g.set_off()
-            else:
                 self.p_r.set_off()
                 self.p_b.set_on()
                 self.p_g.set_on()
+            else:
+                self.p_r.set_on()
+                self.p_b.set_off()
+                self.p_g.set_off()
         elif color == 'yellow':
             if self.anode:
-                self.p_r.set_off()
-                self.p_b.set_on()
-                self.p_g.set_off()
-            else:
                 self.p_r.set_on()
                 self.p_b.set_off()
                 self.p_g.set_on()
-
+            else:
+                self.p_r.set_off()
+                self.p_b.set_on()
+                self.p_g.set_off()
         elif color == 'closed':
             if self.anode:
-                self.p_r.set_on()
-                self.p_b.set_on()
-                self.p_g.set_on()
-            else:
                 self.p_r.set_off()
                 self.p_b.set_off()
                 self.p_g.set_off()
+            else:
+                self.p_r.set_on()
+                self.p_b.set_on()
+                self.p_g.set_on()
+
+
