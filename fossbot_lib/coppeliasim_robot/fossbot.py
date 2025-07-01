@@ -254,6 +254,51 @@ class FossBot(robot_interface.FossBotInterface):
         '''
         self.rotate_90(0)
 
+    def rotate_degrees(self, degrees: float) -> None:
+        """
+        Rotates the robot by a specified number of degrees.
+        Positive degrees -> clockwise
+        Negative degrees -> counterclockwise
+    
+        Param:
+            degrees (float): the number of degrees to rotate.
+        """
+        if degrees == 0:
+            return
+    
+        dir_id = 1 if degrees > 0 else 0  # 1 = clockwise, 0 = counterclockwise
+        target_degrees = abs(degrees)
+    
+        self.just_rotate(dir_id)
+    
+        rotations = self.parameters.rotate_90.value  # how many 90-degree segments to complete one full rotation in this sim setup
+        init = self.__get_degrees()
+        d = 0
+        tar_pos = target_degrees / max(rotations, 1)
+        diff = abs(tar_pos - d)
+    
+        while diff >= 1.5:  # threshold to avoid infinite loops on small fluctuations
+            curr = self.__get_degrees()
+            if dir_id == 1:  # clockwise
+                if init > curr:
+                    d = init - curr
+                else:
+                    n_init = 180 + init
+                    n_cur = 180 - curr
+                    d = n_init + n_cur
+            elif dir_id == 0:  # counterclockwise
+                if curr > init:
+                    d = curr - init
+                else:
+                    n_init = 180 - init
+                    n_cur = 180 + curr
+                    d = n_init + n_cur
+            else:
+                raise RuntimeError
+            diff = abs(tar_pos - d)
+    
+        self.stop()
+
     # ultrasonic sensor
     def get_distance(self) -> float:
         '''Returns distance of nearest obstacle in cm.'''
